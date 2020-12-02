@@ -1,0 +1,4 @@
+mysqlclient
+requests
+SPARQLWrapper
+regex
