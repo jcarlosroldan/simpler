@@ -40,3 +40,14 @@ def human_date(date):
 def random_string(length: int, mask=digits + ascii_letters) -> str:
 	''' Returns a random string. '''
 	return ''.join(choice(mask) for _ in range(length))
+
+def print_matrix(matrix, rows=None, cols=None, elem_width=None, separator=' '):
+	for row in matrix[:rows]:
+		for col in row[:cols]:
+			print(str(col)[:elem_width], end=separator)
+		print()
+
+def safe_filename(name):
+	return ''.join(c for c in name if c.isalpha() or c.isdigit() or c in ' .-_;').strip()
+
+print(safe_filename('a.zip'))

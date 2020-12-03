@@ -1,7 +1,8 @@
-from os import makedirs, chdir
-from os.path import join, exists, dirname
-from pickle import load as pload, dump as pdump
+from filecmp import cmp
 from json import load as jload, dump as jdump
+from os import listdir, makedirs, chdir
+from os.path import isdir, islink, join, exists, dirname
+from pickle import load as pload, dump as pdump
 from regex import compile
 from time import time
 
@@ -138,3 +139,28 @@ def tvshow_rename(path):
 			episode = int(episode)
 			name = '%02d x %02d.%s' % (season, episode, ext)
 			rename(file, name)
+
+_directory_compare_ignored = ('.class', '.metadata', '.recommenders', '.pyc', '.git', '.svn', '.cache', '__pycache__')
+def directory_compare(old, new, kind='dir', ignored=_directory_compare_ignored):
+	def children(path):
+		res = {}
+		for child in listdir(path):
+			if not any(child.endswith(ext) for ext in ignored):
+				full = join(path, child)
+				is_dir = 'dir' if isdir(full) else 'file'
+				if not islink(full):  # symbolic links are ignored in the comparison
+					res[(is_dir, child)] = full
+		return res
+	if kind == 'file':
+		if not cmp(old, new, shallow=False):
+			print('Modified\tfile\t%s' % new)
+	else:
+		old_childs, new_childs = children(old), children(new)
+		for child in old_childs:
+			if child not in new_childs:
+				print('Deleted \t%s\t%s' % (child[0], old_childs[child]))
+		for child in new_childs:
+			if child not in old_childs:
+				print('Created \t%s\t%s' % (child[0], new_childs[child]))
+			else:
+				compare(old_childs[child], new_childs[child], child[0])
