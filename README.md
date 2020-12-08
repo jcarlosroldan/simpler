@@ -1,16 +1,16 @@
 # Simpler
 
-A library to makes Python simpler.
+A library to make Python even simpler.
 
-It contains an assorted selection of utils that I use on my everyday development.
+It contains an assorted selection of utils that I use on my projects.
 
 ## Installation
 
-It is also simple, just do `pip install simpler`.
+It is [available in PyPI](https://pypi.org/project/simpler/), just do `pip install simpler`.
 
 ## Usage
 
-The next examples summarises every available method.
+These are the methods currently available.
 
 * simpler.algorithms
   * DynamicProgramming: abstract dynamic programming class. After implementing methods .alternatives(state), .is_final(state) and .penalty(state) you can run .solve, asking for one solution, one optimal solution, every solution or every optimal solution.
