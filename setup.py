@@ -9,7 +9,7 @@ with open('requirements.txt', 'r', encoding='utf-8') as f:
 
 setup(
 	name='simpler',
-	version='0.2.2',
+	version='0.3.1',
 	author='Juan C. Roldán',
 	author_email='juancarlos@sevilla.es',
 	description='Makes Python simpler.',
