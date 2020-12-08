@@ -1,3 +1,5 @@
+@ECHO OFF
+
 Rem Remove auxiliary files
 rd /s /q build 
 rd /s /q dist
@@ -14,7 +16,7 @@ python setup.py sdist bdist_wheel
 python -m twine upload dist/* -u juancroldan
 
 Rem Reinstall it
-pip uninstall simpler
+pip uninstall simpler -y
 pip install simpler -U
 pause
 

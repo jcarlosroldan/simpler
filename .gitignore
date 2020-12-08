@@ -1,3 +1,7 @@
+# Project specific
+simpler-*/
+*.cached
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
