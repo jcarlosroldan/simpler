@@ -12,19 +12,6 @@ It is [available in PyPI](https://pypi.org/project/simpler/), just do `pip insta
 
 These are the methods currently available.
 
-* **simpler.algorithms**
-  * **DynamicProgramming:** abstract dynamic programming class. After implementing methods .alternatives(state), .is_final(state) and .penalty(state) you can run .solve, asking for one solution, one optimal solution, every solution or every optimal solution.
-* **simpler.bioinformatics**
-  * **codon_table:** dictionary of codon translations.
-  * **monoisotopic_mass_table:** monoisotopic mass for every amino acid.
-  * **monoisotopic_mass_water:** just that.
-  * **parse_fasta:** given a fasta string, it returns every (or just the first) sequence found.
-  * **dna_to_rna:** given a DNA string, returns its RNA version.
-  * **rna_to_dna:** given a RNA string, returns its DNA version.
-  * **rna_to_protein:** given a RNA string, returns its proteins.
-  * **reverse_complement:** returns the reverse complement of a sequence, either DNA or RNA.
-* **simpler.databases**
-  * **MySQL:** this class provides a easy way to connect to a MySQL database and forget about implementation stuff. Methods find_many and find_one methods return {col_name: value} dicitonaries, find column returns just one value, insert returns the id of the inserted element, and apply returns the row count of deleted/updated rows.
 * **simpler.files**
   * **cd:** changes working directory, base of relative routes, to the one where the script is located.
   * **read:** simplified read of a file with a single interface for string, bytes, json and pickle files.
@@ -42,9 +29,6 @@ These are the methods currently available.
   * **random_string:** returns a random string.
   * **print_matrix:** pretty-prints a 2D-array.
   * **safe_filename:** given a string name, returns its safe-to-save version.
-* **simpler.mail**
-  * **compose:** simplified interface to compose a mail message.
-  * **send:** simplified interface to send a mail.
 * **simpler.math**
   * **clamp:** returns a value clamped in an interval.
   * **snap:** returns a value snapped to a scale of a given size and offset.
@@ -61,6 +45,29 @@ These are the methods currently available.
   * **factor:** returns the factors of a number and its exponents.
   * **palindrome_list:** returns every palindromic number with k digits.
   * **phi:** Euler's phi function.
+* **validation**
+  * **assert_set:** asserts that a given value exists and returns it.
+  * **assert_str:** asserts that a given value is a string and complies with some customisable checks, and returns it.
+  * **assert_number:** asserts that a given value is a number and complies with some customisable checks, and returns it.
+  * **assert_id:** asserts that a given value is a valid daabase id and returns it.
+  * **assert_mail:** asserts that a given string is a valid mail and returns it.
+  * **assert_exists:** asserts that the given path exists and returns it.
+* **simpler.bioinformatics**
+  * **codon_table:** dictionary of codon translations.
+  * **monoisotopic_mass_table:** monoisotopic mass for every amino acid.
+  * **monoisotopic_mass_water:** just that.
+  * **parse_fasta:** given a fasta string, it returns every (or just the first) sequence found.
+  * **dna_to_rna:** given a DNA string, returns its RNA version.
+  * **rna_to_dna:** given a RNA string, returns its DNA version.
+  * **rna_to_protein:** given a RNA string, returns its proteins.
+  * **reverse_complement:** returns the reverse complement of a sequence, either DNA or RNA.
+* **simpler.algorithms**
+  * **DynamicProgramming:** abstract dynamic programming class. After implementing methods .alternatives(state), .is_final(state) and .penalty(state) you can run .solve, asking for one solution, one optimal solution, every solution or every optimal solution.
+* **simpler.databases**
+  * **MySQL:** this class provides a easy way to connect to a MySQL database and forget about implementation stuff. Methods find_many and find_one methods return {col_name: value} dicitonaries, find column returns just one value, insert returns the id of the inserted element, and apply returns the row count of deleted/updated rows.
+* **simpler.mail**
+  * **compose:** simplified interface to compose a mail message.
+  * **send:** simplified interface to send a mail.
 * **simpler.sparql**
   * **dbpedia:** sends a query to DBPedia.
   * **types:** returns every entity type with values that contain a given string.
@@ -69,13 +76,6 @@ These are the methods currently available.
 * **timing**
   * **tic:** adds the current time to a time stack.
   * **toc:** pops the last added time from a time stack and prints the difference. Can be used with tic to profile methods.
-* **validation**
-  * **assert_set:** asserts that a given value exists and returns it.
-  * **assert_str:** asserts that a given value is a string and complies with some customisable checks, and returns it.
-  * **assert_number:** asserts that a given value is a number and complies with some customisable checks, and returns it.
-  * **assert_id:** asserts that a given value is a valid daabase id and returns it.
-  * **assert_mail:** asserts that a given string is a valid mail and returns it.
-  * **assert_exists:** asserts that the given path exists and returns it.
 * **web**
   * **download_file:** stream a download a file from a URL while displaying the progress and ETA.
   * **DownloaderPool:** pool of workers that download a set of URLs simultaneously.
