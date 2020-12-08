@@ -1,4 +1,5 @@
 from filecmp import cmp
+from hashlib import md5
 from json import load as jload, dump as jdump
 from os import listdir, makedirs, chdir
 from os.path import isdir, islink, join, exists, dirname
@@ -56,28 +57,44 @@ def read(path: str, content: object, encoding: str = 'utf-8', format: str = 'str
 	fp.close()
 	return res
 
-def cache(target, args=None, kwargs=None, name=None, cache_lifespan=None, cache_directory='.pickled/'):
-	''' Runs the `target` method with the given `args` and `kwargs`, and store
-	its result to a pickled cache folder using the name of the target method,
-	or an alternative `name`, if given. If `cache_lifespan` is set, the stored
-	result will be discarded after `cache_lifespan` seconds. '''
-	args = () if args is None else args
-	kwargs = {} if kwargs is None else kwargs
-	name = REGEX_SAFE_FILENAME.sub(target.__name__ if name is None else name)
-	makedirs(cache_directory, exist_ok=True)
-	path = join(cache_directory, '_', name) + '.pk'
-	now = time()
-	res = None
-	if exists(path):
-		with open(path, 'rb') as fp:
-			save_time, value = pload(fp)
-		if cache_lifespan is None or now < save_time + cache_lifespan:
-			res = value
-	if res is None:
-		res = target(*args, **kwargs)
-		with open(path, 'wb') as fp:
-			pdump((now, res), fp, protocol=3)
-	return res
+def disk_cache(func=None, *, identifier=None, cache_seconds=None, cache_directory='.cached/'):
+	''' The first time the decorated method is called, its result is stored as a pickle file. The
+	next call loads the cached result from memory. The cache file identifier is generated from the
+	method name and its arguments, but it can be changed with the `identifier` argument. The directory
+	where files are stored is `.cached`, but it can be modified with the `cache_directory` argument.
+	The cached files are used indefinitely, but a `cache_seconds` lifespan can be defined. '''
+	def decorator(func):
+		def wrapper(*args, **kwargs):
+			makedirs(cache_directory, exist_ok=True)
+			# compute the cached file identifier
+			if identifier is None:
+				fname = '%s|%s|%s' % (
+					func.__name__,
+					','.join(map(str, args)),
+					','.join(map(lambda it: '%s:%s' % it, kwargs.items()))
+				)
+				fname = md5(fname.encode()).hexdigest()
+			else:
+				fname = identifier
+			fname = join(cache_directory, str(fname))
+			# return the value, cached or not
+			res = None
+			now = time()
+			if exists(fname):
+				with open(fname, 'rb') as fp:
+					save_time, value = pload(fp)
+				if cache_seconds is None or save_time - now < cache_seconds:
+					res = value
+			if res is None:
+				res = func(*args, **kwargs)
+				with open(fname, 'wb') as fp:
+					pdump((now, res), fp)
+			return res
+		return wrapper
+	if func:
+		return decorator(func)
+	else:
+		return decorator
 
 def size(file):
 	''' A way to see the size of a file without loading it to memory.
