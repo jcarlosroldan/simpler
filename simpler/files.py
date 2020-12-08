@@ -57,12 +57,12 @@ def read(path: str, content: object, encoding: str = 'utf-8', format: str = 'str
 	fp.close()
 	return res
 
-def disk_cache(func=None, *, identifier=None, cache_seconds=None, cache_directory='.cached/'):
-	''' The first time the decorated method is called, its result is stored as a pickle file. The
-	next call loads the cached result from memory. The cache file identifier is generated from the
-	method name and its arguments, but it can be changed with the `identifier` argument. The directory
-	where files are stored is `.cached`, but it can be modified with the `cache_directory` argument.
-	The cached files are used indefinitely, but a `cache_seconds` lifespan can be defined. '''
+def disk_cache(func=None, *, seconds: float = None, directory: str = '.cached/', identifier: str = None):
+	''' The first time the decorated method is called, its result is stored as a pickle file, the
+	next call loads the cached result from memory. The cached files are used indefinitely, but a
+	`seconds` lifespan can be defined. The directory where files are stored is `.cached`, but it can
+	be modified with the `directory` argument. The cache file identifier is generated from the
+	method name its arguments, but it can be changed with the `identifier` argument. '''
 	def decorator(func):
 		def wrapper(*args, **kwargs):
 			makedirs(cache_directory, exist_ok=True)
