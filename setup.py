@@ -9,7 +9,7 @@ with open('requirements.txt', 'r', encoding='utf-8') as f:
 
 setup(
 	name='simpler',
-	version='0.1.1',
+	version='0.2.0',
 	author='Juan C. Roldán',
 	author_email='juancarlos@sevilla.es',
 	description='Makes Python simpler.',
@@ -20,7 +20,7 @@ setup(
 	packages=find_packages(),
 	install_requires=requirements,
 	classifiers=[
-		'Development Status :: 3 - Alpha',
+		'Development Status :: 4 - Beta',
 		'Intended Audience :: Developers',
 		'License :: OSI Approved :: MIT License',
 		'Programming Language :: Python :: 3',
