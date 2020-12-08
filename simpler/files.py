@@ -42,12 +42,12 @@ def stream_lines(path: str, encoding: str = 'utf-8', format: str = 'string') -> 
 	fp.close()
 
 _read_accepted_formats = 'string', 'bytes', 'json', 'pickle'
-def read(path: str, content: object, encoding: str = 'utf-8', format: str = 'string', append: bool = False, json_ensure_ascii=False, json_indent='\t', json_separators=(', ', ': '), pickle_protocol=4) -> None:
+def write(path: str, content: object, encoding: str = 'utf-8', format: str = 'string', append: bool = False, json_ensure_ascii=False, json_indent='\t', json_separators=(', ', ': '), pickle_protocol=4) -> None:
 	assert format in _read_accepted_formats
 	if format == 'string':
-		fp = open(path, 'a', encoding=encoding)
+		fp = open(path, 'a' if append else 'w', encoding=encoding)
 	else:
-		fp = open(path, 'ab')
+		fp = open(path, 'ab' if append else 'wb')
 	if format in ('bytes', 'string'):
 		fp.write(content)
 	elif format == 'json':

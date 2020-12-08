@@ -86,5 +86,5 @@ def assert_mail(data: dict, name: str, optional: bool = False) -> str:
 	return data[name]
 
 def assert_exists(path: str) -> None:
-	''' Asserts that the given path exists within PATH_STATIC. '''
+	''' Asserts that the given path exists and returns it. '''
 	assert exists(path), 'Non-existing resource ' + path

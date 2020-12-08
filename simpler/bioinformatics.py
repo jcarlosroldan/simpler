@@ -26,8 +26,8 @@ def rna_to_dna(rna):
 def rna_to_protein(rna):
 	return ''.join(codon_table[rna[n:n + 3]] for n in range(0, len(rna), 3)).strip('Stop')
 
-def reverse_complement(dna, is_rna=True):
+def reverse_complement(seq, is_rna=True):
 	if is_rna:
-		return dna.translate(str.maketrans('GUCA', 'CAGU'))[::-1]
+		return seq.translate(str.maketrans('GUCA', 'CAGU'))[::-1]
 	else:
-		return dna.translate(str.maketrans('GTCA', 'CAGT'))[::-1]
+		return seq.translate(str.maketrans('GTCA', 'CAGT'))[::-1]

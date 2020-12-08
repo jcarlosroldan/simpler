@@ -49,5 +49,3 @@ def print_matrix(matrix, rows=None, cols=None, elem_width=None, separator=' '):
 
 def safe_filename(name):
 	return ''.join(c for c in name if c.isalpha() or c.isdigit() or c in ' .-_;').strip()
-
-print(safe_filename('a.zip'))
