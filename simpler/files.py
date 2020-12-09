@@ -65,7 +65,7 @@ def disk_cache(func=None, *, seconds: float = None, directory: str = '.cached/',
 	method name its arguments, but it can be changed with the `identifier` argument. '''
 	def decorator(func):
 		def wrapper(*args, **kwargs):
-			makedirs(cache_directory, exist_ok=True)
+			makedirs(directory, exist_ok=True)
 			# compute the cached file identifier
 			if identifier is None:
 				fname = '%s|%s|%s' % (
@@ -76,14 +76,14 @@ def disk_cache(func=None, *, seconds: float = None, directory: str = '.cached/',
 				fname = md5(fname.encode()).hexdigest()
 			else:
 				fname = identifier
-			fname = join(cache_directory, str(fname))
+			fname = join(directory, str(fname))
 			# return the value, cached or not
 			res = None
 			now = time()
 			if exists(fname):
 				with open(fname, 'rb') as fp:
 					save_time, value = pload(fp)
-				if cache_seconds is None or save_time - now < cache_seconds:
+				if seconds is None or save_time - now < seconds:
 					res = value
 			if res is None:
 				res = func(*args, **kwargs)
