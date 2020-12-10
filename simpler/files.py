@@ -6,13 +6,14 @@ from os.path import isdir, islink, join, exists, dirname
 from pickle import load as pload, dump as pdump
 from regex import compile
 from time import time
+from sys import path
 
 REGEX_SAFE_FILENAME = compile(r'[/\\\*;\[\]\":=,<>]')
 REGEX_FIND_EPISODE = compile(r'(?P<SEASON>\d+)\s*[x\-]\s*(?P<EPISODE>\d+)|S\s*(?P<SEASON>\d+)\s*E\s*(?P<EPISODE>\d+)|(?P<EPISODE>\d+)').search
 
-def cd(directory=__file__):
+def cwd():
 	''' Change the current working directory for relative routes. '''
-	chdir(dirname(directory))
+	chdir(path[0])
 
 _read_accepted_formats = 'string', 'bytes', 'json', 'pickle'
 def read(path: str, encoding: str = 'utf-8', format: str = 'string') -> object:
