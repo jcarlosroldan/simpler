@@ -3,6 +3,7 @@ from simpler.format import human_seconds, human_bytes
 from sys import stdout
 from time import time
 from threading import Thread
+from traceback import print_exc
 from urllib.request import urlopen
 
 def download_file(url, path=None, chunk_size=10**5):
@@ -30,25 +31,30 @@ def download_file(url, path=None, chunk_size=10**5):
 class DownloaderPool:
 
 	def __init__(self, num_workers=100, download_method=lambda url: urlopen(url, timeout=5).read()):
+		self.num_workers = num_workers
 		self.pending_urls = []
 		self.responses = {}
-		self.workers = [Thread(target=self.download_worker) for _ in range(num_workers)]
+		self.workers = None
 		self.download_method = download_method
+
+	def spawn_workers(self):
+		self.workers = [Thread(target=self.download_worker) for _ in range(self.num_workers)]
 		[w.start() for w in self.workers]
 
 	def download_worker(self):
-		while True:
-			if len(self.pending_urls):
-				url = self.pending_urls.pop()
-				try:
-					res = self.download_method(url)
-				except:
-					res = None
-				self.responses[url] = res
+		while len(self.pending_urls):
+			url = self.pending_urls.pop()
+			try:
+				res = self.download_method(url)
+			except:
+				print_exc()
+				res = None
+			self.responses[url] = res
 
 	def get(self, urls):
 		self.pending_urls.extend(urls)
 		request_pending_urls = urls[:]
+		self.spawn_workers()
 		while len(request_pending_urls):
 			for url in request_pending_urls:
 				if url in self.responses:
@@ -57,3 +63,4 @@ class DownloaderPool:
 				continue
 			yield url, self.responses[url]
 			del self.responses[url]
+			request_pending_urls.remove(url)
