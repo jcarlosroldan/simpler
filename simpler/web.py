@@ -1,5 +1,5 @@
 from requests import get
-from simpler.format import seconds_to_human, bytes_to_human
+from simpler.format import human_seconds, human_bytes
 from sys import stdout
 from time import time
 from threading import Thread
@@ -12,7 +12,7 @@ def download_file(url, path=None, chunk_size=10**5):
 	total_bytes = int(r.headers.get('content-length'))
 	bytes_downloaded = 0
 	start = time()
-	print('Downloading %s (%s)' % (url, bytes_to_human(total_bytes)))
+	print('Downloading %s (%s)' % (url, human_bytes(total_bytes)))
 	with open(path, 'wb') as fp:
 		for chunk in r.iter_content(chunk_size=chunk_size):
 			if not chunk: continue
@@ -21,8 +21,8 @@ def download_file(url, path=None, chunk_size=10**5):
 			percent = bytes_downloaded / total_bytes
 			bar = ('█' * int(percent * 32)).ljust(32)
 			time_delta = time() - start
-			eta = seconds_to_human((total_bytes - bytes_downloaded) * time_delta / bytes_downloaded)
-			avg_speed = bytes_to_human(bytes_downloaded / time_delta).rjust(9)
+			eta = human_seconds((total_bytes - bytes_downloaded) * time_delta / bytes_downloaded)
+			avg_speed = human_bytes(bytes_downloaded / time_delta).rjust(9)
 			stdout.flush()
 			stdout.write('\r  %6.02f%% |%s| %s/s eta %s' % (100 * percent, bar, avg_speed, eta))
 	print()
