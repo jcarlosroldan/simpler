@@ -29,7 +29,7 @@ def download_file(url, path=None, chunk_size=10**5):
 
 class DownloaderPool:
 
-	def __init__(self, num_workers=100, download_method=lambda url: urlopen(url, timeout=5)):
+	def __init__(self, num_workers=100, download_method=lambda url: urlopen(url, timeout=5).read()):
 		self.pending_urls = []
 		self.responses = {}
 		self.workers = [Thread(target=self.download_worker) for _ in range(num_workers)]
@@ -41,7 +41,7 @@ class DownloaderPool:
 			if len(self.pending_urls):
 				url = self.pending_urls.pop()
 				try:
-					res = self.download_method(url).read()
+					res = self.download_method(url)
 				except:
 					res = None
 				self.responses[url] = res
