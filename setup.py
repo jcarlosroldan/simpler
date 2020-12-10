@@ -8,7 +8,7 @@ with open('requirements.txt', 'r', encoding='utf-8') as f:
 
 setup(
 	name='simpler',
-	version='0.3.2',
+	version='0.4.1',
 	author='Juan C. Roldán',
 	author_email='juancarlos@sevilla.es',
 	description='Makes Python simpler.',
