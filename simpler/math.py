@@ -1,7 +1,9 @@
+from datetime import timedelta, datetime
 from difflib import SequenceMatcher
 from functools import reduce
 from itertools import zip_longest, compress, chain, product, combinations
 from math import sqrt, ceil
+from typing import Generator
 
 def clamp(value: float, smallest: float = 0, largest: float = 1) -> float:
 	''' Returns the value clamped between smallest and largest.
@@ -159,3 +161,9 @@ def phi(n: int) -> int:
 			if val <= n and n % val == 0:
 				res += (n // val) * multiplier
 	return res
+
+def date_range(date_start: datetime, date_end: datetime, step: timedelta = timedelta(days=1)) -> Generator[datetime, None, None]:
+	current = date_start
+	while current < date_end:
+		yield current
+		current += step
