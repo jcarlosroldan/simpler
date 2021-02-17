@@ -2,7 +2,7 @@ from filecmp import cmp
 from hashlib import md5
 from json import load as jload, dump as jdump
 from os import listdir, makedirs, chdir
-from os.path import isdir, islink, join, exists, dirname
+from os.path import isdir, islink, join, exists, dirname, rename
 from pickle import load as pload, dump as pdump
 from regex import compile
 from time import time
@@ -56,7 +56,6 @@ def write(path: str, content: object, encoding: str = 'utf-8', format: str = 'st
 	elif format == 'pickle':
 		pdump(content, fp, protocol=pickle_protocol)
 	fp.close()
-	return res
 
 def disk_cache(func=None, *, seconds: float = None, directory: str = '.cached/', identifier: str = None):
 	''' The first time the decorated method is called, its result is stored as a pickle file, the
@@ -181,4 +180,4 @@ def directory_compare(old, new, kind='dir', ignored=_directory_compare_ignored):
 			if child not in old_childs:
 				print('Created \t%s\t%s' % (child[0], new_childs[child]))
 			else:
-				compare(old_childs[child], new_childs[child], child[0])
+				directory_compare(old_childs[child], new_childs[child], child[0])

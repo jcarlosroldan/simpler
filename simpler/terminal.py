@@ -6,7 +6,6 @@ else:  # POSIX-based systems
 	from sys import stdin
 	from termios import tcgetattr, tcsetattr, TCSADRAIN
 
-
 def getch():
 	''' Reads a single byte from the user input. '''
 	if name == 'nt':
