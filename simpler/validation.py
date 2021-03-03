@@ -1,19 +1,20 @@
 from os.path import exists
 from re import search, match
 
-def assert_set(data: dict, name: str, optional: bool = False):
+def assert_set(data: dict, name: str, optional: bool = False, default: object = None):
 	''' Asserts that data[name] exists and returns it. '''
-	if optional and name not in data: return None
+	if optional and name not in data: return default
 	assert name in data, '%s is not set.' % name
 	return data[name]
 
 def assert_str(
-	data: dict, name: str, optional: bool = False, min_len: bool = None, max_len: bool = None,
-	has_letter: bool = None, has_number: bool = None, has_symbol: bool = None,
-	has_whitespace: bool = None, has_pattern: bool = None
+	data: dict, name: str, optional: bool = False, min_len: bool = None,
+	max_len: bool = None, has_letter: bool = None, has_number: bool = None,
+	has_symbol: bool = None, has_whitespace: bool = None, has_pattern: bool = None,
+	default: object = None
 ) -> str:
 	''' Asserts all the requested checks to data[name] and returns it. '''
-	if optional and name not in data: return None
+	if optional and name not in data: return default
 	assert_set(data, name)
 	if min_len is not None:
 		assert len(data[name]) >= min_len, '%s should be %d characters at least.' % (name, min_len)
@@ -48,11 +49,11 @@ def assert_str(
 	return data[name]
 
 def assert_number(
-	data: dict, name: str, optional: bool = False, min_val: bool = None, max_val: bool = None,
-	is_integer: bool = None
+	data: dict, name: str, optional: bool = False, min_val: bool = None,
+	max_val: bool = None, is_integer: bool = None, default: object = None
 ) -> int:
 	''' Asserts all the requested numeric checks to data[name] and returns it. '''
-	if optional and name not in data: return None
+	if optional and name not in data: return default
 	assert_set(data, name)
 	try:
 		val = float(data[name])
@@ -74,17 +75,27 @@ def assert_number(
 		assert val <= min_val, '%s must be %s at most.' % (name, max_val)
 	return val
 
-def assert_id(data: dict, name: str, optional: bool = False, allow_zero: bool = False) -> int:
+def assert_id(
+	data: dict, name: str, optional: bool = False, allow_zero: bool = False,
+	default: object = None
+) -> int:
 	''' Asserts that data[name] is a valid database id and returns it. '''
-	return assert_number(data, name, min_val=0 if allow_zero else 1, optional=optional, is_integer=True)
+	return assert_number(
+		data,
+		name,
+		min_val=0 if allow_zero else 1,
+		optional=optional,
+		default=default,
+		is_integer=True
+	)
 
-def assert_mail(data: dict, name: str, optional: bool = False) -> str:
+def assert_mail(data: dict, name: str, optional: bool = False, default: object = None) -> str:
 	''' Asserts that data[name] is a valid mail string and returns it. '''
-	if optional and name not in data: return None
+	if optional and name not in data: return default
 	assert_set(data, name)
 	assert match(r'[^\s@]+@[^\s@]+\.[^\s@]+', data[name]), '%s is not a valid mail.' % name
 	return data[name]
 
 def assert_exists(path: str) -> None:
-	''' Asserts that the given path exists and returns it. '''
-	assert exists(path), 'Non-existing resource ' + path
+	''' Asserts that the given path exists within PATH_STATIC. '''
+	assert exists(path), 'Non-existing resource "%s".' % path
