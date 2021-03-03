@@ -10,7 +10,6 @@ from pandas import read_csv, read_table
 from time import time
 from sys import path as sys_path
 
-REGEX_FILENAME_UNSAFE = compile(r'[/\\\*;\[\]\":=,<>]')
 REGEX_FIND_EPISODE = compile(r'(?P<SEASON>\d+)\s*[x\-]\s*(?P<EPISODE>\d+)|S\s*(?P<SEASON>\d+)\s*E\s*(?P<EPISODE>\d+)|(?P<EPISODE>\d+)').search
 
 def cwd():
@@ -214,6 +213,3 @@ def directory_compare(old, new, kind='dir', ignored=_directory_compare_ignored):
 				print('Created \t%s\t%s' % (child[0], new_childs[child]))
 			else:
 				directory_compare(old_childs[child], new_childs[child], child[0])
-
-def safe_filename(filename: str) -> str:
-	return REGEX_FILENAME_UNSAFE.sub('', filename)

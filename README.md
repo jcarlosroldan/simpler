@@ -10,12 +10,11 @@ It is [available in PyPI](https://pypi.org/project/simpler/), just do `pip insta
 
 ## Usage
 
-These are the methods currently available.
+Every method is properly documented. To use it, just do `from simpler import ...` and see all the choices that you have.
 
 * **simpler.files**
-  * **cd:** changes working directory, base of relative routes, to the one where the script is located.
+  * **cwd:** changes working directory, base of relative routes, to the one where the script is located.
   * **read:** simplified read of a file with a single interface for string, bytes, json and pickle files.
-  * **stream_lines:** same interface as read, just for string and bytes.
   * **write:** simplified write to a file with the same format as read.
   * **disk_cache:** this @annotation caches a file in the disk.
   * **size:** given a file, returns its size without loading it to memory.
@@ -29,6 +28,10 @@ These are the methods currently available.
   * **random_string:** returns a random string.
   * **print_matrix:** pretty-prints a 2D-array.
   * **safe_filename:** given a string name, returns its safe-to-save version.
+* **profiling**
+  * **tic:** adds the current time to a time stack.
+  * **toc:** pops the last added time from a time stack and prints the difference. Can be used with tic to profile methods.
+  * **deep_size:** recursively approximates the memory size of an object.
 * **simpler.math**
   * **clamp:** returns a value clamped in an interval.
   * **snap:** returns a value snapped to a scale of a given size and offset.
@@ -64,18 +67,16 @@ These are the methods currently available.
 * **simpler.algorithms**
   * **DynamicProgramming:** abstract dynamic programming class. After implementing methods .alternatives(state), .is_final(state) and .penalty(state) you can run .solve, asking for one solution, one optimal solution, every solution or every optimal solution.
 * **simpler.databases**
-  * **MySQL:** this class provides a easy way to connect to a MySQL database and forget about implementation stuff. Methods find_many and find_one methods return {col_name: value} dicitonaries, find column returns just one value, insert returns the id of the inserted element, and apply returns the row count of deleted/updated rows.
+  * **MySQL:** easy way to connect to a MySQL database and forget about implementation stuff. Methods find_many and find_one methods return {col_name: value} dictionaries, find column returns just one value, insert returns the id of the inserted element, and apply returns the row count of deleted/updated rows.
+  * **Excel:** simple connector to an Excel file to retrieve cell ranges using the Excel range format.
 * **simpler.mail**
   * **compose:** simplified interface to compose a mail message.
   * **send:** simplified interface to send a mail.
 * **simpler.sparql**
   * **dbpedia:** sends a query to DBPedia.
-  * **types:** returns every entity type with values that contain a given string.
+  * **entity_types:** returns every entity type with values that contain a given string.
 * **terminal**
   * **getch:** reads a sngle byte from the user input.
-* **timing**
-  * **tic:** adds the current time to a time stack.
-  * **toc:** pops the last added time from a time stack and prints the difference. Can be used with tic to profile methods.
 * **web**
   * **download_file:** stream a download a file from a URL while displaying the progress and ETA.
   * **DownloaderPool:** pool of workers that download a set of URLs simultaneously.

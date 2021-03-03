@@ -1,6 +1,9 @@
 from datetime import datetime, timedelta
 from random import choice
 from string import digits, ascii_letters
+from regex import compile
+
+REGEX_FILENAME_UNSAFE = compile(r'[/\\\*;\[\]\":=,<>]')
 
 def human_bytes(size, decimal_places=2):
 	''' Returns a human readable file size from a number of bytes. '''
@@ -47,5 +50,5 @@ def print_matrix(matrix, rows=None, cols=None, elem_width=None, separator=' '):
 			print(str(col)[:elem_width], end=separator)
 		print()
 
-def safe_filename(name):
-	return ''.join(c for c in name if c.isalpha() or c.isdigit() or c in ' .-_;').strip()
+def safe_filename(filename: str) -> str:
+	return REGEX_FILENAME_UNSAFE.sub('', filename)
