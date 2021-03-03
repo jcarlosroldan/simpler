@@ -1,23 +1,25 @@
 from filecmp import cmp
 from hashlib import md5
-from json import load as jload, dump as jdump
+from json import load as jload, dump as jdump, dumps as jdumps
 from os import listdir, makedirs, chdir
-from os.path import isdir, islink, join, exists, dirname, rename
+from os.path import isdir, islink, join, exists, rename
 from pickle import load as pload, dump as pdump
+from pandas.core.frame import DataFrame
 from regex import compile
+from pandas import read_csv, read_table
 from time import time
-from sys import path
+from sys import path as sys_path
 
-REGEX_SAFE_FILENAME = compile(r'[/\\\*;\[\]\":=,<>]')
+REGEX_FILENAME_UNSAFE = compile(r'[/\\\*;\[\]\":=,<>]')
 REGEX_FIND_EPISODE = compile(r'(?P<SEASON>\d+)\s*[x\-]\s*(?P<EPISODE>\d+)|S\s*(?P<SEASON>\d+)\s*E\s*(?P<EPISODE>\d+)|(?P<EPISODE>\d+)').search
 
 def cwd():
-	''' Change the current working directory for relative routes. '''
-	chdir(path[0])
+	''' Change the base of relative paths to the directory of the main script. '''
+	chdir(sys_path[0])
 
-_read_accepted_formats = 'string', 'bytes', 'json', 'pickle'
-def read(path: str, encoding: str = 'utf-8', format: str = 'string') -> object:
-	assert format in _read_accepted_formats
+def read(path: str, format: str = 'auto', encoding: str = 'utf-8') -> object:
+	''' Read a file in a given format. '''
+	format = _detect_format(path, format)
 	if format == 'string':
 		fp = open(path, 'r', encoding=encoding)
 	else:
@@ -26,26 +28,21 @@ def read(path: str, encoding: str = 'utf-8', format: str = 'string') -> object:
 		res = fp.read()
 	elif format == 'json':
 		res = jload(fp)
+	elif format == 'jsonl':
+		res = [jload(line) for line in fp]
+	elif format == 'csv':
+		res = read_csv(fp)
+	elif format == 'table':
+		res = read_table(fp)
 	elif format == 'pickle':
 		res = pload(fp)
 	fp.close()
 	return res
 
-_stream_accepted_formats = 'string', 'bytes'
-def stream_lines(path: str, encoding: str = 'utf-8', format: str = 'string') -> object:
-	assert format in _stream_accepted_formats
-	if format == 'string':
-		fp = open(path, 'r', encoding=encoding)
-	else:
-		fp = open(path, 'rb')
-	for line in fp:
-		yield line
-	fp.close()
-
-_read_accepted_formats = 'string', 'bytes', 'json', 'pickle'
-def write(path: str, content: object, encoding: str = 'utf-8', format: str = 'string', append: bool = False, json_ensure_ascii=False, json_indent='\t', json_separators=(', ', ': '), pickle_protocol=4) -> None:
-	assert format in _read_accepted_formats
-	if format == 'string':
+def write(path: str, content: object, format: str = 'auto', encoding: str = 'utf-8', append: bool = False, json_ensure_ascii=False, json_indent='\t', json_separators=(', ', ': '), pickle_protocol=4) -> None:
+	''' Saves a file to the given format. '''
+	format = _detect_format(path, format)
+	if format in ('string', 'jsonl'):
 		fp = open(path, 'a' if append else 'w', encoding=encoding)
 	else:
 		fp = open(path, 'ab' if append else 'wb')
@@ -53,16 +50,53 @@ def write(path: str, content: object, encoding: str = 'utf-8', format: str = 'st
 		fp.write(content)
 	elif format == 'json':
 		jdump(content, fp, ensure_ascii=json_ensure_ascii, indent=json_indent, separators=json_separators)
+	elif format == 'jsonl':
+		fp.write(
+			jdumps(elem, ensure_ascii=json_ensure_ascii, indent=json_indent, separators=json_separators)
+			for elem in content
+		)
 	elif format == 'pickle':
 		pdump(content, fp, protocol=pickle_protocol)
+	elif format == 'csv':
+		DataFrame(content).to_csv(path)
+	elif format == 'table':
+		DataFrame(content).to_excel(path)
 	fp.close()
+
+_accepted_formats = {
+	'auto': (),
+	'bytes': ('bin', 'db', 'dat', 'blob', 'bytes'),
+	'csv': ('csv'),
+	'json': ('json', 'js'),
+	'jsonl': ('jsonl', 'jsl'),
+	'pickle': ('pickle', 'pk', 'pkl', 'pck', 'pcl'),
+	'string': ('txt', 'text', 'str'),
+	'table': ('xlsx', 'odf', 'ods', 'odt', 'xls', 'xlsb', 'xlsm')
+}
+
+def _detect_format(path: str, format: str) -> str:
+	if format == 'auto':
+		if '.' in path:
+			ext = path.rsplit('.', 1)
+			for ext_format, exts in _accepted_formats.items():
+				if ext in exts:
+					format = ext_format
+					break
+			else:
+				format = 'txt'
+	else:
+		assert format in _accepted_formats, 'Unknown format %s. Accepted formats are: %s' % (
+			format,
+			', '.join(_accepted_formats.keys())
+		)
+	return format
 
 def disk_cache(func=None, *, seconds: float = None, directory: str = '.cached/', identifier: str = None):
 	''' The first time the decorated method is called, its result is stored as a pickle file, the
-	next call loads the cached result from memory. The cached files are used indefinitely, but a
-	`seconds` lifespan can be defined. The directory where files are stored is `.cached`, but it can
-	be modified with the `directory` argument. The cache file identifier is generated from the
-	method name its arguments, but it can be changed with the `identifier` argument. '''
+	next call loads the cached result from the disk. The cached files are used indefinitely unless the
+	`seconds` lifespan is defined. The cached files are stored at `.cached` unless otherwise
+	specificed with the `directory` argument. The cache file identifier is generated from the
+	method name its arguments unless otherwise specified with the `identifier` argument. '''
 	def decorator(func):
 		def wrapper(*args, **kwargs):
 			makedirs(directory, exist_ok=True)
@@ -97,8 +131,7 @@ def disk_cache(func=None, *, seconds: float = None, directory: str = '.cached/',
 		return decorator
 
 def size(file):
-	''' A way to see the size of a file without loading it to memory.
-	See https://stackoverflow.com/a/22126842/1832728 '''
+	''' A way to see the size of a file without loading it to memory. '''
 	if file.content_length:
 		return file.content_length
 	try:
@@ -157,7 +190,7 @@ def tvshow_rename(path):
 			name = '%02d x %02d.%s' % (season, episode, ext)
 			rename(file, name)
 
-_directory_compare_ignored = ('.class', '.metadata', '.recommenders', '.pyc', '.git', '.svn', '.cache', '__pycache__')
+_directory_compare_ignored = ('.class', '.metadata', '.recommenders', '.pyc', '.git', '.svn', '.cached', '__pycache__')
 def directory_compare(old, new, kind='dir', ignored=_directory_compare_ignored):
 	def children(path):
 		res = {}
@@ -181,3 +214,6 @@ def directory_compare(old, new, kind='dir', ignored=_directory_compare_ignored):
 				print('Created \t%s\t%s' % (child[0], new_childs[child]))
 			else:
 				directory_compare(old_childs[child], new_childs[child], child[0])
+
+def safe_filename(filename: str) -> str:
+	return REGEX_FILENAME_UNSAFE.sub('', filename)
