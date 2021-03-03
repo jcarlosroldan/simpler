@@ -2,3 +2,4 @@ mysqlclient
 requests
 SPARQLWrapper
 regex
+pandas
