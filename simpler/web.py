@@ -1,7 +1,7 @@
 from requests import get
 from simpler.format import human_seconds, human_bytes
 from sys import stdout
-from time import time
+from time import time, sleep
 from threading import Thread
 from traceback import print_exc
 from urllib.request import urlopen
@@ -64,3 +64,14 @@ class DownloaderPool:
 			yield url, self.responses[url]
 			del self.responses[url]
 			request_pending_urls.remove(url)
+
+_throttle_last = None
+def throttle(seconds: float = 1) -> None:
+	''' Sleeps the thread so that the function is called every X seconds. '''
+	global _throttle_last
+	now = time()
+	if _throttle_last is not None:
+		diff = now - _throttle_last
+		if diff < seconds:
+			sleep(seconds - diff)
+	_throttle_last = now
