@@ -65,13 +65,14 @@ class DownloaderPool:
 			del self.responses[url]
 			request_pending_urls.remove(url)
 
-_throttle_last = None
+_throttle_last = 0
 def throttle(seconds: float = 1) -> None:
 	''' Sleeps the thread so that the function is called every X seconds. '''
 	global _throttle_last
 	now = time()
-	if _throttle_last is not None:
-		diff = now - _throttle_last
-		if diff < seconds:
-			sleep(seconds - diff)
-	_throttle_last = now
+	remaining = _throttle_last + seconds - now
+	if remaining > 0:
+		sleep(remaining)
+		_throttle_last += seconds
+	else:
+		_throttle_last = now
