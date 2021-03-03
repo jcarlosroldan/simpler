@@ -1,8 +1,8 @@
 from filecmp import cmp
 from hashlib import md5
 from json import load as jload, dump as jdump, dumps as jdumps
-from os import listdir, makedirs, chdir
-from os.path import isdir, islink, join, exists, rename
+from os import listdir, makedirs, chdir, rename
+from os.path import isdir, islink, join, exists
 from pickle import load as pload, dump as pdump
 from pandas.core.frame import DataFrame
 from regex import compile
@@ -76,13 +76,13 @@ _accepted_formats = {
 def _detect_format(path: str, format: str) -> str:
 	if format == 'auto':
 		if '.' in path:
-			ext = path.rsplit('.', 1)
+			ext = path.rsplit('.', 1)[-1]
 			for ext_format, exts in _accepted_formats.items():
 				if ext in exts:
 					format = ext_format
 					break
 			else:
-				format = 'txt'
+				format = 'string'
 	else:
 		assert format in _accepted_formats, 'Unknown format %s. Accepted formats are: %s' % (
 			format,
