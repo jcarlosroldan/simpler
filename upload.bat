@@ -21,6 +21,8 @@ rd /s /q dist
 rd /s /q simpler.egg-info
 for /d %%x in (simpler-*) do rd /s /q %%x
 
+timeout /t 2
+
 Rem Reinstall it
 pip uninstall simpler -y
 pip install simpler -U
