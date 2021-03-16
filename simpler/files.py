@@ -41,14 +41,16 @@ def read(path: str, format: str = 'auto', encoding: str = 'utf-8') -> object:
 def write(path: str, content: object, format: str = 'auto', encoding: str = 'utf-8', append: bool = False, json_ensure_ascii=False, json_indent='\t', json_separators=(', ', ': '), pickle_protocol=4) -> None:
 	''' Saves a file to the given format. '''
 	format = _detect_format(path, format)
-	if format in ('string', 'jsonl'):
+	if format in ('string', 'json', 'jsonl'):
 		fp = open(path, 'a' if append else 'w', encoding=encoding)
 	else:
 		fp = open(path, 'ab' if append else 'wb')
 	if format in ('bytes', 'string'):
 		fp.write(content)
 	elif format == 'json':
-		jdump(content, fp, ensure_ascii=json_ensure_ascii, indent=json_indent, separators=json_separators)
+		fp.write(
+			jdumps(content, ensure_ascii=json_ensure_ascii, indent=json_indent, separators=json_separators)
+		)
 	elif format == 'jsonl':
 		fp.write(
 			jdumps(elem, ensure_ascii=json_ensure_ascii, indent=json_indent, separators=json_separators)
