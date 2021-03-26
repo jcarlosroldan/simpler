@@ -6,6 +6,7 @@ from simpler.format import human_bytes, human_seconds, human_date, random_string
 from simpler.mail import compose, send
 from simpler.math import clamp, snap, unique, all_equal, jaccard, levenshtein, base_change, prime_list, is_prime, fibonacci, lcm, gcd, factor, palindrome_list, phi, date_range
 from simpler.profiling import tic, toc, deep_size
+from simpler.reflection import import_from_path
 from simpler.sparql import dbpedia, entity_types
 from simpler.terminal import getch
 from simpler.validation import assert_set, assert_str, assert_number, assert_id, assert_mail, assert_exists

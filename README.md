@@ -81,3 +81,5 @@ Every method is properly documented. To use it, just do `from simpler import ...
   * **download_file:** stream a download a file from a URL while displaying the progress and ETA.
   * **DownloaderPool:** pool of workers that download a set of URLs simultaneously.
   * **throttle:** ensures that a piece of code is called every X seconds.
+* **reflection**
+  * **import_from_path:** loads the script at the specified path and returns an object given its name.
