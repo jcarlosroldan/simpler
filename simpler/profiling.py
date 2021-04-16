@@ -4,19 +4,20 @@ from types import ModuleType, FunctionType
 from gc import get_referents
 
 _tictoc_stack = []
-def tic():
+def tic() -> None:
 	''' Captures time '''
 	global _tictoc_stack
 	_tictoc_stack.append(time())
 
-def toc(show=True):
+def toc(show: bool = True, show_label: str = '') -> float:
 	''' Shows time since tic() was executed. '''
 	global _tictoc_stack
 	total = time() - _tictoc_stack.pop()
 	if show:
+		if show_label:
+			print(show_label, end=': ')
 		print(total)
-	else:
-		return total
+	return total
 
 _deep_size_blacklist = type, ModuleType, FunctionType
 def deep_size(obj):
