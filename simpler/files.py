@@ -83,8 +83,8 @@ def _detect_format(path: str, format: str) -> str:
 				if ext in exts:
 					format = ext_format
 					break
-			else:
-				format = 'string'
+		if format == 'auto':
+			format = 'string'
 	else:
 		assert format in _accepted_formats, 'Unknown format %s. Accepted formats are: %s' % (
 			format,
