@@ -16,8 +16,8 @@ def cwd():
 	''' Change the base of relative paths to the directory of the main script. '''
 	chdir(sys_path[0])
 
-def read(path: str, format: str = 'auto', encoding: str = 'utf-8') -> object:
-	''' Read a file in a given format. '''
+def load(path: str, format: str = 'auto', encoding: str = 'utf-8') -> object:
+	''' Load a file in a given format. '''
 	format = _detect_format(path, format)
 	if format == 'string':
 		fp = open(path, 'r', encoding=encoding)
@@ -38,7 +38,7 @@ def read(path: str, format: str = 'auto', encoding: str = 'utf-8') -> object:
 	fp.close()
 	return res
 
-def write(path: str, content: object, format: str = 'auto', encoding: str = 'utf-8', append: bool = False, json_ensure_ascii=False, json_indent='\t', json_separators=(', ', ': '), pickle_protocol=4) -> None:
+def save(path: str, content: object, format: str = 'auto', encoding: str = 'utf-8', append: bool = False, json_ensure_ascii=False, json_indent='\t', json_separators=(', ', ': '), pickle_protocol=4) -> None:
 	''' Saves a file to the given format. '''
 	format = _detect_format(path, format)
 	if format in ('string', 'json', 'jsonl'):
@@ -59,9 +59,9 @@ def write(path: str, content: object, format: str = 'auto', encoding: str = 'utf
 	elif format == 'pickle':
 		pdump(content, fp, protocol=pickle_protocol)
 	elif format == 'csv':
-		DataFrame(content).to_csv(path)
+		DataFrame(content).to_csv(path, index=False)
 	elif format == 'table':
-		DataFrame(content).to_excel(path)
+		DataFrame(content).to_excel(path, index=False)
 	fp.close()
 
 _accepted_formats = {

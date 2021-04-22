@@ -14,8 +14,8 @@ Every method is properly documented. To use it, just do `from simpler import ...
 
 * **simpler.files**
   * **cwd:** changes working directory, base of relative routes, to the one where the script is located.
-  * **read:** simplified read of a file with a single interface for string, bytes, json and pickle files.
-  * **write:** simplified write to a file with the same format as read.
+  * **load:** simplified load of a file with a single interface for string, bytes, json and pickle files.
+  * **save:** simplified save to a file with the same format as load.
   * **disk_cache:** this @annotation caches a file in the disk.
   * **size:** given a file, returns its size without loading it to memory.
   * **find_hidden_compressed:** given a file, finds if it contains the signature for any compressed format.
