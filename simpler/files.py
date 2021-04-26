@@ -1,9 +1,10 @@
 from filecmp import cmp
 from hashlib import md5
-from json import load as jload, dump as jdump, dumps as jdumps
+from json import load as jload, dumps as jdumps
 from os import listdir, makedirs, chdir, rename
 from os.path import isdir, islink, join, exists
 from pickle import load as pload, dump as pdump
+from yaml import load_all as yload, dump as ydump
 from pandas.core.frame import DataFrame
 from regex import compile
 from pandas import read_csv, read_table
@@ -35,6 +36,8 @@ def load(path: str, format: str = 'auto', encoding: str = 'utf-8') -> object:
 		res = read_table(fp)
 	elif format == 'pickle':
 		res = pload(fp)
+	elif format == 'yaml':
+		res = list(yload(fp))
 	fp.close()
 	return res
 
@@ -43,8 +46,10 @@ def save(path: str, content: object, format: str = 'auto', encoding: str = 'utf-
 	format = _detect_format(path, format)
 	if format in ('string', 'json', 'jsonl'):
 		fp = open(path, 'a' if append else 'w', encoding=encoding)
-	else:
+	elif format in ('bytes', 'pickle', 'yaml'):
 		fp = open(path, 'ab' if append else 'wb')
+	else:
+		fp = None
 	if format in ('bytes', 'string'):
 		fp.write(content)
 	elif format == 'json':
@@ -62,7 +67,10 @@ def save(path: str, content: object, format: str = 'auto', encoding: str = 'utf-
 		DataFrame(content).to_csv(path, index=False)
 	elif format == 'table':
 		DataFrame(content).to_excel(path, index=False)
-	fp.close()
+	elif format == 'yaml':
+		ydump(content, fp)
+	if fp is not None:
+		fp.close()
 
 _accepted_formats = {
 	'auto': (),
@@ -72,7 +80,8 @@ _accepted_formats = {
 	'jsonl': ('jsonl', 'jsl'),
 	'pickle': ('pickle', 'pk', 'pkl', 'pck', 'pcl'),
 	'string': ('txt', 'text', 'str'),
-	'table': ('xlsx', 'odf', 'ods', 'odt', 'xls', 'xlsb', 'xlsm')
+	'table': ('xlsx', 'odf', 'ods', 'odt', 'xls', 'xlsb', 'xlsm'),
+	'yaml': ('yaml', 'yml')
 }
 
 def _detect_format(path: str, format: str) -> str:
