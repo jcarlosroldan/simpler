@@ -4,7 +4,7 @@ from json import load as jload, dumps as jdumps
 from os import listdir, makedirs, chdir, rename
 from os.path import isdir, islink, join, exists
 from pickle import load as pload, dump as pdump
-from yaml import load_all as yload, dump as ydump
+from yaml import safe_load_all as yload, dump as ydump
 from pandas.core.frame import DataFrame
 from regex import compile
 from pandas import read_csv, read_table
@@ -38,6 +38,7 @@ def load(path: str, format: str = 'auto', encoding: str = 'utf-8') -> object:
 		res = pload(fp)
 	elif format == 'yaml':
 		res = list(yload(fp))
+		res = res[0] if len(res) == 1 else res
 	fp.close()
 	return res
 
