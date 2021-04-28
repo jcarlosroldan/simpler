@@ -17,9 +17,11 @@ def cwd():
 	''' Change the base of relative paths to the directory of the main script. '''
 	chdir(sys_path[0])
 
-def load(path: str, format: str = 'auto', encoding: str = 'utf-8') -> object:
+def load(path: str, format: str = 'auto', encoding: str = 'utf-8', inner_args: list = None, inner_kwargs: dict = None) -> object:
 	''' Load a file in a given format. '''
 	format = _detect_format(path, format)
+	args = [] if inner_args is None else inner_args
+	kwargs = {} if inner_kwargs is None else inner_kwargs
 	if format == 'string':
 		fp = open(path, 'r', encoding=encoding)
 	else:
@@ -27,24 +29,26 @@ def load(path: str, format: str = 'auto', encoding: str = 'utf-8') -> object:
 	if format in ('bytes', 'string'):
 		res = fp.read()
 	elif format == 'json':
-		res = jload(fp)
+		res = jload(fp, *args, **kwargs)
 	elif format == 'jsonl':
-		res = [jload(line) for line in fp]
+		res = [jload(line, *args, **kwargs) for line in fp]
 	elif format == 'csv':
-		res = read_csv(fp)
+		res = read_csv(fp, *args, **kwargs)
 	elif format == 'table':
-		res = read_table(fp)
+		res = read_table(fp, *args, **kwargs)
 	elif format == 'pickle':
-		res = pload(fp)
+		res = pload(fp, *args, **kwargs)
 	elif format == 'yaml':
-		res = list(yload(fp))
+		res = list(yload(fp, *args, **kwargs))
 		res = res[0] if len(res) == 1 else res
 	fp.close()
 	return res
 
-def save(path: str, content: object, format: str = 'auto', encoding: str = 'utf-8', append: bool = False, json_ensure_ascii=False, json_indent='\t', json_separators=(', ', ': '), pickle_protocol=4) -> None:
+def save(path: str, content: object, format: str = 'auto', encoding: str = 'utf-8', append: bool = False, inner_args: list = None, inner_kwargs: dict = None) -> None:
 	''' Saves a file to the given format. '''
 	format = _detect_format(path, format)
+	args = [] if inner_args is None else inner_args
+	kwargs = {} if inner_kwargs is None else inner_kwargs
 	if format in ('string', 'json', 'jsonl', 'yaml'):
 		fp = open(path, 'a' if append else 'w', encoding=encoding)
 	elif format in ('bytes', 'pickle'):
@@ -53,23 +57,25 @@ def save(path: str, content: object, format: str = 'auto', encoding: str = 'utf-
 		fp = None
 	if format in ('bytes', 'string'):
 		fp.write(content)
-	elif format == 'json':
-		fp.write(
-			jdumps(content, ensure_ascii=json_ensure_ascii, indent=json_indent, separators=json_separators)
-		)
-	elif format == 'jsonl':
-		fp.write(
-			jdumps(elem, ensure_ascii=json_ensure_ascii, indent=json_indent, separators=json_separators)
-			for elem in content
-		)
+	elif format in ('json', 'jsonl'):
+		if 'json_ensure_ascii' not in kwargs: kwargs['json_ensure_ascii'] = False
+		if 'json_indent' not in kwargs: kwargs['json_indent'] = '\t'
+		if 'json_separators' not in kwargs: kwargs['json_separators'] = (', ', ': ')
+		if format[-1] == 'l':
+			fp.write(jdumps(elem, *args, **kwargs) for elem in content)
+		else:
+			fp.write(jdumps(content, *args, **kwargs))
 	elif format == 'pickle':
-		pdump(content, fp, protocol=pickle_protocol)
+		if 'pickle_protocol' not in kwargs: kwargs['pickle_protocol'] = 4
+		pdump(content, fp, *args, **kwargs)
 	elif format == 'csv':
-		DataFrame(content).to_csv(path, index=False)
+		if 'index' not in kwargs: kwargs['index'] = False
+		DataFrame(content).to_csv(path, *args, **kwargs)
 	elif format == 'table':
-		DataFrame(content).to_excel(path, index=False)
+		if 'index' not in kwargs: kwargs['index'] = False
+		DataFrame(content).to_excel(path, *args, **kwargs)
 	elif format == 'yaml':
-		ydump(content, fp)
+		ydump(content, fp, *args, **kwargs)
 	if fp is not None:
 		fp.close()
 
