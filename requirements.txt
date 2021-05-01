@@ -4,3 +4,4 @@ SPARQLWrapper
 regex
 pandas
 pyyaml
+rarfile

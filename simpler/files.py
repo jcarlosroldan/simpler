@@ -4,12 +4,23 @@ from json import load as jload, dumps as jdumps
 from os import listdir, makedirs, chdir, rename
 from os.path import isdir, islink, join, exists
 from pickle import load as pload, dump as pdump
+from typing import Optional
 from yaml import safe_load_all as yload, dump as ydump
 from pandas.core.frame import DataFrame
 from regex import compile
 from pandas import read_csv, read_table
 from time import time
 from sys import path as sys_path
+from collections import OrderedDict
+from os import makedirs
+from zipfile import ZipFile
+from gzip import GzipFile
+from shutil import copyfileobj
+from tarfile import open as open_tar
+from bz2 import open as open_bz2
+from rarfile import RarFile
+from py7zr import SevenZipFile
+from lzma import open as open_lzma, decompress as lzdecompress
 
 REGEX_FIND_EPISODE = compile(r'(?P<SEASON>\d+)\s*[x\-]\s*(?P<EPISODE>\d+)|S\s*(?P<SEASON>\d+)\s*E\s*(?P<EPISODE>\d+)|(?P<EPISODE>\d+)').search
 
@@ -17,9 +28,12 @@ def cwd():
 	''' Change the base of relative paths to the directory of the main script. '''
 	chdir(sys_path[0])
 
+
+_load_formats = 'bytes', 'csv', 'json', 'jsonl', 'pickle', 'string', 'table', 'yaml'
 def load(path: str, format: str = 'auto', encoding: str = 'utf-8', inner_args: list = None, inner_kwargs: dict = None) -> object:
 	''' Load a file in a given format. '''
-	format = _detect_format(path, format)
+	format = detect_format(path, format)
+	format = detect_format(path, format, accept=_load_formats, default='string')
 	args = [] if inner_args is None else inner_args
 	kwargs = {} if inner_kwargs is None else inner_kwargs
 	if format == 'string':
@@ -46,7 +60,7 @@ def load(path: str, format: str = 'auto', encoding: str = 'utf-8', inner_args: l
 
 def save(path: str, content: object, format: str = 'auto', encoding: str = 'utf-8', append: bool = False, inner_args: list = None, inner_kwargs: dict = None) -> None:
 	''' Saves a file to the given format. '''
-	format = _detect_format(path, format)
+	format = detect_format(path, format, accept=_load_formats, default='string')
 	args = [] if inner_args is None else inner_args
 	kwargs = {} if inner_kwargs is None else inner_kwargs
 	if format in ('string', 'json', 'jsonl', 'yaml'):
@@ -79,32 +93,62 @@ def save(path: str, content: object, format: str = 'auto', encoding: str = 'utf-
 	if fp is not None:
 		fp.close()
 
-_accepted_formats = {
-	'auto': (),
-	'bytes': ('bin', 'db', 'dat', 'blob', 'bytes'),
-	'csv': ('csv'),
-	'json': ('json', 'js'),
-	'jsonl': ('jsonl', 'jsl'),
-	'pickle': ('pickle', 'pk', 'pkl', 'pck', 'pcl'),
-	'string': ('txt', 'text', 'str'),
-	'table': ('xlsx', 'odf', 'ods', 'odt', 'xls', 'xlsb', 'xlsm'),
-	'yaml': ('yaml', 'yml')
-}
+_decompress_formats = 'tar', 'zip', 'gzip', 'bzip2', 'rar', '7zip', 'lzma'
+def decompress(path: str, output: str, format: str = 'auto'):
+	format = detect_format(path, format, accept=_decompress_formats)
+	makedirs(output, exist_ok=True)
+	if format == 'zip':
+		with ZipFile(path, 'r') as zipped:
+			zipped.extractall(output)
+	elif format == 'gzip':
+		with GzipFile(path, 'r') as zipped, open(output, 'wb') as file_dest:
+			copyfileobj(zipped, file_dest)
+	elif format == 'rar':
+		with RarFile(path, 'r') as zipped:
+			zipped.extractall(output)
+	elif format == 'bzip2':
+		with open_bz2(path, 'r') as zipped, open(output, 'wb') as file_dest:
+			copyfileobj(zipped, file_dest)
+	elif format == 'tar':
+		with open_tar(path) as zipped:
+			zipped.extractall(output)
+	elif format == '7zip':
+		with SevenZipFile(path, 'r') as zipped:
+			zipped.extractall(output)
+	elif format == 'lzma':
+		with open_lzma(path, 'r') as zipped, open(output, 'wb') as file_dest:
+			copyfileobj(lzdecompress(zipped), file_dest)
 
-def _detect_format(path: str, format: str) -> str:
+_detect_format_exts = OrderedDict((
+	('bytes', ('bin', 'db', 'dat', 'blob', 'bytes')),
+	('csv', ('csv')),
+	('json', ('json', 'js')),
+	('jsonl', ('jsonl', 'jsl')),
+	('pickle', ('pickle', 'pk', 'pkl', 'pck', 'pcl')),
+	('string', ('txt', 'text', 'str')),
+	('table', ('xlsx', 'odf', 'ods', 'odt', 'xls', 'xlsb', 'xlsm')),
+	('yaml', ('yaml', 'yml')),
+	('tar', ('tar', 'tar-linux32', 'tar-linux64', 'tar.gz')),
+	('zip', ('zip', 'cbz')),
+	('gzip', ('gz', 'gzip', 'gunzip')),
+	('bzip2', ('bzip2', 'bz2')),
+	('rar', ('rar', 'cbr')),
+	('7zip', ('7z', '7zip')),
+	('lzma', ('lzip', 'lz')),
+))
+def detect_format(path: str, format: str, accept: list = None, default: str = None) -> Optional[str]:
 	if format == 'auto':
-		if '.' in path:
-			ext = path.rsplit('.', 1)[-1]
-			for ext_format, exts in _accepted_formats.items():
-				if ext in exts:
-					format = ext_format
-					break
-		if format == 'auto':
-			format = 'string'
-	else:
-		assert format in _accepted_formats, 'Unknown format %s. Accepted formats are: %s' % (
-			format,
-			', '.join(_accepted_formats.keys())
+		name = path.lower()
+		for ext_format, exts in _detect_format_exts.items():
+			if any(name.endswith('.' + ext) for ext in exts):
+				format = ext_format
+				break
+		else:
+			format = default
+	if accept is not None:
+		assert format in accept, 'Unknown format for file at "%s". Accepted formats are %s.' % (
+			path,
+			', '.join(accept)
 		)
 	return format
 
