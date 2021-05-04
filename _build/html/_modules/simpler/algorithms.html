@@ -1,0 +1,152 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>simpler.algorithms &#8212; simpler  documentation</title>
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for simpler.algorithms</h1><div class="highlight"><pre>
+<div class="viewcode-block" id="DynamicProgramming"><a class="viewcode-back" href="../../simpler.html#simpler.algorithms.DynamicProgramming">[docs]</a><span></span><span class="k">class</span> <span class="nc">DynamicProgramming</span><span class="p">:</span>
+	<span class="sd">&quot;&quot;&quot; Abstract class to solve problems using dynamic programming. To use it,</span>
+<span class="sd">	make a child class implementing alternatives, is_final and penalty. Then,</span>
+<span class="sd">	make one of such objects providing the initial state in the constructor, and</span>
+<span class="sd">	call to solve(), providing one search type. &quot;&quot;&quot;</span>
+	<span class="n">ONE_SOLUTION</span> <span class="o">=</span> <span class="mi">0</span>
+	<span class="n">ONE_OPTIMAL_SOLUTION</span> <span class="o">=</span> <span class="mi">1</span>
+	<span class="n">ALL_SOLUTIONS</span> <span class="o">=</span> <span class="mi">2</span>
+	<span class="n">ALL_OPTIMAL_SOLUTIONS</span> <span class="o">=</span> <span class="mi">3</span>
+
+	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">initial_state</span><span class="p">):</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">initial_state</span> <span class="o">=</span> <span class="n">initial_state</span>
+
+<div class="viewcode-block" id="DynamicProgramming.alternatives"><a class="viewcode-back" href="../../simpler.html#simpler.algorithms.DynamicProgramming.alternatives">[docs]</a>	<span class="k">def</span> <span class="nf">alternatives</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+		<span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;This should return all the alternatives for a given state, without modifying the given state.&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DynamicProgramming.is_final"><a class="viewcode-back" href="../../simpler.html#simpler.algorithms.DynamicProgramming.is_final">[docs]</a>	<span class="k">def</span> <span class="nf">is_final</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+		<span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;This should return whether a state is a final state or not.&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DynamicProgramming.penalty"><a class="viewcode-back" href="../../simpler.html#simpler.algorithms.DynamicProgramming.penalty">[docs]</a>	<span class="k">def</span> <span class="nf">penalty</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+		<span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;This should return an upper bound for the penalty of the problem. Ideally, optimal solutions should have no penalty.&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="DynamicProgramming.solve"><a class="viewcode-back" href="../../simpler.html#simpler.algorithms.DynamicProgramming.solve">[docs]</a>	<span class="k">def</span> <span class="nf">solve</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">search_type</span><span class="o">=</span><span class="n">ONE_SOLUTION</span><span class="p">):</span>
+		<span class="k">assert</span> <span class="n">search_type</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">),</span> <span class="s2">&quot;Invalid search type.&quot;</span>
+		<span class="n">final_states</span> <span class="o">=</span> <span class="p">[]</span>
+		<span class="n">explored</span> <span class="o">=</span> <span class="p">[]</span>
+		<span class="n">remaining</span> <span class="o">=</span> <span class="p">[(</span><span class="bp">self</span><span class="o">.</span><span class="n">penalty</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">initial_state</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">initial_state</span><span class="p">)]</span>
+		<span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">remaining</span><span class="p">):</span>
+			<span class="n">_</span><span class="p">,</span> <span class="n">state</span> <span class="o">=</span> <span class="n">remaining</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+			<span class="n">explored</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+			<span class="k">for</span> <span class="n">alternative</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">alternatives</span><span class="p">(</span><span class="n">state</span><span class="p">):</span>
+				<span class="k">if</span> <span class="n">alternative</span> <span class="ow">in</span> <span class="n">explored</span><span class="p">:</span> <span class="k">continue</span>
+				<span class="n">penalty</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">penalty</span><span class="p">(</span><span class="n">alternative</span><span class="p">)</span>
+				<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_final</span><span class="p">(</span><span class="n">alternative</span><span class="p">):</span>
+					<span class="k">if</span> <span class="n">search_type</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">ONE_SOLUTION</span> <span class="ow">or</span> <span class="n">penalty</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">search_type</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">ONE_OPTIMAL_SOLUTION</span><span class="p">:</span>
+						<span class="k">return</span> <span class="n">alternative</span>
+					<span class="k">else</span><span class="p">:</span>
+						<span class="n">final_states</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">penalty</span><span class="p">,</span> <span class="n">alternative</span><span class="p">))</span>
+				<span class="k">else</span><span class="p">:</span>
+					<span class="n">index</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="mi">1</span> <span class="k">for</span> <span class="n">p</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">remaining</span> <span class="k">if</span> <span class="n">p</span> <span class="o">&lt;</span> <span class="n">penalty</span><span class="p">)</span>
+					<span class="n">remaining</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="p">(</span><span class="n">penalty</span><span class="p">,</span> <span class="n">alternative</span><span class="p">))</span>
+		<span class="k">if</span> <span class="n">search_type</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">ALL_SOLUTIONS</span><span class="p">:</span>
+			<span class="k">return</span> <span class="p">[</span><span class="n">state</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">state</span> <span class="ow">in</span> <span class="n">final_states</span><span class="p">]</span>
+		<span class="k">else</span><span class="p">:</span>
+			<span class="n">min_penalty</span> <span class="o">=</span> <span class="nb">min</span><span class="p">([</span><span class="n">penalty</span> <span class="k">for</span> <span class="n">penalty</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">final_states</span><span class="p">])</span>
+			<span class="n">optimals</span> <span class="o">=</span> <span class="p">[</span><span class="n">state</span> <span class="k">for</span> <span class="n">penalty</span><span class="p">,</span> <span class="n">state</span> <span class="ow">in</span> <span class="n">final_states</span> <span class="k">if</span> <span class="n">penalty</span> <span class="o">==</span> <span class="n">min_penalty</span><span class="p">]</span>
+			<span class="k">if</span> <span class="n">search_type</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">ALL_OPTIMAL_SOLUTIONS</span><span class="p">:</span>
+				<span class="k">return</span> <span class="n">optimals</span>
+			<span class="k">else</span><span class="p">:</span>
+				<span class="k">return</span> <span class="n">optimals</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">simpler</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../setup.html">setup module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../simpler.html">simpler package</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Juan C. Roldan.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

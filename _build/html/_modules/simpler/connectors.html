@@ -1,0 +1,238 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>simpler.connectors &#8212; simpler  documentation</title>
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for simpler.connectors</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">MySQLdb</span> <span class="kn">import</span> <span class="n">Connection</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">ExcelFile</span><span class="p">,</span> <span class="n">read_excel</span><span class="p">,</span> <span class="n">DataFrame</span><span class="p">,</span> <span class="n">concat</span>
+<span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="n">arange</span><span class="p">,</span> <span class="n">concatenate</span><span class="p">,</span> <span class="n">array</span>
+<span class="kn">from</span> <span class="nn">re</span> <span class="kn">import</span> <span class="nb">compile</span><span class="p">,</span> <span class="n">IGNORECASE</span>
+
+<div class="viewcode-block" id="MySQL"><a class="viewcode-back" href="../../simpler.html#simpler.connectors.MySQL">[docs]</a><span class="k">class</span> <span class="nc">MySQL</span><span class="p">:</span>
+	<span class="n">client</span> <span class="o">=</span> <span class="kc">None</span>
+	<span class="n">cursor</span> <span class="o">=</span> <span class="kc">None</span>
+
+	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">autocommit</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+		<span class="sd">&#39;&#39;&#39; Creates a MySQL database adapter with a handful of recurrent functions. &#39;&#39;&#39;</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">connection</span> <span class="o">=</span> <span class="n">Connection</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">autocommit</span><span class="p">(</span><span class="n">autocommit</span><span class="p">)</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">cursor</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">cursor</span><span class="p">()</span>
+
+<div class="viewcode-block" id="MySQL.close"><a class="viewcode-back" href="../../simpler.html#simpler.connectors.MySQL.close">[docs]</a>	<span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+		<span class="sd">&#39;&#39;&#39; Closes the current cursor and connection. &#39;&#39;&#39;</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="MySQL.find_many"><a class="viewcode-back" href="../../simpler.html#simpler.connectors.MySQL.find_many">[docs]</a>	<span class="k">def</span> <span class="nf">find_many</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="n">params</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+		<span class="sd">&#39;&#39;&#39; Returns a list of {column_name: value} dicts of the selected rows. &#39;&#39;&#39;</span>
+		<span class="k">assert</span> <span class="s1">&#39;select&#39;</span> <span class="ow">in</span> <span class="n">query</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+		<span class="k">return</span> <span class="p">[</span>
+			<span class="p">{</span><span class="n">k</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">description</span><span class="p">,</span> <span class="n">row</span><span class="p">)}</span>
+			<span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+		<span class="p">]</span></div>
+
+<div class="viewcode-block" id="MySQL.find_one"><a class="viewcode-back" href="../../simpler.html#simpler.connectors.MySQL.find_one">[docs]</a>	<span class="k">def</span> <span class="nf">find_one</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="n">params</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+		<span class="sd">&#39;&#39;&#39; Returns a {column_name: value} dict of the first selected row. &#39;&#39;&#39;</span>
+		<span class="k">assert</span> <span class="s1">&#39;select&#39;</span> <span class="ow">in</span> <span class="n">query</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+		<span class="n">row</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
+		<span class="k">if</span> <span class="n">row</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+			<span class="n">row</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span> <span class="n">v</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">description</span><span class="p">,</span> <span class="n">row</span><span class="p">)}</span>
+		<span class="k">return</span> <span class="n">row</span></div>
+
+<div class="viewcode-block" id="MySQL.find_column"><a class="viewcode-back" href="../../simpler.html#simpler.connectors.MySQL.find_column">[docs]</a>	<span class="k">def</span> <span class="nf">find_column</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="n">params</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+		<span class="sd">&#39;&#39;&#39; Returns the value of the first attribute of a selected row. &#39;&#39;&#39;</span>
+		<span class="k">assert</span> <span class="s1">&#39;select&#39;</span> <span class="ow">in</span> <span class="n">query</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+		<span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
+		<span class="k">if</span> <span class="n">res</span><span class="p">:</span>
+			<span class="k">return</span> <span class="n">res</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="MySQL.insert"><a class="viewcode-back" href="../../simpler.html#simpler.connectors.MySQL.insert">[docs]</a>	<span class="k">def</span> <span class="nf">insert</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="n">params</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+		<span class="sd">&#39;&#39;&#39; Inserts a row and returns the id of the last one inserted. &#39;&#39;&#39;</span>
+		<span class="k">assert</span> <span class="s1">&#39;insert&#39;</span> <span class="ow">in</span> <span class="n">query</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+		<span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">lastrowid</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="MySQL.apply"><a class="viewcode-back" href="../../simpler.html#simpler.connectors.MySQL.apply">[docs]</a>	<span class="k">def</span> <span class="nf">apply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="n">params</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+		<span class="sd">&#39;&#39;&#39; Executes an update or delete operation and returns the number of rows affected. &#39;&#39;&#39;</span>
+		<span class="k">assert</span> <span class="s1">&#39;update&#39;</span> <span class="ow">in</span> <span class="n">query</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">or</span> <span class="s1">&#39;delete&#39;</span> <span class="ow">in</span> <span class="n">query</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">query</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+		<span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cursor</span><span class="o">.</span><span class="n">rowcount</span><span class="p">)</span></div></div>
+
+<div class="viewcode-block" id="Excel"><a class="viewcode-back" href="../../simpler.html#simpler.connectors.Excel">[docs]</a><span class="k">class</span> <span class="nc">Excel</span><span class="p">:</span>
+	<span class="sd">&#39;&#39;&#39; Pandas Excel backend. &#39;&#39;&#39;</span>
+
+	<span class="n">_RANGE</span> <span class="o">=</span> <span class="nb">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;(?P&lt;start_col&gt;[a-z]+)(?P&lt;start_row&gt;\d+)(\:(?P&lt;end_col&gt;[a-z]+)(?P&lt;end_row&gt;\d+))?&#39;</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="n">IGNORECASE</span><span class="p">)</span><span class="o">.</span><span class="n">match</span>
+	<span class="n">_LETTERS</span> <span class="o">=</span> <span class="s1">&#39;ABCDEFGHIJKLMNOPQRSTUVWXYZ&#39;</span>
+
+	<span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">path</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">sheet_names</span> <span class="o">=</span> <span class="n">ExcelFile</span><span class="p">(</span><span class="n">path</span><span class="p">)</span><span class="o">.</span><span class="n">sheet_names</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">sheets</span> <span class="o">=</span> <span class="p">{</span><span class="n">name</span><span class="p">:</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sheet_names</span><span class="p">}</span>
+
+<div class="viewcode-block" id="Excel.sheet"><a class="viewcode-back" href="../../simpler.html#simpler.connectors.Excel.sheet">[docs]</a>	<span class="k">def</span> <span class="nf">sheet</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sheet</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DataFrame</span><span class="p">:</span>
+		<span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sheet</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+			<span class="n">sheet</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sheet_names</span><span class="p">[</span><span class="n">sheet</span><span class="p">]</span>
+		<span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sheets</span><span class="p">[</span><span class="n">sheet</span><span class="p">]</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">sheets</span><span class="p">[</span><span class="n">sheet</span><span class="p">]</span> <span class="o">=</span> <span class="n">read_excel</span><span class="p">(</span>
+				<span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span>
+				<span class="n">dtype</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+				<span class="n">sheet_name</span><span class="o">=</span><span class="n">sheet</span><span class="p">,</span>
+				<span class="n">na_filter</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+				<span class="n">header</span><span class="o">=</span><span class="kc">None</span>
+			<span class="p">)</span><span class="o">.</span><span class="n">applymap</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="k">else</span> <span class="n">x</span><span class="p">)</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sheets</span><span class="p">[</span><span class="n">sheet</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Excel.cell"><a class="viewcode-back" href="../../simpler.html#simpler.connectors.Excel.cell">[docs]</a>	<span class="k">def</span> <span class="nf">cell</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="n">sheet</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+		<span class="sd">&#39;&#39;&#39; Retrieves a cell from the book. &#39;&#39;&#39;</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sheet</span><span class="p">(</span><span class="n">sheet</span><span class="p">)</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">row</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">col</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Excel.cells"><a class="viewcode-back" href="../../simpler.html#simpler.connectors.Excel.cells">[docs]</a>	<span class="k">def</span> <span class="nf">cells</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">sheet</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+		<span class="sd">&#39;&#39;&#39; Retrieves a square of cells data from a block. &#39;&#39;&#39;</span>
+		<span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">block</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+			<span class="n">block</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">block_from_code</span><span class="p">(</span><span class="n">block</span><span class="p">)</span>
+		<span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">sheet</span><span class="p">(</span><span class="n">sheet</span><span class="p">)</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">block</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span><span class="n">block</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">block</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span><span class="n">block</span><span class="p">[</span><span class="mi">3</span><span class="p">]]</span></div>
+
+<div class="viewcode-block" id="Excel.index_from_code"><a class="viewcode-back" href="../../simpler.html#simpler.connectors.Excel.index_from_code">[docs]</a>	<span class="k">def</span> <span class="nf">index_from_code</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">code</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+		<span class="sd">&#39;&#39;&#39; Transforms an Excel code like ABC to an index like 731.&#39;&#39;&#39;</span>
+		<span class="n">res</span> <span class="o">=</span> <span class="mi">0</span>
+		<span class="k">for</span> <span class="n">letter</span> <span class="ow">in</span> <span class="n">code</span><span class="p">:</span>
+			<span class="n">res</span> <span class="o">=</span> <span class="n">res</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">Excel</span><span class="o">.</span><span class="n">_LETTERS</span><span class="p">)</span> <span class="o">+</span> <span class="n">Excel</span><span class="o">.</span><span class="n">_LETTERS</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">letter</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+		<span class="k">return</span> <span class="n">res</span></div>
+
+<div class="viewcode-block" id="Excel.block_from_code"><a class="viewcode-back" href="../../simpler.html#simpler.connectors.Excel.block_from_code">[docs]</a>	<span class="k">def</span> <span class="nf">block_from_code</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">code</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+		<span class="sd">&#39;&#39;&#39; Transforms an Excel code like A4:B5 to block delimiters like (3, 0, 5, 2). &#39;&#39;&#39;</span>
+		<span class="n">match</span> <span class="o">=</span> <span class="n">Excel</span><span class="o">.</span><span class="n">_RANGE</span><span class="p">(</span><span class="n">code</span><span class="p">)</span>
+		<span class="k">assert</span> <span class="n">match</span><span class="p">,</span> <span class="s1">&#39;Excel range </span><span class="si">%s</span><span class="s1"> is not valid&#39;</span> <span class="o">%</span> <span class="n">code</span>
+		<span class="k">return</span> <span class="p">(</span>
+			<span class="nb">int</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;start_row&#39;</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">index_from_code</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;start_col&#39;</span><span class="p">))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span>
+			<span class="nb">int</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;end_row&#39;</span><span class="p">)),</span>
+			<span class="bp">self</span><span class="o">.</span><span class="n">index_from_code</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="s1">&#39;end_col&#39;</span><span class="p">))</span>
+		<span class="p">)</span></div>
+
+<div class="viewcode-block" id="Excel.table"><a class="viewcode-back" href="../../simpler.html#simpler.connectors.Excel.table">[docs]</a>	<span class="k">def</span> <span class="nf">table</span><span class="p">(</span>
+		<span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">hrows</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+		<span class="n">hcols</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">tuple</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">sheet</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+	<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">array</span><span class="p">:</span>
+		<span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cells</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">sheet</span><span class="o">=</span><span class="n">sheet</span><span class="p">)</span>
+		<span class="n">rows</span><span class="p">,</span> <span class="n">cols</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span>
+		<span class="n">data</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">stack</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+		<span class="k">if</span> <span class="n">hrows</span><span class="p">:</span>
+			<span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">hrows</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+				<span class="n">hrows</span> <span class="o">=</span> <span class="p">(</span><span class="n">hrows</span><span class="p">,)</span>
+			<span class="k">for</span> <span class="n">hrow</span> <span class="ow">in</span> <span class="n">hrows</span><span class="p">:</span>
+				<span class="n">header</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cells</span><span class="p">(</span><span class="n">hrow</span><span class="p">,</span> <span class="n">sheet</span><span class="o">=</span><span class="n">sheet</span><span class="p">)</span>
+				<span class="n">header</span> <span class="o">=</span> <span class="n">concat</span><span class="p">([</span><span class="n">header</span><span class="p">]</span> <span class="o">*</span> <span class="n">rows</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span><span class="o">.</span><span class="n">values</span>
+				<span class="n">data</span> <span class="o">=</span> <span class="n">concatenate</span><span class="p">([</span><span class="n">data</span><span class="p">,</span> <span class="n">header</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+		<span class="k">if</span> <span class="n">hcols</span><span class="p">:</span>
+			<span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">hcols</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+				<span class="n">hcols</span> <span class="o">=</span> <span class="p">(</span><span class="n">hcols</span><span class="p">,)</span>
+			<span class="k">for</span> <span class="n">hcol</span> <span class="ow">in</span> <span class="n">hcols</span><span class="p">:</span>
+				<span class="n">header</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cells</span><span class="p">(</span><span class="n">hcol</span><span class="p">,</span> <span class="n">sheet</span><span class="o">=</span><span class="n">sheet</span><span class="p">)</span>
+				<span class="n">header</span> <span class="o">=</span> <span class="n">header</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">header</span><span class="p">))</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">cols</span><span class="p">)]</span><span class="o">.</span><span class="n">values</span>
+				<span class="n">data</span> <span class="o">=</span> <span class="n">concatenate</span><span class="p">([</span><span class="n">data</span><span class="p">,</span> <span class="n">header</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+		<span class="k">return</span> <span class="n">data</span></div>
+
+	<span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="k">return</span> <span class="s1">&#39;Excel(path=&quot;</span><span class="si">%s</span><span class="s1">&quot;)&#39;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">simpler</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../setup.html">setup module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../simpler.html">simpler package</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Juan C. Roldan.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

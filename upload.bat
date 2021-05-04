@@ -11,6 +11,11 @@ git add *
 git commit
 git push origin master
 
+Rem Build docs
+cd docs
+make html
+cd ..
+
 Rem Update library
 python setup.py sdist bdist_wheel
 python -m twine upload dist/* -u juancroldan

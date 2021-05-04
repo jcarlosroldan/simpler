@@ -1,0 +1,662 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>simpler package &#8212; simpler  documentation</title>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="setup module" href="setup.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="simpler-package">
+<h1>simpler package<a class="headerlink" href="#simpler-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-simpler.algorithms">
+<span id="simpler-algorithms-module"></span><h2>simpler.algorithms module<a class="headerlink" href="#module-simpler.algorithms" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="simpler.algorithms.DynamicProgramming">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">simpler.algorithms.</span></code><code class="sig-name descname"><span class="pre">DynamicProgramming</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">initial_state</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simpler/algorithms.html#DynamicProgramming"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simpler.algorithms.DynamicProgramming" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Abstract class to solve problems using dynamic programming. To use it,
+make a child class implementing alternatives, is_final and penalty. Then,
+make one of such objects providing the initial state in the constructor, and
+call to solve(), providing one search type.</p>
+<dl class="py attribute">
+<dt id="simpler.algorithms.DynamicProgramming.ALL_OPTIMAL_SOLUTIONS">
+<code class="sig-name descname"><span class="pre">ALL_OPTIMAL_SOLUTIONS</span></code><em class="property"> <span class="pre">=</span> <span class="pre">3</span></em><a class="headerlink" href="#simpler.algorithms.DynamicProgramming.ALL_OPTIMAL_SOLUTIONS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="simpler.algorithms.DynamicProgramming.ALL_SOLUTIONS">
+<code class="sig-name descname"><span class="pre">ALL_SOLUTIONS</span></code><em class="property"> <span class="pre">=</span> <span class="pre">2</span></em><a class="headerlink" href="#simpler.algorithms.DynamicProgramming.ALL_SOLUTIONS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="simpler.algorithms.DynamicProgramming.ONE_OPTIMAL_SOLUTION">
+<code class="sig-name descname"><span class="pre">ONE_OPTIMAL_SOLUTION</span></code><em class="property"> <span class="pre">=</span> <span class="pre">1</span></em><a class="headerlink" href="#simpler.algorithms.DynamicProgramming.ONE_OPTIMAL_SOLUTION" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="simpler.algorithms.DynamicProgramming.ONE_SOLUTION">
+<code class="sig-name descname"><span class="pre">ONE_SOLUTION</span></code><em class="property"> <span class="pre">=</span> <span class="pre">0</span></em><a class="headerlink" href="#simpler.algorithms.DynamicProgramming.ONE_SOLUTION" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="simpler.algorithms.DynamicProgramming.alternatives">
+<code class="sig-name descname"><span class="pre">alternatives</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simpler/algorithms.html#DynamicProgramming.alternatives"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simpler.algorithms.DynamicProgramming.alternatives" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="simpler.algorithms.DynamicProgramming.is_final">
+<code class="sig-name descname"><span class="pre">is_final</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simpler/algorithms.html#DynamicProgramming.is_final"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simpler.algorithms.DynamicProgramming.is_final" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="simpler.algorithms.DynamicProgramming.penalty">
+<code class="sig-name descname"><span class="pre">penalty</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simpler/algorithms.html#DynamicProgramming.penalty"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simpler.algorithms.DynamicProgramming.penalty" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="simpler.algorithms.DynamicProgramming.solve">
+<code class="sig-name descname"><span class="pre">solve</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">search_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simpler/algorithms.html#DynamicProgramming.solve"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simpler.algorithms.DynamicProgramming.solve" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-simpler.bioinformatics">
+<span id="simpler-bioinformatics-module"></span><h2>simpler.bioinformatics module<a class="headerlink" href="#module-simpler.bioinformatics" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="simpler.bioinformatics.dna_to_rna">
+<code class="sig-prename descclassname"><span class="pre">simpler.bioinformatics.</span></code><code class="sig-name descname"><span class="pre">dna_to_rna</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dna</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simpler/bioinformatics.html#dna_to_rna"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simpler.bioinformatics.dna_to_rna" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="simpler.bioinformatics.parse_fasta">
+<code class="sig-prename descclassname"><span class="pre">simpler.bioinformatics.</span></code><code class="sig-name descname"><span class="pre">parse_fasta</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_string</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">first</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simpler/bioinformatics.html#parse_fasta"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simpler.bioinformatics.parse_fasta" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="simpler.bioinformatics.reverse_complement">
+<code class="sig-prename descclassname"><span class="pre">simpler.bioinformatics.</span></code><code class="sig-name descname"><span class="pre">reverse_complement</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_rna</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simpler/bioinformatics.html#reverse_complement"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simpler.bioinformatics.reverse_complement" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="simpler.bioinformatics.rna_to_dna">
+<code class="sig-prename descclassname"><span class="pre">simpler.bioinformatics.</span></code><code class="sig-name descname"><span class="pre">rna_to_dna</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rna</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simpler/bioinformatics.html#rna_to_dna"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simpler.bioinformatics.rna_to_dna" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="simpler.bioinformatics.rna_to_protein">
+<code class="sig-prename descclassname"><span class="pre">simpler.bioinformatics.</span></code><code class="sig-name descname"><span class="pre">rna_to_protein</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rna</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simpler/bioinformatics.html#rna_to_protein"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simpler.bioinformatics.rna_to_protein" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-simpler.connectors">
+<span id="simpler-connectors-module"></span><h2>simpler.connectors module<a class="headerlink" href="#module-simpler.connectors" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="simpler.connectors.Excel">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">simpler.connectors.</span></code><code class="sig-name descname"><span class="pre">Excel</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simpler/connectors.html#Excel"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simpler.connectors.Excel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Pandas Excel backend.</p>
+<dl class="py method">
+<dt id="simpler.connectors.Excel.block_from_code">
+<code class="sig-name descname"><span class="pre">block_from_code</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">tuple</span><a class="reference internal" href="_modules/simpler/connectors.html#Excel.block_from_code"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simpler.connectors.Excel.block_from_code" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transforms an Excel code like A4:B5 to block delimiters like (3, 0, 5, 2).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="simpler.connectors.Excel.cell">
+<code class="sig-name descname"><span class="pre">cell</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">row</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">col</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sheet</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simpler/connectors.html#Excel.cell"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simpler.connectors.Excel.cell" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieves a cell from the book.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="simpler.connectors.Excel.cells">
+<code class="sig-name descname"><span class="pre">cells</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">block</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sheet</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simpler/connectors.html#Excel.cells"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simpler.connectors.Excel.cells" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieves a square of cells data from a block.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="simpler.connectors.Excel.index_from_code">
+<code class="sig-name descname"><span class="pre">index_from_code</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">int</span><a class="reference internal" href="_modules/simpler/connectors.html#Excel.index_from_code"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simpler.connectors.Excel.index_from_code" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transforms an Excel code like ABC to an index like 731.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="simpler.connectors.Excel.sheet">
+<code class="sig-name descname"><span class="pre">sheet</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sheet</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">pandas.core.frame.DataFrame</span><a class="reference internal" href="_modules/simpler/connectors.html#Excel.sheet"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simpler.connectors.Excel.sheet" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="simpler.connectors.Excel.table">
+<code class="sig-name descname"><span class="pre">table</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">,</span> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hrows</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">,</span> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hcols</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">tuple</span><span class="p"><span class="pre">,</span> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sheet</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">numpy.array</span><a class="reference internal" href="_modules/simpler/connectors.html#Excel.table"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simpler.connectors.Excel.table" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="simpler.connectors.MySQL">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">simpler.connectors.</span></code><code class="sig-name descname"><span class="pre">MySQL</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">autocommit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simpler/connectors.html#MySQL"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simpler.connectors.MySQL" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt id="simpler.connectors.MySQL.apply">
+<code class="sig-name descname"><span class="pre">apply</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">tuple</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">int</span><a class="reference internal" href="_modules/simpler/connectors.html#MySQL.apply"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simpler.connectors.MySQL.apply" title="Permalink to this definition">¶</a></dt>
+<dd><p>Executes an update or delete operation and returns the number of rows affected.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="simpler.connectors.MySQL.client">
+<code class="sig-name descname"><span class="pre">client</span></code><em class="property"> <span class="pre">=</span> <span class="pre">None</span></em><a class="headerlink" href="#simpler.connectors.MySQL.client" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="simpler.connectors.MySQL.close">
+<code class="sig-name descname"><span class="pre">close</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="reference internal" href="_modules/simpler/connectors.html#MySQL.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simpler.connectors.MySQL.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Closes the current cursor and connection.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="simpler.connectors.MySQL.cursor">
+<code class="sig-name descname"><span class="pre">cursor</span></code><em class="property"> <span class="pre">=</span> <span class="pre">None</span></em><a class="headerlink" href="#simpler.connectors.MySQL.cursor" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="simpler.connectors.MySQL.find_column">
+<code class="sig-name descname"><span class="pre">find_column</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">tuple</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">str</span><a class="reference internal" href="_modules/simpler/connectors.html#MySQL.find_column"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simpler.connectors.MySQL.find_column" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the value of the first attribute of a selected row.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="simpler.connectors.MySQL.find_many">
+<code class="sig-name descname"><span class="pre">find_many</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">tuple</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">list</span><a class="reference internal" href="_modules/simpler/connectors.html#MySQL.find_many"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simpler.connectors.MySQL.find_many" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of {column_name: value} dicts of the selected rows.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="simpler.connectors.MySQL.find_one">
+<code class="sig-name descname"><span class="pre">find_one</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">tuple</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">dict</span><a class="reference internal" href="_modules/simpler/connectors.html#MySQL.find_one"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simpler.connectors.MySQL.find_one" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a {column_name: value} dict of the first selected row.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="simpler.connectors.MySQL.insert">
+<code class="sig-name descname"><span class="pre">insert</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">params</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">tuple</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">int</span><a class="reference internal" href="_modules/simpler/connectors.html#MySQL.insert"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simpler.connectors.MySQL.insert" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inserts a row and returns the id of the last one inserted.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-simpler.files">
+<span id="simpler-files-module"></span><h2>simpler.files module<a class="headerlink" href="#module-simpler.files" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="simpler.files.REGEX_FIND_EPISODE">
+<code class="sig-prename descclassname"><span class="pre">simpler.files.</span></code><code class="sig-name descname"><span class="pre">REGEX_FIND_EPISODE</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#simpler.files.REGEX_FIND_EPISODE" title="Permalink to this definition">¶</a></dt>
+<dd><p>search(string, pos=None, endpos=None, concurrent=None, timeout=None) –&gt; MatchObject or None.
+Search through string looking for a match, and return a corresponding
+match object instance.  Return None if no match is found.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="simpler.files.cwd">
+<code class="sig-prename descclassname"><span class="pre">simpler.files.</span></code><code class="sig-name descname"><span class="pre">cwd</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/simpler/files.html#cwd"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simpler.files.cwd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Change the base of relative paths to the directory of the main script.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="simpler.files.decompress">
+<code class="sig-prename descclassname"><span class="pre">simpler.files.</span></code><code class="sig-name descname"><span class="pre">decompress</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'auto'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simpler/files.html#decompress"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simpler.files.decompress" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="simpler.files.detect_format">
+<code class="sig-prename descclassname"><span class="pre">simpler.files.</span></code><code class="sig-name descname"><span class="pre">detect_format</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accept</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><a class="reference internal" href="_modules/simpler/files.html#detect_format"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simpler.files.detect_format" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="simpler.files.directory_compare">
+<code class="sig-prename descclassname"><span class="pre">simpler.files.</span></code><code class="sig-name descname"><span class="pre">directory_compare</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">old</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">new</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kind</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'dir'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignored</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">('.class',</span> <span class="pre">'.metadata',</span> <span class="pre">'.recommenders',</span> <span class="pre">'.pyc',</span> <span class="pre">'.git',</span> <span class="pre">'.svn',</span> <span class="pre">'.cached',</span> <span class="pre">'__pycache__')</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simpler/files.html#directory_compare"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simpler.files.directory_compare" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="simpler.files.disk_cache">
+<code class="sig-prename descclassname"><span class="pre">simpler.files.</span></code><code class="sig-name descname"><span class="pre">disk_cache</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seconds</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">directory</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'.cached/'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">identifier</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simpler/files.html#disk_cache"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simpler.files.disk_cache" title="Permalink to this definition">¶</a></dt>
+<dd><p>The first time the decorated method is called, its result is stored as a pickle file, the
+next call loads the cached result from the disk. The cached files are used indefinitely unless the
+<cite>seconds</cite> lifespan is defined. The cached files are stored at <cite>.cached</cite> unless otherwise
+specificed with the <cite>directory</cite> argument. The cache file identifier is generated from the
+method name its arguments unless otherwise specified with the <cite>identifier</cite> argument.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="simpler.files.find_hidden_compressed">
+<code class="sig-prename descclassname"><span class="pre">simpler.files.</span></code><code class="sig-name descname"><span class="pre">find_hidden_compressed</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simpler/files.html#find_hidden_compressed"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simpler.files.find_hidden_compressed" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="simpler.files.load">
+<code class="sig-prename descclassname"><span class="pre">simpler.files.</span></code><code class="sig-name descname"><span class="pre">load</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'utf-8'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inner_args</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inner_kwargs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">object</span><a class="reference internal" href="_modules/simpler/files.html#load"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simpler.files.load" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load a file in a given format.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="simpler.files.save">
+<code class="sig-prename descclassname"><span class="pre">simpler.files.</span></code><code class="sig-name descname"><span class="pre">save</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">content</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">format</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoding</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'utf-8'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">append</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inner_args</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inner_kwargs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="reference internal" href="_modules/simpler/files.html#save"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simpler.files.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Saves a file to the given format.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="simpler.files.size">
+<code class="sig-prename descclassname"><span class="pre">simpler.files.</span></code><code class="sig-name descname"><span class="pre">size</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simpler/files.html#size"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simpler.files.size" title="Permalink to this definition">¶</a></dt>
+<dd><p>A way to see the size of a file without loading it to memory.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="simpler.files.tvshow_rename">
+<code class="sig-prename descclassname"><span class="pre">simpler.files.</span></code><code class="sig-name descname"><span class="pre">tvshow_rename</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simpler/files.html#tvshow_rename"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simpler.files.tvshow_rename" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rename every TV show of a folder.
+E.g. Inception_Season_4_Episode_02_DivX-Total.mkv would be 04x02.mkv.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-simpler.format">
+<span id="simpler-format-module"></span><h2>simpler.format module<a class="headerlink" href="#module-simpler.format" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="simpler.format.human_bytes">
+<code class="sig-prename descclassname"><span class="pre">simpler.format.</span></code><code class="sig-name descname"><span class="pre">human_bytes</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decimal_places</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simpler/format.html#human_bytes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simpler.format.human_bytes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a human readable file size from a number of bytes.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="simpler.format.human_date">
+<code class="sig-prename descclassname"><span class="pre">simpler.format.</span></code><code class="sig-name descname"><span class="pre">human_date</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">date</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simpler/format.html#human_date"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simpler.format.human_date" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a date the a human-friendly format “1 month ago”.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="simpler.format.human_seconds">
+<code class="sig-prename descclassname"><span class="pre">simpler.format.</span></code><code class="sig-name descname"><span class="pre">human_seconds</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seconds</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simpler/format.html#human_seconds"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simpler.format.human_seconds" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a human readable string from a number of seconds.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="simpler.format.print_matrix">
+<code class="sig-prename descclassname"><span class="pre">simpler.format.</span></code><code class="sig-name descname"><span class="pre">print_matrix</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">matrix</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rows</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cols</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">elem_width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">separator</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'</span> <span class="pre">'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simpler/format.html#print_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simpler.format.print_matrix" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="simpler.format.random_string">
+<code class="sig-prename descclassname"><span class="pre">simpler.format.</span></code><code class="sig-name descname"><span class="pre">random_string</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">length</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">str</span><a class="reference internal" href="_modules/simpler/format.html#random_string"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simpler.format.random_string" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a random string.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="simpler.format.safe_filename">
+<code class="sig-prename descclassname"><span class="pre">simpler.format.</span></code><code class="sig-name descname"><span class="pre">safe_filename</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">str</span><a class="reference internal" href="_modules/simpler/format.html#safe_filename"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simpler.format.safe_filename" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-simpler.mail">
+<span id="simpler-mail-module"></span><h2>simpler.mail module<a class="headerlink" href="#module-simpler.mail" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="simpler.mail.compose">
+<code class="sig-prename descclassname"><span class="pre">simpler.mail.</span></code><code class="sig-name descname"><span class="pre">compose</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">from_mail</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest_mail</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">object</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">from_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dest_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">object</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">text_type</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'plain'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subject</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">blocking</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simpler/mail.html#compose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simpler.mail.compose" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="simpler.mail.send">
+<code class="sig-prename descclassname"><span class="pre">simpler.mail.</span></code><code class="sig-name descname"><span class="pre">send</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">smtp_server</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">password</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mail</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">email.message.EmailMessage</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="reference internal" href="_modules/simpler/mail.html#send"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simpler.mail.send" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sends a message.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-simpler.math">
+<span id="simpler-math-module"></span><h2>simpler.math module<a class="headerlink" href="#module-simpler.math" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="simpler.math.all_equal">
+<code class="sig-prename descclassname"><span class="pre">simpler.math.</span></code><code class="sig-name descname"><span class="pre">all_equal</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seq</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">list</span><a class="reference internal" href="_modules/simpler/math.html#all_equal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simpler.math.all_equal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns true if every element in the sequence has the same value.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="simpler.math.base_change">
+<code class="sig-prename descclassname"><span class="pre">simpler.math.</span></code><code class="sig-name descname"><span class="pre">base_change</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_from</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_to</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">list</span><a class="reference internal" href="_modules/simpler/math.html#base_change"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simpler.math.base_change" title="Permalink to this definition">¶</a></dt>
+<dd><p>Changes the base of n represented as a list of integers.
+Example:  base_change([1, 1, 0, 1], 2, 10) = [1, 3]</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="simpler.math.clamp">
+<code class="sig-prename descclassname"><span class="pre">simpler.math.</span></code><code class="sig-name descname"><span class="pre">clamp</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">smallest</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">largest</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">float</span><a class="reference internal" href="_modules/simpler/math.html#clamp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simpler.math.clamp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the value clamped between smallest and largest.
+I.e.: <cite>clamp(10, 2, 8)</cite> would return 8.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="simpler.math.date_range">
+<code class="sig-prename descclassname"><span class="pre">simpler.math.</span></code><code class="sig-name descname"><span class="pre">date_range</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">date_start</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">datetime.datetime</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">date_end</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">datetime.datetime</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">datetime.timedelta</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">datetime.timedelta(days=1)</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Generator</span><span class="p"><span class="pre">[</span></span><span class="pre">datetime.datetime</span><span class="p"><span class="pre">,</span> </span><span class="pre">None</span><span class="p"><span class="pre">,</span> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span><a class="reference internal" href="_modules/simpler/math.html#date_range"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simpler.math.date_range" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt id="simpler.math.factor">
+<code class="sig-prename descclassname"><span class="pre">simpler.math.</span></code><code class="sig-name descname"><span class="pre">factor</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">list</span><a class="reference internal" href="_modules/simpler/math.html#factor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simpler.math.factor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the factors of n and its exponents.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="simpler.math.fibonacci">
+<code class="sig-prename descclassname"><span class="pre">simpler.math.</span></code><code class="sig-name descname"><span class="pre">fibonacci</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">int</span><a class="reference internal" href="_modules/simpler/math.html#fibonacci"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simpler.math.fibonacci" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the n-th Fibonacci number.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="simpler.math.gcd">
+<code class="sig-prename descclassname"><span class="pre">simpler.math.</span></code><code class="sig-name descname"><span class="pre">gcd</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">int</span><a class="reference internal" href="_modules/simpler/math.html#gcd"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simpler.math.gcd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Greatest common divisor of two numbers.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="simpler.math.is_prime">
+<code class="sig-prename descclassname"><span class="pre">simpler.math.</span></code><code class="sig-name descname"><span class="pre">is_prime</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">bool</span><a class="reference internal" href="_modules/simpler/math.html#is_prime"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simpler.math.is_prime" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks if a number is prime.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="simpler.math.jaccard">
+<code class="sig-prename descclassname"><span class="pre">simpler.math.</span></code><code class="sig-name descname"><span class="pre">jaccard</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seq1</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seq2</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">list</span><a class="reference internal" href="_modules/simpler/math.html#jaccard"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simpler.math.jaccard" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the Jaccard index of two sequences.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="simpler.math.lcm">
+<code class="sig-prename descclassname"><span class="pre">simpler.math.</span></code><code class="sig-name descname"><span class="pre">lcm</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">b</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">int</span><a class="reference internal" href="_modules/simpler/math.html#lcm"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simpler.math.lcm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Least common multiple of two numbers.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="simpler.math.levenshtein">
+<code class="sig-prename descclassname"><span class="pre">simpler.math.</span></code><code class="sig-name descname"><span class="pre">levenshtein</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seq1</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seq2</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">list</span><a class="reference internal" href="_modules/simpler/math.html#levenshtein"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simpler.math.levenshtein" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the Levenshtein distance of two sequences.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="simpler.math.palindrome_list">
+<code class="sig-prename descclassname"><span class="pre">simpler.math.</span></code><code class="sig-name descname"><span class="pre">palindrome_list</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">list</span><a class="reference internal" href="_modules/simpler/math.html#palindrome_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simpler.math.palindrome_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of every palindromic number with k digits.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="simpler.math.phi">
+<code class="sig-prename descclassname"><span class="pre">simpler.math.</span></code><code class="sig-name descname"><span class="pre">phi</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">int</span><a class="reference internal" href="_modules/simpler/math.html#phi"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simpler.math.phi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the Euler’s phi function of n.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="simpler.math.prime_list">
+<code class="sig-prename descclassname"><span class="pre">simpler.math.</span></code><code class="sig-name descname"><span class="pre">prime_list</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">list</span><a class="reference internal" href="_modules/simpler/math.html#prime_list"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simpler.math.prime_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the list of prime numbers from 2 to n.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="simpler.math.snap">
+<code class="sig-prename descclassname"><span class="pre">simpler.math.</span></code><code class="sig-name descname"><span class="pre">snap</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">float</span><a class="reference internal" href="_modules/simpler/math.html#snap"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simpler.math.snap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the value snapped to a scale of size step with an optional offset.
+I.e.: <cite>snap(3.1, 2, 0)</cite> would return 4.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="simpler.math.unique">
+<code class="sig-prename descclassname"><span class="pre">simpler.math.</span></code><code class="sig-name descname"><span class="pre">unique</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seq</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">uniqueness_function</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">list</span><a class="reference internal" href="_modules/simpler/math.html#unique"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simpler.math.unique" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list in the same order with just the elements with a unique
+value on the uniqueness_function.
+I.e.: <cite>unique([1, 5, 7, 9], lambda x: x % 3)</cite> would return [1, 5, 9].</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-simpler.profiling">
+<span id="simpler-profiling-module"></span><h2>simpler.profiling module<a class="headerlink" href="#module-simpler.profiling" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="simpler.profiling.deep_size">
+<code class="sig-prename descclassname"><span class="pre">simpler.profiling.</span></code><code class="sig-name descname"><span class="pre">deep_size</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simpler/profiling.html#deep_size"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simpler.profiling.deep_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the actual size of an instance, exploring all its references.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="simpler.profiling.tic">
+<code class="sig-prename descclassname"><span class="pre">simpler.profiling.</span></code><code class="sig-name descname"><span class="pre">tic</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="reference internal" href="_modules/simpler/profiling.html#tic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simpler.profiling.tic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Captures time</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="simpler.profiling.toc">
+<code class="sig-prename descclassname"><span class="pre">simpler.profiling.</span></code><code class="sig-name descname"><span class="pre">toc</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">show</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_label</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">float</span><a class="reference internal" href="_modules/simpler/profiling.html#toc"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simpler.profiling.toc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Shows time since tic() was executed.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-simpler.reflection">
+<span id="simpler-reflection-module"></span><h2>simpler.reflection module<a class="headerlink" href="#module-simpler.reflection" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="simpler.reflection.import_from_path">
+<code class="sig-prename descclassname"><span class="pre">simpler.reflection.</span></code><code class="sig-name descname"><span class="pre">import_from_path</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">module_name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'.'</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">object</span><a class="reference internal" href="_modules/simpler/reflection.html#import_from_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simpler.reflection.import_from_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads the script at the specified path and returns an object given its name.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-simpler.sparql">
+<span id="simpler-sparql-module"></span><h2>simpler.sparql module<a class="headerlink" href="#module-simpler.sparql" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="simpler.sparql.dbpedia">
+<code class="sig-prename descclassname"><span class="pre">simpler.sparql.</span></code><code class="sig-name descname"><span class="pre">dbpedia</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simpler/sparql.html#dbpedia"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simpler.sparql.dbpedia" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sends a query to DBPedia and return the results.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="simpler.sparql.entity_types">
+<code class="sig-prename descclassname"><span class="pre">simpler.sparql.</span></code><code class="sig-name descname"><span class="pre">entity_types</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simpler/sparql.html#entity_types"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simpler.sparql.entity_types" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return every entity type with values that contain a given string sorted by frequency.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-simpler.terminal">
+<span id="simpler-terminal-module"></span><h2>simpler.terminal module<a class="headerlink" href="#module-simpler.terminal" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="simpler.terminal.getch">
+<code class="sig-prename descclassname"><span class="pre">simpler.terminal.</span></code><code class="sig-name descname"><span class="pre">getch</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/simpler/terminal.html#getch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simpler.terminal.getch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Reads a single byte from the user input.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-simpler.validation">
+<span id="simpler-validation-module"></span><h2>simpler.validation module<a class="headerlink" href="#module-simpler.validation" title="Permalink to this headline">¶</a></h2>
+<dl class="py function">
+<dt id="simpler.validation.assert_exists">
+<code class="sig-prename descclassname"><span class="pre">simpler.validation.</span></code><code class="sig-name descname"><span class="pre">assert_exists</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="reference internal" href="_modules/simpler/validation.html#assert_exists"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simpler.validation.assert_exists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Asserts that the given path exists within PATH_STATIC.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="simpler.validation.assert_id">
+<code class="sig-prename descclassname"><span class="pre">simpler.validation.</span></code><code class="sig-name descname"><span class="pre">assert_id</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optional</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_zero</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">object</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">int</span><a class="reference internal" href="_modules/simpler/validation.html#assert_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simpler.validation.assert_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Asserts that data[name] is a valid database id and returns it.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="simpler.validation.assert_mail">
+<code class="sig-prename descclassname"><span class="pre">simpler.validation.</span></code><code class="sig-name descname"><span class="pre">assert_mail</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optional</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">object</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">str</span><a class="reference internal" href="_modules/simpler/validation.html#assert_mail"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simpler.validation.assert_mail" title="Permalink to this definition">¶</a></dt>
+<dd><p>Asserts that data[name] is a valid mail string and returns it.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="simpler.validation.assert_number">
+<code class="sig-prename descclassname"><span class="pre">simpler.validation.</span></code><code class="sig-name descname"><span class="pre">assert_number</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optional</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_val</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_val</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_integer</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">object</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">int</span><a class="reference internal" href="_modules/simpler/validation.html#assert_number"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simpler.validation.assert_number" title="Permalink to this definition">¶</a></dt>
+<dd><p>Asserts all the requested numeric checks to data[name] and returns it.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="simpler.validation.assert_set">
+<code class="sig-prename descclassname"><span class="pre">simpler.validation.</span></code><code class="sig-name descname"><span class="pre">assert_set</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optional</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">object</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simpler/validation.html#assert_set"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simpler.validation.assert_set" title="Permalink to this definition">¶</a></dt>
+<dd><p>Asserts that data[name] exists and returns it.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="simpler.validation.assert_str">
+<code class="sig-prename descclassname"><span class="pre">simpler.validation.</span></code><code class="sig-name descname"><span class="pre">assert_str</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optional</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_len</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_len</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">has_letter</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">has_number</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">has_symbol</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">has_whitespace</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">has_pattern</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">object</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">str</span><a class="reference internal" href="_modules/simpler/validation.html#assert_str"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simpler.validation.assert_str" title="Permalink to this definition">¶</a></dt>
+<dd><p>Asserts all the requested checks to data[name] and returns it.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-simpler.web">
+<span id="simpler-web-module"></span><h2>simpler.web module<a class="headerlink" href="#module-simpler.web" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt id="simpler.web.DownloaderPool">
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">simpler.web.</span></code><code class="sig-name descname"><span class="pre">DownloaderPool</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="pre">num_workers=100</span></em>, <em class="sig-param"><span class="pre">download_method=&lt;function</span> <span class="pre">DownloaderPool.&lt;lambda&gt;&gt;</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simpler/web.html#DownloaderPool"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simpler.web.DownloaderPool" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt id="simpler.web.DownloaderPool.download_worker">
+<code class="sig-name descname"><span class="pre">download_worker</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/simpler/web.html#DownloaderPool.download_worker"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simpler.web.DownloaderPool.download_worker" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="simpler.web.DownloaderPool.get">
+<code class="sig-name descname"><span class="pre">get</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">urls</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simpler/web.html#DownloaderPool.get"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simpler.web.DownloaderPool.get" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="simpler.web.DownloaderPool.spawn_workers">
+<code class="sig-name descname"><span class="pre">spawn_workers</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/simpler/web.html#DownloaderPool.spawn_workers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simpler.web.DownloaderPool.spawn_workers" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt id="simpler.web.download_file">
+<code class="sig-prename descclassname"><span class="pre">simpler.web.</span></code><code class="sig-name descname"><span class="pre">download_file</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chunk_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100000</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/simpler/web.html#download_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simpler.web.download_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Downloads a file keeping track of the progress.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="simpler.web.throttle">
+<code class="sig-prename descclassname"><span class="pre">simpler.web.</span></code><code class="sig-name descname"><span class="pre">throttle</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seconds</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="reference internal" href="_modules/simpler/web.html#throttle"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#simpler.web.throttle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sleeps the thread so that the function is called every X seconds.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-simpler">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-simpler" title="Permalink to this headline">¶</a></h2>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">simpler</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="setup.html">setup module</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">simpler package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-simpler.algorithms">simpler.algorithms module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-simpler.bioinformatics">simpler.bioinformatics module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-simpler.connectors">simpler.connectors module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-simpler.files">simpler.files module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-simpler.format">simpler.format module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-simpler.mail">simpler.mail module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-simpler.math">simpler.math module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-simpler.profiling">simpler.profiling module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-simpler.reflection">simpler.reflection module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-simpler.sparql">simpler.sparql module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-simpler.terminal">simpler.terminal module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-simpler.validation">simpler.validation module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-simpler.web">simpler.web module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-simpler">Module contents</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="setup.html" title="previous chapter">setup module</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2021, Juan C. Roldan.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/simpler.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
