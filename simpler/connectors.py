@@ -1,4 +1,3 @@
-from MySQLdb import Connection
 from typing import Union
 from pandas import ExcelFile, read_excel, DataFrame, concat
 from numpy import arange, concatenate, array
@@ -10,6 +9,7 @@ class MySQL:
 
 	def __init__(self, autocommit=True, *args, **kwargs) -> None:
 		''' Creates a MySQL database adapter with a handful of recurrent functions. '''
+		from MySQLdb import Connection
 		self.connection = Connection(*args, **kwargs)
 		self.connection.autocommit(autocommit)
 		self.cursor = self.connection.cursor()
