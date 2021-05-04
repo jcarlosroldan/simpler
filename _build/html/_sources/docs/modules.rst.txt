@@ -1,7 +1,0 @@
-simpler
-=======
-
-.. toctree::
-   :maxdepth: 5
-
-   simpler
