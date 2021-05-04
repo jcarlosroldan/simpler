@@ -9,7 +9,10 @@ class MySQL:
 
 	def __init__(self, autocommit=True, *args, **kwargs) -> None:
 		''' Creates a MySQL database adapter with a handful of recurrent functions. '''
-		from MySQLdb import Connection
+		try:
+			from MySQLdb import Connection
+		except:
+			raise RuntimeError('Install MySQL or MariaDB and then do "pip install mysqlclient" to use this connector.')
 		self.connection = Connection(*args, **kwargs)
 		self.connection.autocommit(autocommit)
 		self.cursor = self.connection.cursor()
