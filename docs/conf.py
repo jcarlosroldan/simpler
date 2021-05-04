@@ -29,6 +29,8 @@ author = 'Juan C. Roldán'
 # ones.
 extensions = [
 	'sphinx.ext.autodoc',
+	'sphinx_autodoc_typehints',
+	'sphinx.ext.autosummary',
 	'sphinx.ext.viewcode',
 	'sphinx_rtd_theme'
 ]
