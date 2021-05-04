@@ -24,7 +24,7 @@ from lzma import open as open_lzma, decompress as lzdecompress
 
 REGEX_FIND_EPISODE = compile(r'(?P<SEASON>\d+)\s*[x\-]\s*(?P<EPISODE>\d+)|S\s*(?P<SEASON>\d+)\s*E\s*(?P<EPISODE>\d+)|(?P<EPISODE>\d+)').search
 
-def cwd():
+def cwd() -> None:
 	''' Change the base of relative paths to the directory of the main script. '''
 	chdir(sys_path[0])
 
@@ -137,6 +137,7 @@ _detect_format_exts = OrderedDict((
 	('lzma', ('lzip', 'lz')),
 ))
 def detect_format(path: str, format: str, accept: list = None, default: str = None) -> Optional[str]:
+	''' Detects the format of a file from its path. '''
 	if format == 'auto':
 		name = path.lower()
 		for ext_format, exts in _detect_format_exts.items():
@@ -152,7 +153,7 @@ def detect_format(path: str, format: str, accept: list = None, default: str = No
 		)
 	return format
 
-def disk_cache(func=None, *, seconds: float = None, directory: str = '.cached/', identifier: str = None):
+def disk_cache(func=None, *, seconds: float = None, directory: str = '.cached/', identifier: str = None) -> function:
 	''' The first time the decorated method is called, its result is stored as a pickle file, the
 	next call loads the cached result from the disk. The cached files are used indefinitely unless the
 	`seconds` lifespan is defined. The cached files are stored at `.cached` unless otherwise
@@ -191,7 +192,7 @@ def disk_cache(func=None, *, seconds: float = None, directory: str = '.cached/',
 	else:
 		return decorator
 
-def size(file):
+def size(file) -> int:
 	''' A way to see the size of a file without loading it to memory. '''
 	if file.content_length:
 		return file.content_length
@@ -229,7 +230,7 @@ _find_hidden_compressed_signatures = {
 	# 'tar': b'\x1f\x9d',
 	# 'bz2': b'\x42\x5a\x68',
 }
-def find_hidden_compressed(path):
+def find_hidden_compressed(path: str) -> list:
 	with open(path, 'rb') as fp:
 		data = fp.read()
 		signatures = []
