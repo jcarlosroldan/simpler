@@ -10,7 +10,7 @@ Welcome to Simpler's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-   docs/modules  
+   modules.rst
 
 
 Indices and tables
