@@ -7,7 +7,7 @@ class MySQL:
 	client = None
 	cursor = None
 
-	def __init__(self, autocommit=True, *args, **kwargs) -> None:
+	def __init__(self, autocommit: bool = True, *args, **kwargs) -> None:
 		''' Creates a MySQL database adapter with a handful of recurrent functions. '''
 		try:
 			from MySQLdb import Connection
@@ -66,12 +66,13 @@ class Excel:
 	_RANGE = compile(r'(?P<start_col>[a-z]+)(?P<start_row>\d+)(\:(?P<end_col>[a-z]+)(?P<end_row>\d+))?', flags=IGNORECASE).match
 	_LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
-	def __init__(self, path):
+	def __init__(self, path: str):
 		self.path = path
 		self.sheet_names = ExcelFile(path).sheet_names
 		self.sheets = {name: None for name in self.sheet_names}
 
-	def sheet(self, sheet=0) -> DataFrame:
+	def sheet(self, sheet: Union[str, int] = 0) -> DataFrame:
+		''' Loads a sheet given its name or position in the book. '''
 		if isinstance(sheet, int):
 			sheet = self.sheet_names[sheet]
 		if self.sheets[sheet] is None:
@@ -84,11 +85,11 @@ class Excel:
 			).applymap(lambda x: x.strip() if isinstance(x, str) else x)
 		return self.sheets[sheet]
 
-	def cell(self, row, col, sheet=0):
+	def cell(self, row: int, col: int, sheet: int = 0) -> DataFrame:
 		''' Retrieves a cell from the book. '''
 		return self.sheet(sheet).iloc[row].iloc[col]
 
-	def cells(self, block, sheet=0):
+	def cells(self, block: Union[str, int], sheet: int = 0) -> DataFrame:
 		''' Retrieves a square of cells data from a block. '''
 		if isinstance(block, str):
 			block = self.block_from_code(block)
@@ -135,5 +136,5 @@ class Excel:
 				data = concatenate([data, header], axis=1)
 		return data
 
-	def __str__(self):
+	def __str__(self) -> str:
 		return 'Excel(path="%s")' % self.path
