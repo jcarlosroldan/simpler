@@ -1,3 +1,4 @@
+mysqlclient[mysql]
 requests>=2.13.0
 SPARQLWrapper
 regex
