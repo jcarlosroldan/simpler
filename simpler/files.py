@@ -121,7 +121,7 @@ def decompress(path: str, output: str, format: str = 'auto'):
 
 _detect_format_exts = OrderedDict((
 	('bytes', ('bin', 'db', 'dat', 'blob', 'bytes')),
-	('csv', ('csv')),
+	('csv', ('csv',)),
 	('json', ('json', 'js')),
 	('jsonl', ('jsonl', 'jsl')),
 	('pickle', ('pickle', 'pk', 'pkl', 'pck', 'pcl')),
