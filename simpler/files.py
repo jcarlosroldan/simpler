@@ -72,15 +72,15 @@ def save(path: str, content: object, format: str = 'auto', encoding: str = 'utf-
 	if format in ('bytes', 'string'):
 		fp.write(content)
 	elif format in ('json', 'jsonl'):
-		if 'ensure_ascii' not in kwargs: kwargs['json_ensure_ascii'] = False
-		if 'indent' not in kwargs: kwargs['json_indent'] = '\t'
-		if 'separators' not in kwargs: kwargs['json_separators'] = (', ', ': ')
+		if 'ensure_ascii' not in kwargs: kwargs['ensure_ascii'] = False
+		if 'indent' not in kwargs: kwargs['indent'] = '\t'
+		if 'separators' not in kwargs: kwargs['separators'] = (', ', ': ')
 		if format[-1] == 'l':
 			fp.write(jdumps(elem, *args, **kwargs) for elem in content)
 		else:
 			fp.write(jdumps(content, *args, **kwargs))
 	elif format == 'pickle':
-		if 'protocol' not in kwargs: kwargs['pickle_protocol'] = 4
+		if 'protocol' not in kwargs: kwargs['protocol'] = 4
 		pdump(content, fp, *args, **kwargs)
 	elif format == 'csv':
 		if 'index' not in kwargs: kwargs['index'] = False
