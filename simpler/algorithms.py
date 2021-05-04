@@ -1,8 +1,11 @@
 class DynamicProgramming:
-	""" Abstract class to solve problems using dynamic programming. To use it,
+	'''
+	Abstract class to solve problems using dynamic programming. To use it,
 	make a child class implementing alternatives, is_final and penalty. Then,
 	make one of such objects providing the initial state in the constructor, and
-	call to solve(), providing one search type. """
+	call to solve(), providing one search type.
+	'''
+
 	ONE_SOLUTION = 0
 	ONE_OPTIMAL_SOLUTION = 1
 	ALL_SOLUTIONS = 2
@@ -11,16 +14,20 @@ class DynamicProgramming:
 	def __init__(self, initial_state):
 		self.initial_state = initial_state
 
-	def alternatives(self, state):
-		raise NotImplementedError("This should return all the alternatives for a given state, without modifying the given state.")
+	def alternatives(self, state: object) -> list:
+		''' This should return all the alternatives for a given state, without modifying the given state. '''
+		raise NotImplementedError()
 
-	def is_final(self, state):
-		raise NotImplementedError("This should return whether a state is a final state or not.")
+	def is_final(self, state: object) -> bool:
+		''' This should return whether a state is a final state or not. '''
+		raise NotImplementedError()
 
-	def penalty(self, state):
-		raise NotImplementedError("This should return an upper bound for the penalty of the problem. Ideally, optimal solutions should have no penalty.")
+	def penalty(self, state: object) -> float:
+		''' This should return an upper bound for the penalty of the problem. Ideally, optimal solutions should have no penalty. '''
+		raise NotImplementedError()
 
-	def solve(self, search_type=ONE_SOLUTION):
+	def solve(self, search_type: int = ONE_SOLUTION):
+		''' Resolves the Dynamic Programming problem. '''
 		assert search_type in range(4), "Invalid search type."
 		final_states = []
 		explored = []
