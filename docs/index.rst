@@ -7,7 +7,7 @@ Welcome to Simpler's documentation!
 ===================================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :caption: Contents:
 
    simpler.rst
