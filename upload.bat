@@ -13,9 +13,6 @@ git push origin master
 
 Rem Build docs
 sphinx-apidoc -o docs simpler -f --separate
-cd docs
-make html
-cd ..
 
 Rem Update library
 python setup.py sdist bdist_wheel
