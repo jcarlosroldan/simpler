@@ -16,4 +16,4 @@ See [simpler.readthedocs.io](https://simpler.readthedocs.io/) for the latest lib
 
 Load/save:
 
-![ASCIInema demo](https://user-images.githubusercontent.com/9042837/117157062-8ca5ce00-adbe-11eb-90b7-062b6e57dfff.gif)
+![load/save terminal demo](https://user-images.githubusercontent.com/9042837/117157317-cbd41f00-adbe-11eb-9553-4a354b087f87.gif)
