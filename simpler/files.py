@@ -94,7 +94,7 @@ def save(path: str, content: object, format: str = 'auto', encoding: str = 'utf-
 		fp.close()
 
 _decompress_formats = 'tar', 'zip', 'gzip', 'bzip2', 'rar', '7zip', 'lzma'
-def decompress(path: str, output: str, format: str = 'auto'):
+def decompress(path: str, output: str, format: str = 'auto') -> None:
 	format = detect_format(path, format, accept=_decompress_formats)
 	makedirs(output, exist_ok=True)
 	if format == 'zip':
@@ -239,7 +239,7 @@ def find_hidden_compressed(path: str) -> list:
 				signatures.append(ftype)
 		return signatures
 
-def tvshow_rename(path):
+def tvshow_rename(path: str) -> None:
 	''' Rename every TV show of a folder.
 	E.g. Inception_Season_4_Episode_02_DivX-Total.mkv would be 04x02.mkv. '''
 	for file in listdir(path):
@@ -253,7 +253,7 @@ def tvshow_rename(path):
 			rename(file, name)
 
 _directory_compare_ignored = ('.class', '.metadata', '.recommenders', '.pyc', '.git', '.svn', '.cached', '__pycache__')
-def directory_compare(old, new, kind='dir', ignored=_directory_compare_ignored):
+def directory_compare(old: str, new: str, kind: str = 'dir', ignored: list = _directory_compare_ignored) -> None:
 	def children(path):
 		res = {}
 		for child in listdir(path):
