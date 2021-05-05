@@ -10,4 +10,4 @@ It is [available in PyPI](https://pypi.org/project/simpler/), just do `pip insta
 
 ## Usage
 
-See [https://simpler.readthedocs.io/](https://simpler.readthedocs.io/) for the latest library documentation.
+See [simpler.readthedocs.io](https://simpler.readthedocs.io/) for the latest library documentation.
