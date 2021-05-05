@@ -5,22 +5,12 @@ from os import listdir, makedirs, chdir, rename
 from os.path import isdir, islink, join, exists
 from pickle import load as pload, dump as pdump
 from typing import Optional
-from yaml import safe_load_all as yload, dump as ydump
-from pandas.core.frame import DataFrame
 from regex import compile
-from pandas import read_csv, read_table
 from time import time
 from sys import path as sys_path
 from collections import OrderedDict
 from os import makedirs
-from zipfile import ZipFile
-from gzip import GzipFile
 from shutil import copyfileobj
-from tarfile import open as open_tar
-from bz2 import open as open_bz2
-from rarfile import RarFile
-from py7zr import SevenZipFile
-from lzma import open as open_lzma, decompress as lzdecompress
 
 REGEX_FIND_EPISODE = compile(r'(?P<SEASON>\d+)\s*[x\-]\s*(?P<EPISODE>\d+)|S\s*(?P<SEASON>\d+)\s*E\s*(?P<EPISODE>\d+)|(?P<EPISODE>\d+)').search
 
@@ -47,12 +37,15 @@ def load(path: str, format: str = 'auto', encoding: str = 'utf-8', inner_args: l
 	elif format == 'jsonl':
 		res = [jload(line, *args, **kwargs) for line in fp]
 	elif format == 'csv':
+		from pandas import read_csv
 		res = read_csv(fp, *args, **kwargs)
 	elif format == 'table':
+		from pandas import read_table
 		res = read_table(fp, *args, **kwargs)
 	elif format == 'pickle':
 		res = pload(fp, *args, **kwargs)
 	elif format == 'yaml':
+		from yaml import safe_load_all as yload
 		res = list(yload(fp, *args, **kwargs))
 		res = res[0] if len(res) == 1 else res
 	fp.close()
@@ -83,12 +76,15 @@ def save(path: str, content: object, format: str = 'auto', encoding: str = 'utf-
 		if 'protocol' not in kwargs: kwargs['protocol'] = 4
 		pdump(content, fp, *args, **kwargs)
 	elif format == 'csv':
+		from pandas import DataFrame
 		if 'index' not in kwargs: kwargs['index'] = False
 		DataFrame(content).to_csv(path, *args, **kwargs)
 	elif format == 'table':
+		from pandas import DataFrame
 		if 'index' not in kwargs: kwargs['index'] = False
 		DataFrame(content).to_excel(path, *args, **kwargs)
 	elif format == 'yaml':
+		from yaml import dump as ydump
 		ydump(content, fp, *args, **kwargs)
 	if fp is not None:
 		fp.close()
@@ -98,24 +94,31 @@ def decompress(path: str, output: str, format: str = 'auto') -> None:
 	format = detect_format(path, format, accept=_decompress_formats)
 	makedirs(output, exist_ok=True)
 	if format == 'zip':
+		from zipfile import ZipFile
 		with ZipFile(path, 'r') as zipped:
 			zipped.extractall(output)
 	elif format == 'gzip':
+		from gzip import GzipFile
 		with GzipFile(path, 'r') as zipped, open(output, 'wb') as file_dest:
 			copyfileobj(zipped, file_dest)
 	elif format == 'rar':
+		from rarfile import RarFile
 		with RarFile(path, 'r') as zipped:
 			zipped.extractall(output)
 	elif format == 'bzip2':
+		from bz2 import open as open_bz2
 		with open_bz2(path, 'r') as zipped, open(output, 'wb') as file_dest:
 			copyfileobj(zipped, file_dest)
 	elif format == 'tar':
+		from tarfile import open as open_tar
 		with open_tar(path) as zipped:
 			zipped.extractall(output)
 	elif format == '7zip':
+		from py7zr import SevenZipFile
 		with SevenZipFile(path, 'r') as zipped:
 			zipped.extractall(output)
 	elif format == 'lzma':
+		from lzma import open as open_lzma, decompress as lzdecompress
 		with open_lzma(path, 'r') as zipped, open(output, 'wb') as file_dest:
 			copyfileobj(lzdecompress(zipped), file_dest)
 
@@ -158,7 +161,7 @@ def disk_cache(func=None, *, seconds: float = None, directory: str = '.cached/',
 	next call loads the cached result from the disk. The cached files are used indefinitely unless the
 	`seconds` lifespan is defined. The cached files are stored at `.cached` unless otherwise
 	specificed with the `directory` argument. The cache file identifier is generated from the
-	method name its arguments unless otherwise specified with the `identifier` argument. '''
+	method name plus its arguments, unless otherwise specified with the `identifier` argument. '''
 	def decorator(func):
 		def wrapper(*args, **kwargs):
 			makedirs(directory, exist_ok=True)
