@@ -153,7 +153,7 @@ def detect_format(path: str, format: str, accept: list = None, default: str = No
 		)
 	return format
 
-def disk_cache(func=None, *, seconds: float = None, directory: str = '.cached/', identifier: str = None) -> function:
+def disk_cache(func=None, *, seconds: float = None, directory: str = '.cached/', identifier: str = None):
 	''' The first time the decorated method is called, its result is stored as a pickle file, the
 	next call loads the cached result from the disk. The cached files are used indefinitely unless the
 	`seconds` lifespan is defined. The cached files are stored at `.cached` unless otherwise
