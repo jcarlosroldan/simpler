@@ -17,6 +17,3 @@ See [simpler.readthedocs.io](https://simpler.readthedocs.io/) for the latest lib
 Load/save:
 
 [![asciicast](https://asciinema.org/a/yhl9BxbiM1sAARqTNW2Dajz8f.svg)](https://asciinema.org/a/yhl9BxbiM1sAARqTNW2Dajz8f)
-
-Disk cache:
-
