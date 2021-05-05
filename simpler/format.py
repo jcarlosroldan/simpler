@@ -44,7 +44,7 @@ def random_string(length: int, mask: list = digits + ascii_letters) -> str:
 	''' Returns a random string. '''
 	return ''.join(choice(mask) for _ in range(length))
 
-def print_matrix(matrix: list, rows: int = None, cols: int = None, elem_width: init = None, separator: str = ' ') -> str:
+def print_matrix(matrix: list, rows: int = None, cols: int = None, elem_width: int = None, separator: str = ' ') -> str:
 	for row in matrix[:rows]:
 		for col in row[:cols]:
 			print(str(col)[:elem_width], end=separator)
