@@ -1,4 +1,5 @@
 from setuptools import setup, find_packages
+from simpler import __version__
 
 with open('README.md', 'r', encoding='utf-8') as fp:
 	long_description = fp.read()
@@ -8,7 +9,7 @@ with open('requirements.txt', 'r', encoding='utf-8') as f:
 
 setup(
 	name='simpler',
-	version='2.0.10',
+	version=__version__,
 	author='Juan C. Roldán',
 	author_email='juancarlos@sevilla.es',
 	description='Makes Python simpler.',

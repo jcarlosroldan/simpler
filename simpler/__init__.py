@@ -1,3 +1,4 @@
+from simpler._version import __version__
 from simpler.algorithms import DynamicProgramming
 from simpler.bioinformatics import codon_table, monoisotopic_mass_table, monoisotopic_mass_water, parse_fasta, dna_to_rna, rna_to_dna, rna_to_protein, reverse_complement
 from simpler.connectors import MySQL, Excel
