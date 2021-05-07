@@ -18,7 +18,6 @@ def cwd() -> None:
 	''' Change the base of relative paths to the directory of the main script. '''
 	chdir(sys_path[0])
 
-
 _load_formats = 'bytes', 'csv', 'json', 'jsonl', 'pickle', 'string', 'table', 'yaml'
 def load(path: str, format: str = 'auto', encoding: str = 'utf-8', inner_args: list = None, inner_kwargs: dict = None) -> object:
 	''' Load a file in a given format. '''
