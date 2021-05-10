@@ -5,6 +5,7 @@ monoisotopic_mass_table = {'A': 71.03711, 'C': 103.00919, 'D': 115.02694, 'E': 1
 monoisotopic_mass_water = 18.01056
 
 def parse_fasta(data_string: str, first: bool = False) -> OrderedDict:
+	''' Given a string in FASTA format, returns the DNA strings on it. '''
 	dnas = OrderedDict()
 	current_dna = None
 	for line in data_string.split('\n'):
@@ -18,15 +19,19 @@ def parse_fasta(data_string: str, first: bool = False) -> OrderedDict:
 	return dnas
 
 def dna_to_rna(dna: str) -> str:
+	''' Transforms a DNA string into RNA by replacing Ts with Us. '''
 	return dna.replace('T', 'U')
 
 def rna_to_dna(rna: str) -> str:
+	''' Transforms a RNA string into DNA by replacing Us with Ts. '''
 	return rna.replace('U', 'T')
 
 def rna_to_protein(rna: str) -> str:
+	''' Transforms a RNA string into a CODON string. '''
 	return ''.join(codon_table[rna[n:n + 3]] for n in range(0, len(rna), 3)).strip('Stop')
 
 def reverse_complement(seq: str, is_rna: bool = True) -> str:
+	''' Obtains the reverse complement of a DNA or RNA string. '''
 	if is_rna:
 		return seq.translate(str.maketrans('GUCA', 'CAGU'))[::-1]
 	else:
