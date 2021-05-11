@@ -89,6 +89,7 @@ def save(path: str, content: object, format: str = 'auto', encoding: str = 'utf-
 
 _decompress_formats = 'tar', 'zip', 'gzip', 'bzip2', 'rar', '7zip', 'lzma'
 def decompress(path: str, output: str, format: str = 'auto') -> None:
+	''' Decompress the given file to the output directory regardless of its format. '''
 	format = detect_format(path, format, accept=_decompress_formats)
 	makedirs(output, exist_ok=True)
 	if format == 'zip':
@@ -232,6 +233,8 @@ _find_hidden_compressed_signatures = {
 	# 'bz2': b'\x42\x5a\x68',
 }
 def find_hidden_compressed(path: str) -> list:
+	''' Recursively examines the signature of the files in a directory while looking for a
+	compressed file. '''
 	with open(path, 'rb') as fp:
 		data = fp.read()
 		signatures = []
@@ -242,7 +245,7 @@ def find_hidden_compressed(path: str) -> list:
 
 def tvshow_rename(path: str) -> None:
 	''' Rename every TV show of a folder.
-	E.g. Inception_Season_4_Episode_02_DivX-Total.mkv would be 04x02.mkv. '''
+	I.e. Inception_Season_4_Episode_02_DivX-Total.mkv would be 04x02.mkv. '''
 	for file in listdir(path):
 		name, ext = file.rsplit('.', 1)
 		match = REGEX_FIND_EPISODE(name.replace('_', ' '))
@@ -255,6 +258,8 @@ def tvshow_rename(path: str) -> None:
 
 _directory_compare_ignored = ('.class', '.metadata', '.recommenders', '.pyc', '.git', '.svn', '.cached', '__pycache__')
 def directory_compare(old: str, new: str, kind: str = 'dir', ignored: list = _directory_compare_ignored) -> None:
+	''' Compares the files in two directories (old and new) to detect files that have been created,
+	deleted, changed or updated, ignoring the specified files. '''
 	def children(path):
 		res = {}
 		for child in listdir(path):
