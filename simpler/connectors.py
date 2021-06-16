@@ -46,7 +46,7 @@ class MySQL:
 
 	def find(self, query: str, *params: tuple) -> dict:
 		''' Returns a {column: value} dict of the first selected row. '''
-		row = self.find_one_tuple(query, *params)
+		row = self.find_tuple(query, *params)
 		if row:
 			return {k[0]: v for k, v in zip(self.get_cursor().description, row)}
 	
@@ -65,7 +65,7 @@ class MySQL:
 
 	def iter_all(self, query: str, *params: tuple) -> Generator[dict, None, None]:
 		''' Returns a generator of {column: value} dicts of the selected rows. '''
-		rows = self.iter_many_tuples(query, *params)
+		rows = self.iter_all_tuples(query, *params)
 		description = self.get_cursor().description
 		for row in rows:
 			yield {k[0]: v for k, v in zip(description, row)}
