@@ -5,3 +5,4 @@ pandas
 pyyaml
 rarfile
 py7zr
+sphinx_autodoc_typehints
