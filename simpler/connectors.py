@@ -63,14 +63,14 @@ class MySQL:
 		''' Returns a list of tuples of the selected rows. '''
 		return list(self.iter_all_tuples(query, *params))
 
-	def iter_all(self, query: str, *params: tuple) -> Generator[dict]:
+	def iter_all(self, query: str, *params: tuple) -> Generator[dict, None, None]:
 		''' Returns a generator of {column: value} dicts of the selected rows. '''
 		rows = self.iter_many_tuples(query, *params)
 		description = self.get_cursor().description
 		for row in rows:
 			yield {k[0]: v for k, v in zip(description, row)}
 
-	def iter_all_tuples(self, query: str, *params: tuple) -> Generator[tuple]:
+	def iter_all_tuples(self, query: str, *params: tuple) -> Generator[tuple, None, None]:
 		''' Returns a generator of tuples of the selected rows. '''
 		self.execute(query, params)
 		return self.get_cursor().fetchall()
@@ -86,7 +86,7 @@ class MySQL:
 		''' Returns the value of the first column of every selected row. '''
 		return list(self.iter_column(query, *params))
 
-	def iter_column(self, query: str, *params: tuple) -> Generator[list]:
+	def iter_column(self, query: str, *params: tuple) -> Generator[list, None, None]:
 		''' Returns a generator of the first column of every selected row. '''
 		self.execute(query, params)
 		for row in self.get_cursor().fetchall():
