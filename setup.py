@@ -1,5 +1,5 @@
 from setuptools import setup, find_packages
-from simpler import __version__
+from simpler._version import __version__
 
 with open('README.md', 'r', encoding='utf-8') as fp:
 	long_description = fp.read()
