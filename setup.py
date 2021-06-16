@@ -1,15 +1,17 @@
 from setuptools import setup, find_packages
-from simpler._version import __version__
 
 with open('README.md', 'r', encoding='utf-8') as fp:
 	long_description = fp.read()
 
-with open('requirements.txt', 'r', encoding='utf-8') as f:
-	requirements = f.read().strip().split()
+with open('requirements.txt', 'r', encoding='utf-8') as fp:
+	requirements = fp.read().strip().split()
+
+with open('simpler/_version.py', 'r', encoding='utf-8') as fp:
+	version = fp.read().split(' = ')[1:-1]
 
 setup(
 	name='simpler',
-	version=__version__,
+	version=version,
 	author='Juan C. Roldán',
 	author_email='juancarlos@sevilla.es',
 	description='Makes Python simpler.',
