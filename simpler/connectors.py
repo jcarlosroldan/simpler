@@ -42,7 +42,7 @@ class MySQL:
 	def execute(self, query: str, params: tuple = None):
 		''' Wrapper for the MySQLdb execute method that won't send the params argument
 		if the params are empty, thus avoiding the need to replace % with %%. '''
-		return self.get_cursor().execute(query, params if len(params) else None)
+		return self.get_cursor().execute(query, params if params is not None and len(params) else None)
 
 	def find(self, query: str, *params: tuple) -> dict:
 		''' Returns a {column: value} dict of the first selected row. '''
