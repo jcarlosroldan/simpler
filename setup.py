@@ -7,7 +7,7 @@ with open('requirements.txt', 'r', encoding='utf-8') as fp:
 	requirements = fp.read().strip().split()
 
 with open('simpler/_version.py', 'r', encoding='utf-8') as fp:
-	version = fp.read().split(' = ')[1:-1]
+	version = fp.read().split(' = ')[1][1:-1]
 
 setup(
 	name='simpler',
