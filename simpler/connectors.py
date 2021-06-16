@@ -1,4 +1,3 @@
-from MySQLdb import Connection
 from numpy import arange, concatenate, array
 from pandas import ExcelFile, read_excel, DataFrame, concat
 from re import compile, IGNORECASE
@@ -35,6 +34,7 @@ class MySQL:
 	def get_cursor(self):
 		''' Returns the open cursor and initializes the connection if required. '''
 		if self._cursor is None:
+			from MySQLdb import Connection
 			self._connection = Connection(**self._connection)
 			self._cursor = self._connection.cursor()
 		return self._cursor
