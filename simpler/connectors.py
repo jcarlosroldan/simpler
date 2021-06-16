@@ -1,8 +1,8 @@
-from typing import Union, Any, Generator, List, Optional
 from MySQLdb import Connection
-from pandas import ExcelFile, read_excel, DataFrame, concat
 from numpy import arange, concatenate, array
+from pandas import ExcelFile, read_excel, DataFrame, concat
 from re import compile, IGNORECASE
+from typing import Union, Any, Generator, List, Optional
 
 class MySQL:
 	''' Connector for the MySQLdb backend with a handful of helpers. '''
