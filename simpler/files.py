@@ -2,7 +2,7 @@ from filecmp import cmp
 from hashlib import md5
 from json import load as jload, dumps as jdumps
 from os import listdir, makedirs, chdir, rename
-from os.path import isdir, islink, join, exists
+from os.path import isdir, islink, join, exists, abspath
 from pickle import load as pload, dump as pdump
 from typing import Optional
 from regex import compile
@@ -14,9 +14,9 @@ from shutil import copyfileobj
 
 REGEX_FIND_EPISODE = compile(r'(?P<SEASON>\d+)\s*[x\-]\s*(?P<EPISODE>\d+)|S\s*(?P<SEASON>\d+)\s*E\s*(?P<EPISODE>\d+)|(?P<EPISODE>\d+)').search
 
-def cwd() -> None:
-	''' Change the base of relative paths to the directory of the main script. '''
-	chdir(sys_path[0])
+def cwd(path: str = None) -> None:
+	''' Change the current directory to the base of relative paths to the directory of the main script. '''
+	chdir(abspath(sys_path[0]))
 
 _load_formats = 'bytes', 'csv', 'json', 'jsonl', 'pickle', 'string', 'table', 'yaml'
 def load(path: str, format: str = 'auto', encoding: str = 'utf-8', inner_args: list = None, inner_kwargs: dict = None) -> object:
