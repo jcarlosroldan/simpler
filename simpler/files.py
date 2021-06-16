@@ -14,9 +14,12 @@ from shutil import copyfileobj
 
 REGEX_FIND_EPISODE = compile(r'(?P<SEASON>\d+)\s*[x\-]\s*(?P<EPISODE>\d+)|S\s*(?P<SEASON>\d+)\s*E\s*(?P<EPISODE>\d+)|(?P<EPISODE>\d+)').search
 
-def cwd(path: str = None) -> None:
-	''' Change the current directory to the base of relative paths to the directory of the main script. '''
-	chdir(abspath(sys_path[0]))
+def cwd() -> None:
+	''' Change the current directory to the base of relative paths to the directory
+	and returns it. '''
+	path = abspath(sys_path[0])
+	chdir(path)
+	return path
 
 _load_formats = 'bytes', 'csv', 'json', 'jsonl', 'pickle', 'string', 'table', 'yaml'
 def load(path: str, format: str = 'auto', encoding: str = 'utf-8', inner_args: list = None, inner_kwargs: dict = None) -> object:
