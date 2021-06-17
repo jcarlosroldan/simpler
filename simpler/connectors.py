@@ -21,7 +21,7 @@ class MySQL:
 			self._connection.update({'passwd': password, 'auth_plugin': 'mysql_native_password'})
 		if db:
 			self._connection['db'] = db
-	
+
 	def __del__(self):
 		self.close()
 
@@ -38,7 +38,7 @@ class MySQL:
 			self._connection = Connection(**self._connection)
 			self._cursor = self._connection.cursor()
 		return self._cursor
-	
+
 	def execute(self, query: str, params: tuple = None):
 		''' Wrapper for the MySQLdb execute method that won't send the params argument
 		if the params are empty, thus avoiding the need to replace % with %%. '''
@@ -49,7 +49,7 @@ class MySQL:
 		row = self.find_tuple(query, *params)
 		if row:
 			return {k[0]: v for k, v in zip(self.get_cursor().description, row)}
-	
+
 	def find_tuple(self, query: str, *params: tuple) -> tuple:
 		''' Returns a tuple of the values of the first selected row. '''
 		self.execute(query, params)
@@ -151,7 +151,7 @@ class MySQL:
 
 	def escape(self, value: Any, is_literal: bool = True) -> str:
 		''' Escapes the given value for its injection into the SQL query. By default,
-		the data `is_literal=True`, which will wrap strings with quotes for its insertion. '''	
+		the data `is_literal=True`, which will wrap strings with quotes for its insertion. '''
 		if value is None:
 			value = 'NULL'
 		elif type(value) == str:
