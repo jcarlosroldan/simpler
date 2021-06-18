@@ -30,6 +30,7 @@ class MySQL:
 		if self._cursor is not None:
 			self._cursor.close()
 			self._connection.close()
+			self._cursor = self._connection = None
 
 	def get_cursor(self):
 		''' Returns the open cursor and initializes the connection if required. '''
