@@ -32,7 +32,7 @@ class MySQL:
 			self._connection.close()
 			self._cursor = self._connection = None
 
-	def get_cursor(self):
+	def cursor(self):
 		''' Returns the open cursor and initializes the connection if required. '''
 		if self._cursor is None:
 			from MySQLdb import Connection
@@ -43,18 +43,18 @@ class MySQL:
 	def execute(self, query: str, params: tuple = None):
 		''' Wrapper for the MySQLdb execute method that won't send the params argument
 		if the params are empty, thus avoiding the need to replace % with %%. '''
-		return self.get_cursor().execute(query, params if params is not None and len(params) else None)
+		return self.cursor().execute(query, params if params is not None and len(params) else None)
 
 	def find(self, query: str, *params: tuple) -> dict:
 		''' Returns a {column: value} dict of the first selected row. '''
 		row = self.find_tuple(query, *params)
 		if row:
-			return {k[0]: v for k, v in zip(self.get_cursor().description, row)}
+			return {k[0]: v for k, v in zip(self.cursor().description, row)}
 
 	def find_tuple(self, query: str, *params: tuple) -> tuple:
 		''' Returns a tuple of the values of the first selected row. '''
 		self.execute(query, params)
-		return self.get_cursor().fetchone()
+		return self.cursor().fetchone()
 
 	def find_all(self, query: str, *params: tuple) -> List[dict]:
 		''' Returns a list of {column: value} dicts of the selected rows. '''
@@ -67,19 +67,19 @@ class MySQL:
 	def iter_all(self, query: str, *params: tuple) -> Generator[dict, None, None]:
 		''' Returns a generator of {column: value} dicts of the selected rows. '''
 		rows = self.iter_all_tuples(query, *params)
-		description = self.get_cursor().description
+		description = self.cursor().description
 		for row in rows:
 			yield {k[0]: v for k, v in zip(description, row)}
 
 	def iter_all_tuples(self, query: str, *params: tuple) -> Generator[tuple, None, None]:
 		''' Returns a generator of tuples of the selected rows. '''
 		self.execute(query, params)
-		return self.get_cursor().fetchall()
+		return self.cursor().fetchall()
 
 	def find_value(self, query: str, *params: tuple) -> Any:
 		''' Returns the value of the first column of the first selected row. '''
 		self.execute(query, params)
-		res = self.get_cursor().fetchone()
+		res = self.cursor().fetchone()
 		if res:
 			return res[0]
 
@@ -90,13 +90,13 @@ class MySQL:
 	def iter_column(self, query: str, *params: tuple) -> Generator[list, None, None]:
 		''' Returns a generator of the first column of every selected row. '''
 		self.execute(query, params)
-		for row in self.get_cursor().fetchall():
+		for row in self.cursor().fetchall():
 			yield row[0]
 
 	def insert(self, query: str, *params: tuple) -> int:
 		''' Inserts a row and returns its id. '''
 		self.execute(query, params)
-		return int(self.get_cursor().lastrowid)
+		return int(self.cursor().lastrowid)
 
 	def insert_all(self, table: str, rows: list, tuple_rows: bool = True) -> Optional[int]:
 		''' Insert a list of rows and returns the id of the last one. By default,
@@ -122,12 +122,12 @@ class MySQL:
 			)
 			params = [insertion[key] for insertion in rows for key in keys]
 		self.execute(query, params)
-		return int(self.get_cursor().lastrowid)
+		return int(self.cursor().lastrowid)
 
 	def apply(self, query: str, *params: tuple) -> int:
 		''' Applies a modification (update or delete) and returns the number of affected rows. '''
 		self.execute(query, params)
-		return int(self.get_cursor().rowcount)
+		return int(self.cursor().rowcount)
 
 	def update(self, table: str, updates: dict = lambda: {}, filters: dict = lambda: {}) -> int:
 		''' Executes an update operation and returns the number of affected rows, specifying
@@ -148,7 +148,7 @@ class MySQL:
 				params.append(v)
 			query += 'WHERE ' + ' AND '.join(values)
 		self.execute(query, params)
-		return int(self.get_cursor().rowcount)
+		return int(self.cursor().rowcount)
 
 	def escape(self, value: Any, is_literal: bool = True) -> str:
 		''' Escapes the given value for its injection into the SQL query. By default,
