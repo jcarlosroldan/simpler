@@ -45,6 +45,25 @@ class MySQL:
 		if the params are empty, thus avoiding the need to replace % with %%. '''
 		return self.cursor().execute(query, params if params is not None and len(params) else None)
 
+	def select(
+		self, table: str, filters: dict = lambda: {}, first_row: bool = False,
+		first_column: bool = False, tuple_rows: bool = True, or_filters: bool = False
+	) -> int:
+		''' Executes an select operation and returns the resulting rows, specifying a filters
+		list, i.e. `{'a': 4, 'b': None}` will be translated into `WHERE A = 4 and B = NULL`. '''
+		query = 'SELECT * FROM %s ' % table
+		columns = list(filters.keys())
+		params = [filters[c] for c in columns]
+		if len(columns):
+			query += ' WHERE ' + (' OR ' if or_filters else ' AND ').join(c + '=%s' for c in columns)
+		self.execute(query, params)
+		res = [self.cursor().fetchone()] if first_row else list(self.cursor().fetchall())
+		res = [row[0] if first_column else row for row in res]
+		if not tuple_rows:
+			description = self.cursor().description
+			res = [{k[0]: v for k, v in zip(description, row)} for row in res]
+		return res[0] if first_row else res
+
 	def find(self, query: str, *params: tuple) -> dict:
 		''' Returns a {column: value} dict of the first selected row. '''
 		row = self.find_tuple(query, *params)
