@@ -9,6 +9,6 @@ from simpler.math import clamp, snap, unique, all_equal, jaccard, levenshtein, b
 from simpler.profiling import tic, toc, deep_size
 from simpler.reflection import import_from_path
 from simpler.sparql import dbpedia, entity_types
-from simpler.terminal import getch
+from simpler.terminal import getch, cprint
 from simpler.validation import assert_set, assert_str, assert_number, assert_id, assert_mail, assert_exists
 from simpler.web import download_file, DownloaderPool, throttle
