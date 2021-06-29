@@ -157,13 +157,13 @@ class MySQL:
 		if len(updates):
 			values = []
 			for k, v in updates.items():
-				values.append(k + '=%s')
+				values.append(k + '=%s ')
 				params.append(v)
 			query += 'SET ' + ','.join(values)
 		if len(filters):
 			values = []
 			for k, v in filters.items():
-				values.append(k + '=%s')
+				values.append(k + '=%s ')
 				params.append(v)
 			query += 'WHERE ' + ' AND '.join(values)
 		self.execute(query, params)
