@@ -124,7 +124,7 @@ class MySQL:
 		if not len(rows): return
 		while self.max_insertions is not None and self.max_insertions < len(rows):
 			part, rows = rows[:self.max_insertions], rows[self.max_insertions:]
-			self.insert_many(table, part, tuple_rows)
+			self.insert_all(table, part, tuple_rows)
 		if tuple_rows:
 			query = 'INSERT INTO %s VALUES %s' % (
 				table,
@@ -153,6 +153,7 @@ class MySQL:
 		a {column: value} list of updates and a filters list, i.e. `{'a': 4, 'b': None}` will be
 		translated into `WHERE A = 4 and B = NULL`. '''
 		query = 'UPDATE %s ' % table
+		# TODO use max_insertions here too
 		params = []
 		if len(updates):
 			values = []
