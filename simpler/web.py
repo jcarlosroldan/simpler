@@ -8,7 +8,7 @@ from urllib.request import urlopen
 
 def download_file(url, path=None, chunk_size=10**5):
 	''' Downloads a file keeping track of the progress. '''
-	if path == None: path = url.split('/')[-1]
+	if path is None: path = url.split('/')[-1]
 	r = get(url, stream=True)
 	total_bytes = int(r.headers.get('content-length'))
 	bytes_downloaded = 0
