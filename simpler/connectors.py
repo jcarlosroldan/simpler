@@ -1,13 +1,15 @@
 from numpy import arange, concatenate, array
 from pandas import ExcelFile, read_excel, DataFrame, concat
 from re import compile, IGNORECASE
+from simpler.terminal import cprint
 from typing import Union, Any, Generator, List, Optional
 
 class MySQL:
 	''' Connector for the MySQLdb backend with a handful of helpers. '''
 	def __init__(
-		self, host: str, user: str, password: str = None, db: str = None, charset: str = 'utf8mb4',
-		use_unicode: bool = True, autocommit: bool = True, max_insertions: int = None
+		self, host: str, user: str, password: str = None, db: str = None,
+		charset: str = 'utf8mb4', use_unicode: bool = True, autocommit: bool = True,
+		max_insertions: int = None, print_queries: bool = False
 	) -> None:
 		self.max_insertions, self._cursor = max_insertions, None
 		self._connection = {
@@ -21,6 +23,7 @@ class MySQL:
 			self._connection.update({'passwd': password, 'auth_plugin': 'mysql_native_password'})
 		if db:
 			self._connection['db'] = db
+		self.print_queries = print_queries
 
 	def __del__(self):
 		self.close()
@@ -43,6 +46,8 @@ class MySQL:
 	def execute(self, query: str, params: tuple = None):
 		''' Wrapper for the MySQLdb execute method that won't send the params argument
 		if the params are empty, thus avoiding the need to replace % with %%. '''
+		if self.print_queries:
+			cprint(query % params, fg='yellow')
 		return self.cursor().execute(query, params if params is not None and len(params) else None)
 
 	def select(
