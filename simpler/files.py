@@ -68,7 +68,6 @@ def save(path: str, content: object, format: str = 'auto', encoding: str = 'utf-
 	elif format in ('json', 'jsonl'):
 		if 'ensure_ascii' not in kwargs: kwargs['ensure_ascii'] = False
 		if 'indent' not in kwargs: kwargs['indent'] = '\t'
-		if 'separators' not in kwargs: kwargs['separators'] = (', ', ': ')
 		if format[-1] == 'l':
 			fp.write(jdumps(elem, *args, **kwargs) for elem in content)
 		else:
