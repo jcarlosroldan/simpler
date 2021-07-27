@@ -47,12 +47,17 @@ class MySQL:
 		''' Wrapper for the MySQLdb execute method that won't send the params argument
 		if the params are empty, thus avoiding the need to replace % with %%. '''
 		if self.print_queries:
-			try:
-				formatted = query.strip() % params
-			except:
-				formatted = query.strip()
-			cprint(formatted + ';', fg='yellow')
+			self.print_query(query, params)
 		return self.cursor().execute(query, params if params is not None and len(params) else None)
+
+	def print_query(self, query: str, params: tuple = None, color: str = 'yellow', max_size: int = 1000):
+		if len(query) > max_size:
+			query = query[:max_size // 2] + '...' + query[-max_size // 2:]
+		try:
+			formatted = query.strip() % params
+		except:
+			formatted = query.strip()
+		cprint(formatted + ';', fg='yellow')
 
 	def select(
 		self, table: str, filters: dict = lambda: {}, first_row: bool = False,
