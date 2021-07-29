@@ -38,8 +38,8 @@ class MySQL:
 	def cursor(self):
 		''' Returns the open cursor and initializes the connection if required. '''
 		if self._cursor is None:
-			from MySQLdb import Connection
-			self._connection = Connection(**self._connection)
+			from mysql.connector import connect
+			self._connection = connect(**self._connection)
 			self._cursor = self._connection.cursor()
 		return self._cursor
 
