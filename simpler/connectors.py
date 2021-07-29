@@ -5,7 +5,7 @@ from simpler.terminal import cprint
 from typing import Union, Any, Generator, List, Optional
 
 class MySQL:
-	''' Connector for the MySQLdb backend with a handful of helpers. '''
+	''' Connector for a mysql backend with a handful of helpers. '''
 	def __init__(
 		self, host: str, user: str, password: str = None, db: str = None,
 		charset: str = 'utf8mb4', use_unicode: bool = True, autocommit: bool = True,
@@ -40,15 +40,21 @@ class MySQL:
 		if self._cursor is None:
 			from mysql.connector import connect
 			self._connection = connect(**self._connection)
-			self._cursor = self._connection.cursor()
+			self._cursor = self._connection.cursor(buffered=True)
 		return self._cursor
 
-	def execute(self, query: str, params: tuple = None):
-		''' Wrapper for the MySQLdb execute method that won't send the params argument
+	def execute(self, query: str, params: tuple = None, multi: bool = False):
+		''' Wrapper for the mysql.connector execute method that won't send the params argument
 		if the params are empty, thus avoiding the need to replace % with %%. '''
 		if self.print_queries:
 			self.print_query(query, params)
-		return self.cursor().execute(query, params if params is not None and len(params) else None)
+		h = self.cursor().execute(query, params if params is not None and len(params) else None, multi)
+		if multi:  # dummy iteration required to execute multiple statements, see https://bugs.mysql.com/bug.php?id=87818
+			try:
+				for _ in h:
+					pass
+			except:
+				pass
 
 	def print_query(self, query: str, params: tuple = None, color: str = 'yellow', max_size: int = 1000):
 		if len(query) > max_size:
@@ -189,12 +195,10 @@ class MySQL:
 		the data `is_literal=True`, which will wrap strings with quotes for its insertion. '''
 		if value is None:
 			value = 'NULL'
-		elif type(value) == str:
-			value = self._connection.escape_string(value).decode()
-			if is_literal:
-				value = '"%s"' % value
 		else:
-			value = self._connection.string_literal(value).decode()
+			value = self._connection.converter.escape(str(value))
+			if is_literal:
+				value = '"%s"' % value()
 		return value
 
 class Excel:
