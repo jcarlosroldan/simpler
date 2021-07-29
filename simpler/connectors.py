@@ -47,12 +47,11 @@ class MySQL:
 		if the params are empty, thus avoiding the need to replace % with %%. '''
 		if self.print_queries:
 			self.print_query(query, params)
-		h = self.cursor().execute(query, params if params is not None and len(params) else None, multi)
-		if multi:  # dummy iteration required to execute multiple statements, see https://bugs.mysql.com/bug.php?id=87818
+		statement = self.cursor().execute(query, params if params is not None and len(params) else None, multi)
+		if multi:
 			try:
-				for _ in h:
-					pass
-			except:
+				list(statement)
+			except RuntimeError:  # see https://bugs.mysql.com/bug.php?id=87818
 				pass
 		self._connection.commit()
 
