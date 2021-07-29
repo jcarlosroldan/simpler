@@ -27,6 +27,7 @@ for /d %%x in (simpler-*) do rd /s /q %%x
 timeout /t 5
 
 Rem Reinstall it
+ipconfig /flushdns
 pip uninstall simpler -y
 pip install simpler -U
 
