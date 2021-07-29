@@ -7,17 +7,16 @@ from typing import Union, Any, Generator, List, Optional
 class MySQL:
 	''' Connector for a mysql backend with a handful of helpers. '''
 	def __init__(
-		self, host: str, user: str, password: str = None, db: str = None,
-		charset: str = 'utf8mb4', use_unicode: bool = True, autocommit: bool = True,
-		max_insertions: int = None, print_queries: bool = False
+		self, host: str = 'localhost', user: str = 'root', password: str = None, db: str = None,
+		charset: str = 'utf8mb4', use_unicode: bool = True, max_insertions: int = None,
+		print_queries: bool = False
 	) -> None:
 		self.max_insertions, self._cursor = max_insertions, None
 		self._connection = {
 			'host': host,
 			'user': user,
 			'charset': charset,
-			'use_unicode': use_unicode,
-			'autocommit': autocommit
+			'use_unicode': use_unicode
 		}
 		if password:
 			self._connection.update({'passwd': password, 'auth_plugin': 'mysql_native_password'})
@@ -55,12 +54,13 @@ class MySQL:
 					pass
 			except:
 				pass
+		self._connection.commit()
 
 	def print_query(self, query: str, params: tuple = None, color: str = 'yellow', max_size: int = 1000):
 		if len(query) > max_size:
 			query = query[:max_size // 2] + '...' + query[-max_size // 2:]
 		try:
-			formatted = query.strip() % params
+			formatted = query.strip() % params if params is not None and len(params) else query.strip()
 		except:
 			formatted = query.strip()
 		cprint(formatted + ';', fg='yellow')
