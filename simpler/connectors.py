@@ -2,7 +2,16 @@ from numpy import arange, concatenate, array
 from pandas import ExcelFile, read_excel, DataFrame, concat
 from re import compile, IGNORECASE
 from simpler.terminal import cprint
-from typing import Union, Any, Generator, List, Optional
+from typing import Tuple, Union, Any, Generator, List, Optional
+
+from mysql.connector.conversion import MySQLConverter
+class Inspect(MySQLConverter):
+
+	def row_to_python(self, row: Tuple[Optional[bytearray]], types: List[tuple]):
+		res = super(Inspect, self).row_to_python(row, types)
+		# TODO adapt going over mysql.connector.constants.FieldType
+		# TODO move inside MySQL
+		return res
 
 class MySQL:
 	''' Connector for a mysql backend with a handful of helpers. '''
@@ -16,7 +25,8 @@ class MySQL:
 			'host': host,
 			'user': user,
 			'charset': charset,
-			'use_unicode': use_unicode
+			'use_unicode': use_unicode,
+			'converter_class': Inspect
 		}
 		if password:
 			self._connection.update({'passwd': password, 'auth_plugin': 'mysql_native_password'})
