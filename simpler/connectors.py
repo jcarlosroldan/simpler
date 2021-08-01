@@ -1,24 +1,44 @@
-from numpy import arange, concatenate, array
-from pandas import ExcelFile, read_excel, DataFrame, concat
+from numpy import arange, array, concatenate
+from pandas import concat, DataFrame, ExcelFile, read_excel
 from re import compile, IGNORECASE
 from simpler.terminal import cprint
-from typing import Tuple, Union, Any, Generator, List, Optional
+from typing import Any, Generator, List, Optional, Union
 
-from mysql.connector.conversion import MySQLConverter
-class Inspect(MySQLConverter):
+def simpler_converter():
+	from mysql.connector.constants import FieldFlag
+	from mysql.connector.conversion import MySQLConverter
 
-	def row_to_python(self, row: Tuple[Optional[bytearray]], types: List[tuple]):
-		res = super(Inspect, self).row_to_python(row, types)
-		# TODO adapt going over mysql.connector.constants.FieldType
-		# TODO move inside MySQL
-		return res
+	class Res(MySQLConverter):
+		def row_to_python(self, row, fields):
+			res = super().row_to_python(row, fields)
+			return res
+
+		def _STRING_to_python(self, value, dsc=None):
+			res = super(Res, self)._STRING_to_python(value, dsc)
+			if dsc[7] & FieldFlag.BINARY:
+				return res.decode(self.charset)
+			return res
+		_VAR_STRING_to_python = _STRING_to_python
+
+		def _DECIMAL_to_python(self, value, desc=None):
+			return float(value.decode(self.charset))
+		_NEWDECIMAL_to_python = _DECIMAL_to_python
+		
+		def _BLOB_to_python(self, value, dsc=None):
+			"""Convert BLOB data type to Python"""
+			return self._STRING_to_python(value, dsc)
+		_LONG_BLOB_to_python = _BLOB_to_python
+		_MEDIUM_BLOB_to_python = _BLOB_to_python
+		_TINY_BLOB_to_python = _BLOB_to_python
+	
+	return Res
 
 class MySQL:
 	''' Connector for a mysql backend with a handful of helpers. '''
 	def __init__(
 		self, host: str = 'localhost', user: str = 'root', password: str = None, db: str = None,
 		charset: str = 'utf8mb4', use_unicode: bool = True, max_insertions: int = None,
-		print_queries: bool = False
+		print_queries: bool = False, native_types: bool = True
 	) -> None:
 		self.max_insertions, self._cursor = max_insertions, None
 		self._connection = {
@@ -26,8 +46,9 @@ class MySQL:
 			'user': user,
 			'charset': charset,
 			'use_unicode': use_unicode,
-			'converter_class': Inspect
 		}
+		if native_types:
+			self._connection['converter_class'] = simpler_converter()
 		if password:
 			self._connection.update({'passwd': password, 'auth_plugin': 'mysql_native_password'})
 		if db:
