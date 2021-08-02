@@ -13,6 +13,18 @@ def simpler_converter():
 			res = super().row_to_python(row, fields)
 			return res
 
+		def _BLOB_to_python(self, value, dsc=None):
+			"""Convert BLOB data type to Python"""
+			return self._STRING_to_python(value, dsc)
+		_LONG_BLOB_to_python = _BLOB_to_python
+		_MEDIUM_BLOB_to_python = _BLOB_to_python
+		_TINY_BLOB_to_python = _BLOB_to_python
+
+		def _DECIMAL_to_python(self, value, desc=None):
+			return float(value.decode(self.charset))
+		_NEWDECIMAL_to_python = _DECIMAL_to_python
+		_float64_to_mysql = _DECIMAL_to_python
+
 		def _STRING_to_python(self, value, dsc=None):
 			res = super(Res, self)._STRING_to_python(value, dsc)
 			if dsc[7] & FieldFlag.BINARY:
@@ -20,17 +32,6 @@ def simpler_converter():
 			return res
 		_VAR_STRING_to_python = _STRING_to_python
 
-		def _DECIMAL_to_python(self, value, desc=None):
-			return float(value.decode(self.charset))
-		_NEWDECIMAL_to_python = _DECIMAL_to_python
-		
-		def _BLOB_to_python(self, value, dsc=None):
-			"""Convert BLOB data type to Python"""
-			return self._STRING_to_python(value, dsc)
-		_LONG_BLOB_to_python = _BLOB_to_python
-		_MEDIUM_BLOB_to_python = _BLOB_to_python
-		_TINY_BLOB_to_python = _BLOB_to_python
-	
 	return Res
 
 class MySQL:
