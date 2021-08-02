@@ -228,7 +228,7 @@ class MySQL:
 		else:
 			value = self._connection.converter.escape(str(value))
 			if is_literal:
-				value = '"%s"' % value()
+				value = '"%s"' % value
 		return value
 
 class Excel:
