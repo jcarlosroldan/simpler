@@ -23,7 +23,9 @@ def simpler_converter():
 		def _DECIMAL_to_python(self, value, desc=None):
 			return float(value.decode(self.charset))
 		_NEWDECIMAL_to_python = _DECIMAL_to_python
-		_float64_to_mysql = _DECIMAL_to_python
+
+		def _float64_to_mysql(self, value, desc=None):
+			return float(value)
 
 		def _STRING_to_python(self, value, dsc=None):
 			res = super(Res, self)._STRING_to_python(value, dsc)
