@@ -36,27 +36,45 @@ def simpler_converter():
 
 	return Res
 
-class MySQL:
+class SQL:
 	''' Connector for a mysql backend with a handful of helpers. '''
 	def __init__(
 		self, host: str = 'localhost', user: str = 'root', password: str = None, db: str = None,
 		charset: str = 'utf8mb4', collation: str = 'utf8mb4_general_ci', use_unicode: bool = True,
-		max_insertions: int = None, print_queries: bool = False, native_types: bool = True
+		max_insertions: int = None, print_queries: bool = False, native_types: bool = True, engine='MySQL'
 	) -> None:
 		self.max_insertions, self._cursor = max_insertions, None
+		self.engine = engine
 		self._connection = {
-			'host': host,
 			'user': user,
 			'charset': charset,
-			'collation': collation,
-			'use_unicode': use_unicode,
 		}
-		if native_types:
-			self._connection['converter_class'] = simpler_converter()
-		if password:
-			self._connection.update({'passwd': password, 'auth_plugin': 'mysql_native_password'})
-		if db:
-			self._connection['db'] = db
+		self._cursor = {}
+		if engine == 'MySQL':
+			self._connection.update({
+				'host': host,
+				'collation': collation
+			})
+			if native_types:
+				self._connection['converter_class'] = simpler_converter()
+			if password:
+				self._connection.update({
+					'passwd': password,
+					'auth_plugin': 'mysql_native_password'
+				})
+			if db:
+				self._connection['db'] = db
+			self._cursor['buffered'] = True
+		elif engine == 'MSSQL':
+			self._connection.update({
+				'server': host,
+				'collation': collation,
+				'use_unicode': use_unicode
+			})
+			if password:
+				self._connection['password'] = password
+			if db:
+				self._connection['database'] = db
 		self.print_queries = print_queries
 
 	def __del__(self):
@@ -72,9 +90,12 @@ class MySQL:
 	def cursor(self):
 		''' Returns the open cursor and initializes the connection if required. '''
 		if self._cursor is None:
-			from mysql.connector import connect
+			if self.engine == 'MySQL':
+				from mysql.connector import connect
+			else:
+				from pymssql import connect
 			self._connection = connect(**self._connection)
-			self._cursor = self._connection.cursor(buffered=True)
+			self._cursor = self._connection.cursor(**self._cursor)
 		return self._cursor
 
 	def execute(self, query: str, params: tuple = None, multi: bool = False):
