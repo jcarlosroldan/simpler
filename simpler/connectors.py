@@ -40,7 +40,7 @@ class MySQL:
 	''' Connector for a mysql backend with a handful of helpers. '''
 	def __init__(
 		self, host: str = 'localhost', user: str = 'root', password: str = None, db: str = None,
-		charset: str = 'utfmb4', collation: str = 'utf8mb4_general_ci', use_unicode: bool = True,
+		charset: str = 'utf8mb4', collation: str = 'utf8mb4_general_ci', use_unicode: bool = True,
 		max_insertions: int = None, print_queries: bool = False, native_types: bool = True
 	) -> None:
 		self.max_insertions, self._cursor = max_insertions, None
