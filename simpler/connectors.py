@@ -45,15 +45,15 @@ class SQL:
 	) -> None:
 		self.max_insertions, self._cursor = max_insertions, None
 		self.engine = engine
-		self._connection = {
-			'user': user,
-			'charset': charset,
-		}
+		self._connection = {'user': user}
 		self._cursor = {}
+		self._initialized = False
 		if engine == 'MySQL':
 			self._connection.update({
+				'charset': charset,
+				'collation': collation,
 				'host': host,
-				'collation': collation
+				'use_unicode': use_unicode
 			})
 			if native_types:
 				self._connection['converter_class'] = simpler_converter()
@@ -66,11 +66,7 @@ class SQL:
 				self._connection['db'] = db
 			self._cursor['buffered'] = True
 		elif engine == 'MSSQL':
-			self._connection.update({
-				'server': host,
-				'collation': collation,
-				'use_unicode': use_unicode
-			})
+			self._connection['server'] = host
 			if password:
 				self._connection['password'] = password
 			if db:
@@ -82,34 +78,40 @@ class SQL:
 
 	def close(self) -> None:
 		''' Closes the current cursor and connection. '''
-		if self._cursor is not None:
+		if self._initialized:
+			self._initialized = False
 			self._cursor.close()
 			self._connection.close()
 			self._cursor = self._connection = None
 
 	def cursor(self):
 		''' Returns the open cursor and initializes the connection if required. '''
-		if self._cursor is None:
+		if not self._initialized:
 			if self.engine == 'MySQL':
 				from mysql.connector import connect
 			else:
 				from pymssql import connect
 			self._connection = connect(**self._connection)
 			self._cursor = self._connection.cursor(**self._cursor)
+			self._initialized = True
 		return self._cursor
 
-	def execute(self, query: str, params: tuple = None, multi: bool = False):
+	def execute(self, query: str, params: tuple = None, multi: bool = False, commit: bool = False):
 		''' Wrapper for the mysql.connector execute method that won't send the params argument
 		if the params are empty, thus avoiding the need to replace % with %%. '''
 		if self.print_queries:
 			self.print_query(query, params)
-		statement = self.cursor().execute(query, params if params is not None and len(params) else None, multi)
-		if multi:
-			try:
-				list(statement)
-			except RuntimeError:  # see https://bugs.mysql.com/bug.php?id=87818
-				pass
-		self._connection.commit()
+		if self.engine == 'MySQL':
+			statement = self.cursor().execute(query, params if params is not None and len(params) else None, multi)
+			if multi:
+				try:
+					list(statement)
+				except RuntimeError:  # see https://bugs.mysql.com/bug.php?id=87818
+					pass
+		else:
+			statement = self.cursor().execute(*([query] + ([params] if params else [])))
+		if commit:
+			self._connection.commit()
 
 	def print_query(self, query: str, params: tuple = None, color: str = 'yellow', max_size: int = 1000):
 		if len(query) > max_size:
@@ -118,7 +120,7 @@ class SQL:
 			formatted = query.strip() % params if params is not None and len(params) else query.strip()
 		except:
 			formatted = query.strip()
-		cprint(formatted + ';', fg='yellow')
+		cprint(formatted + ';', fg=color)
 
 	def select(
 		self, table: str, filters: dict = lambda: {}, first_row: bool = False,
@@ -189,17 +191,17 @@ class SQL:
 
 	def insert(self, query: str, *params: tuple) -> int:
 		''' Inserts a row and returns its id. '''
-		self.execute(query, params)
+		self.execute(query, params, commit=True)
 		return int(self.cursor().lastrowid)
 
-	def insert_all(self, table: str, rows: list, tuple_rows: bool = True) -> Optional[int]:
+	def insert_all(self, table: str, rows: Union[List[dict], List[tuple]], tuple_rows: bool = True, commit: bool = True) -> Optional[int]:
 		''' Insert a list of rows and returns the id of the last one. By default,
 		these rows are a list of {column: value} dicts, but they can be inserted
 		from tuples of values setting `tuple_rows` to True. '''
 		if not len(rows): return
 		while self.max_insertions is not None and self.max_insertions < len(rows):
 			part, rows = rows[:self.max_insertions], rows[self.max_insertions:]
-			self.insert_all(table, part, tuple_rows)
+			self.insert_all(table, part, tuple_rows, commit=False)
 		if tuple_rows:
 			query = 'INSERT INTO %s VALUES %s' % (
 				table,
@@ -215,12 +217,12 @@ class SQL:
 				','.join(values for _ in rows)
 			)
 			params = [insertion[key] for insertion in rows for key in keys]
-		self.execute(query, params)
+		self.execute(query, params, commit=commit)
 		return int(self.cursor().lastrowid)
 
 	def apply(self, query: str, *params: tuple) -> int:
 		''' Applies a modification (update or delete) and returns the number of affected rows. '''
-		self.execute(query, params)
+		self.execute(query, params, commit=True)
 		return int(self.cursor().rowcount)
 
 	def update(self, table: str, updates: dict = lambda: {}, filters: dict = lambda: {}) -> int:
@@ -242,7 +244,7 @@ class SQL:
 				values.append(k + '=%s ')
 				params.append(v)
 			query += 'WHERE ' + ' AND '.join(values)
-		self.execute(query, params)
+		self.execute(query, params, commit=True)
 		return int(self.cursor().rowcount)
 
 	def escape(self, value: Any, is_literal: bool = True) -> str:
