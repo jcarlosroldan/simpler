@@ -4,11 +4,12 @@ from re import compile, IGNORECASE
 from simpler.terminal import cprint
 from typing import Any, Generator, List, Optional, Union
 
-def simpler_converter():
+def _mysql_converter():
+	''' Simpler MySQL converter that returns some bytes as strings and decimals as floats. '''
 	from mysql.connector.constants import FieldFlag
-	from mysql.connector.conversion import MySQLConverter
+	from mysql.connector.conversion import MySQLConverter as NativeConverter
 
-	class Res(MySQLConverter):
+	class MySQLConverter(NativeConverter):
 		def row_to_python(self, row, fields):
 			res = super().row_to_python(row, fields)
 			return res
@@ -28,69 +29,78 @@ def simpler_converter():
 			return float(value)
 
 		def _STRING_to_python(self, value, dsc=None):
-			res = super(Res, self)._STRING_to_python(value, dsc)
+			res = super(MySQLConverter, self)._STRING_to_python(value, dsc)
 			if dsc[7] & FieldFlag.BINARY:
 				return res.decode(self.charset)
 			return res
 		_VAR_STRING_to_python = _STRING_to_python
 
-	return Res
+	return MySQLConverter
 
 class SQL:
 	''' Connector for a mysql backend with a handful of helpers. '''
+	ENGINES = 'mysql', 'mssql'
 	def __init__(
 		self, host: str = 'localhost', user: str = 'root', password: str = None, db: str = None,
 		charset: str = 'utf8mb4', collation: str = 'utf8mb4_general_ci', use_unicode: bool = True,
-		max_insertions: int = None, print_queries: bool = False, native_types: bool = True, engine='MySQL'
+		max_insertions: int = None, print_queries: bool = False, native_types: bool = True,
+		engine: str = 'mysql'
 	) -> None:
-		self.max_insertions, self._cursor = max_insertions, None
-		self.engine = engine
-		self._connection = {'user': user}
-		self._cursor = {}
-		self._initialized = False
-		if engine == 'MySQL':
+		assert engine in SQL.ENGINES, 'Accepted engine values are: %s.' % ', '.join(SQL.ENGINES)
+		self.max_insertions, self.native_types, self.engine, self.print_queries = max_insertions, native_types, engine, print_queries
+		self._connection, self._cursor, self._initialized = {'user': user}, {}, False
+		if engine == 'mysql':
+			self._init_mysql(charset, collation, host, use_unicode, password, db)
+		elif engine == 'mssql':
+			self._init_mssql(host, password, db)
+	
+	def _init_mysql(self, charset, collation, host, use_unicode, password, db):
+		self._connection.update({
+			'charset': charset,
+			'collation': collation,
+			'host': host,
+			'use_unicode': use_unicode
+		})
+		if password:
 			self._connection.update({
-				'charset': charset,
-				'collation': collation,
-				'host': host,
-				'use_unicode': use_unicode
+				'passwd': password,
+				'auth_plugin': 'mysql_native_password'
 			})
-			if native_types:
-				self._connection['converter_class'] = simpler_converter()
-			if password:
-				self._connection.update({
-					'passwd': password,
-					'auth_plugin': 'mysql_native_password'
-				})
-			if db:
-				self._connection['db'] = db
-			self._cursor['buffered'] = True
-		elif engine == 'MSSQL':
-			self._connection['server'] = host
-			if password:
-				self._connection['password'] = password
-			if db:
-				self._connection['database'] = db
-		self.print_queries = print_queries
-
-	def __del__(self):
-		self.close()
+		if db:
+			self._connection['db'] = db
+		self._cursor['buffered'] = True
+	
+	def _init_mssql(self, host, password, db):
+		self._connection['server'] = host
+		if password:
+			self._connection['password'] = password
+		if db:
+			self._connection['database'] = db
 
 	def close(self) -> None:
 		''' Closes the current cursor and connection. '''
 		if self._initialized:
 			self._cursor.close()
 			self._connection.close()
-			self._cursor = self._connection = None
 			self._initialized = False
+
+	__del__ = close
 
 	def cursor(self):
 		''' Returns the open cursor and initializes the connection if required. '''
 		if not self._initialized:
-			if self.engine == 'MySQL':
-				from mysql.connector import connect
+			if self.engine == 'mysql':
+				try:
+					from mysql.connector import connect
+				except ModuleNotFoundError:
+					raise ModuleNotFoundError('Missing MySQL connector. Install a mysql client and then do `pip install mysql.connector`.')
+				if self.native_types:
+					self._connection['converter_class'] = _mysql_converter()
 			else:
-				from pymssql import connect
+				try:
+					from pymssql import connect
+				except ModuleNotFoundError:
+					raise ModuleNotFoundError('Missing MS-SQL connector. Install a MS-SQL client and then do `pip install pymssql`.')
 			self._connection = connect(**self._connection)
 			self._cursor = self._connection.cursor(**self._cursor)
 			self._initialized = True
@@ -101,7 +111,7 @@ class SQL:
 		if the params are empty, thus avoiding the need to replace % with %%. '''
 		if self.print_queries:
 			self.print_query(query, params)
-		if self.engine == 'MySQL':
+		if self.engine == 'mysql':
 			statement = self.cursor().execute(query, params if params is not None and len(params) else None, multi)
 			if multi:
 				try:
@@ -114,6 +124,7 @@ class SQL:
 			self._connection.commit()
 
 	def print_query(self, query: str, params: tuple = None, color: str = 'yellow', max_size: int = 1000):
+		''' Shows a query attempting to inject the parameters, for debugging purposes. '''
 		if len(query) > max_size:
 			query = query[:max_size // 2] + '...' + query[-max_size // 2:]
 		try:
