@@ -111,17 +111,23 @@ class SQL:
 		if the params are empty, thus avoiding the need to replace % with %%. '''
 		if self.print_queries:
 			self.print_query(query, params)
-		if self.engine == 'mysql':
-			statement = self.cursor().execute(query, params if params is not None and len(params) else None, multi)
-			if multi:
-				try:
-					list(statement)
-				except RuntimeError:  # see https://bugs.mysql.com/bug.php?id=87818
-					pass
-		else:
-			statement = self.cursor().execute(*([query] + ([params] if params else [])))
-		if commit:
+		error = None
+		try:
+			if self.engine == 'mysql':
+				statement = self.cursor().execute(query, params if params is not None and len(params) else None, multi)
+				if multi:
+					try:
+						list(statement)
+					except RuntimeError:  # see https://bugs.mysql.com/bug.php?id=87818
+						pass
+			else:
+				statement = self.cursor().execute(*([query] + ([params] if params else [])))
+		except Exception as e:
+			error = e
+		if commit or self.engine in ('mysql', 'mariadb'):
 			self._connection.commit()
+		if error is not None:
+			raise error
 
 	def print_query(self, query: str, params: tuple = None, color: str = 'yellow', max_size: int = 1000):
 		''' Shows a query attempting to inject the parameters, for debugging purposes. '''
