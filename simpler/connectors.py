@@ -39,7 +39,7 @@ def _mysql_converter():
 
 class SQL:
 	''' Connector for SQL databases with a handful of helpers. '''
-	ENGINES = 'mysql', 'mssql'
+	ENGINES = 'mysql', 'mariadb', 'mssql'
 	def __init__(
 		self, host: str = 'localhost', user: str = 'root', password: str = None, db: str = None,
 		charset: str = 'utf8mb4', collation: str = 'utf8mb4_general_ci', use_unicode: bool = True,
@@ -49,7 +49,7 @@ class SQL:
 		assert engine in SQL.ENGINES, 'Accepted engine values are: %s.' % ', '.join(SQL.ENGINES)
 		self.max_insertions, self.native_types, self.engine, self.print_queries = max_insertions, native_types, engine, print_queries
 		self._connection, self._cursor, self._initialized = {'user': user}, {}, False
-		if engine == 'mysql':
+		if engine in ('mysql', 'mariadb'):
 			self._init_mysql(charset, collation, host, use_unicode, password, db)
 		elif engine == 'mssql':
 			self._init_mssql(host, password, db)
@@ -89,11 +89,11 @@ class SQL:
 	def cursor(self):
 		''' Returns the open cursor and initializes the connection if required. '''
 		if not self._initialized:
-			if self.engine == 'mysql':
+			if self.engine in ('mysql', 'mariadb'):
 				try:
 					from mysql.connector import connect
 				except ModuleNotFoundError:
-					raise ModuleNotFoundError('Missing MySQL connector. Install a mysql client and then do `pip install mysql.connector`.')
+					raise ModuleNotFoundError('Missing MySQL/MariaDB connector. Install a mysql client and then do `pip install mysql.connector`.')
 				if self.native_types:
 					self._connection['converter_class'] = _mysql_converter()
 			else:
@@ -107,7 +107,7 @@ class SQL:
 		return self._cursor
 
 	def execute(self, query: str, params: tuple = None, multi: bool = False, commit: bool = False):
-		''' Wrapper for the mysql.connector execute method that won't send the params argument
+		''' Wrapper for the database connector execute method that won't send the params argument
 		if the params are empty, thus avoiding the need to replace % with %%. '''
 		if self.print_queries:
 			self.print_query(query, params)
