@@ -79,10 +79,10 @@ class SQL:
 	def close(self) -> None:
 		''' Closes the current cursor and connection. '''
 		if self._initialized:
-			self._initialized = False
 			self._cursor.close()
 			self._connection.close()
 			self._cursor = self._connection = None
+			self._initialized = False
 
 	def cursor(self):
 		''' Returns the open cursor and initializes the connection if required. '''
