@@ -121,6 +121,7 @@ class SQL:
 					except RuntimeError:  # see https://bugs.mysql.com/bug.php?id=87818
 						pass
 			else:
+				assert not multi, 'MS-SQL connector does not support multistatement queries.'
 				statement = self.cursor().execute(*([query] + ([params] if params else [])))
 		except Exception as e:
 			error = e
