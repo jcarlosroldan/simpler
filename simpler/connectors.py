@@ -38,7 +38,7 @@ def _mysql_converter():
 	return MySQLConverter
 
 class SQL:
-	''' Connector for a mysql backend with a handful of helpers. '''
+	''' Connector for SQL databases with a handful of helpers. '''
 	ENGINES = 'mysql', 'mssql'
 	def __init__(
 		self, host: str = 'localhost', user: str = 'root', password: str = None, db: str = None,
