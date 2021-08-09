@@ -90,37 +90,37 @@ def save(path: str, content: object, format: str = 'auto', encoding: str = 'utf-
 		fp.close()
 
 _decompress_formats = 'tar', 'zip', 'gzip', 'bzip2', 'rar', '7zip', 'lzma'
-def decompress(path: str, output: str, format: str = 'auto') -> None:
+def decompress(input_file: str, output_dir: str, format: str = 'auto') -> None:
 	''' Decompress the given file to the output directory regardless of its format. '''
-	format = detect_format(path, format, accept=_decompress_formats)
-	makedirs(output, exist_ok=True)
+	format = detect_format(input_file, format, accept=_decompress_formats)
+	makedirs(output_dir, exist_ok=True)
 	if format == 'zip':
 		from zipfile import ZipFile
-		with ZipFile(path, 'r') as zipped:
-			zipped.extractall(output)
+		with ZipFile(input_file, 'r') as zipped:
+			zipped.extractall(output_dir)
 	elif format == 'gzip':
 		from gzip import GzipFile
-		with GzipFile(path, 'r') as zipped, open(output, 'wb') as file_dest:
+		with GzipFile(input_file, 'r') as zipped, open(output_dir, 'wb') as file_dest:
 			copyfileobj(zipped, file_dest)
 	elif format == 'rar':
 		from rarfile import RarFile
-		with RarFile(path, 'r') as zipped:
-			zipped.extractall(output)
+		with RarFile(input_file, 'r') as zipped:
+			zipped.extractall(output_dir)
 	elif format == 'bzip2':
 		from bz2 import open as open_bz2
-		with open_bz2(path, 'r') as zipped, open(output, 'wb') as file_dest:
+		with open_bz2(input_file, 'r') as zipped, open(output_dir, 'wb') as file_dest:
 			copyfileobj(zipped, file_dest)
 	elif format == 'tar':
 		from tarfile import open as open_tar
-		with open_tar(path) as zipped:
-			zipped.extractall(output)
+		with open_tar(input_file) as zipped:
+			zipped.extractall(output_dir)
 	elif format == '7zip':
 		from py7zr import SevenZipFile
-		with SevenZipFile(path, 'r') as zipped:
-			zipped.extractall(output)
+		with SevenZipFile(input_file, 'r') as zipped:
+			zipped.extractall(output_dir)
 	elif format == 'lzma':
 		from lzma import open as open_lzma, decompress as lzdecompress
-		with open_lzma(path, 'r') as zipped, open(output, 'wb') as file_dest:
+		with open_lzma(input_file, 'r') as zipped, open(output_dir, 'wb') as file_dest:
 			copyfileobj(lzdecompress(zipped), file_dest)
 
 _detect_format_exts = OrderedDict((
