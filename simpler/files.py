@@ -97,32 +97,33 @@ def decompress(input_file: str, output_dir: str = None, format: str = 'auto') ->
 	makedirs(output_dir, exist_ok=True)
 	if format == 'zip':
 		from zipfile import ZipFile
-		with ZipFile(input_file, 'r') as zipped:
-			zipped.extractall(output_dir)
+		with ZipFile(input_file, 'r') as i:
+			i.extractall(output_dir)
 	elif format == 'gzip':
 		from gzip import GzipFile
-		with GzipFile(input_file, 'r') as zipped, open(output_dir, 'wb') as file_dest:
-			copyfileobj(zipped, file_dest)
+		o_dir = join(output_dir, input_file.rsplit('.', 1)[0])
+		with GzipFile(input_file, 'r') as i, open(o_dir, 'wb') as o:
+			copyfileobj(i, o)
 	elif format == 'rar':
 		from rarfile import RarFile
-		with RarFile(input_file, 'r') as zipped:
-			zipped.extractall(output_dir)
+		with RarFile(input_file, 'r') as i:
+			i.extractall(output_dir)
 	elif format == 'bzip2':
 		from bz2 import open as open_bz2
-		with open_bz2(input_file, 'r') as zipped, open(output_dir, 'wb') as file_dest:
-			copyfileobj(zipped, file_dest)
+		with open_bz2(input_file, 'r') as i, open(output_dir, 'wb') as o:
+			copyfileobj(i, o)
 	elif format == 'tar':
 		from tarfile import open as open_tar
-		with open_tar(input_file) as zipped:
-			zipped.extractall(output_dir)
+		with open_tar(input_file) as i:
+			i.extractall(output_dir)
 	elif format == '7zip':
 		from py7zr import SevenZipFile
-		with SevenZipFile(input_file, 'r') as zipped:
-			zipped.extractall(output_dir)
+		with SevenZipFile(input_file, 'r') as i:
+			i.extractall(output_dir)
 	elif format == 'lzma':
 		from lzma import open as open_lzma, decompress as lzdecompress
-		with open_lzma(input_file, 'r') as zipped, open(output_dir, 'wb') as file_dest:
-			copyfileobj(lzdecompress(zipped), file_dest)
+		with open_lzma(input_file, 'r') as i, open(output_dir, 'wb') as o:
+			copyfileobj(lzdecompress(i), o)
 
 _detect_format_exts = OrderedDict((
 	('bytes', ('bin', 'db', 'dat', 'blob', 'bytes')),
