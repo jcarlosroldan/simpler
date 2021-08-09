@@ -7,7 +7,7 @@ from traceback import print_exc
 from urllib.request import urlopen
 
 def download_file(url, path=None, chunk_size=10**5):
-	''' Downloads a file keeping track of the progress. '''
+	''' Downloads a file keeping track of the progress. Returns the output path. '''
 	if path is None: path = url.split('/')[-1]
 	r = get(url, stream=True)
 	total_bytes = int(r.headers.get('content-length'))
@@ -27,6 +27,7 @@ def download_file(url, path=None, chunk_size=10**5):
 			stdout.flush()
 			stdout.write('\r  %6.02f%% |%s| %s/s eta %s' % (100 * percent, bar, avg_speed, eta))
 	print()
+	return path
 
 class DownloaderPool:
 
