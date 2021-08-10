@@ -125,7 +125,7 @@ class SQL:
 				statement = self.cursor().execute(*([query] + ([params] if params else [])))
 		except Exception as e:
 			error = e
-		if commit or self.engine in ('mysql', 'mariadb'):
+		if self._initialized and (commit or self.engine in ('mysql', 'mariadb')):
 			self._connection.commit()
 		if error is not None:
 			raise error
