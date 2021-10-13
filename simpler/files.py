@@ -31,7 +31,7 @@ def load(path: str, format: str = 'auto', encoding: str = 'utf-8', inner_args: l
 		fp = open(path, 'r', encoding=encoding)
 	else:
 		fp = open(path, 'rb')
-	if format in ('bytes', 'string'):
+	if format in ('bytes', 'string', 'jsonl'):
 		res = fp.read()
 	elif format == 'json':
 		res = jload(fp, *args, **kwargs)
