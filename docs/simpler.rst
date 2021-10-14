@@ -18,6 +18,7 @@ Submodules
    simpler.reflection
    simpler.sparql
    simpler.terminal
+   simpler.tests
    simpler.validation
    simpler.web
 
