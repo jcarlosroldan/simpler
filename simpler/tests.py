@@ -73,10 +73,10 @@ class Suite:
 		tests, elapsed, passes, errors = self.run()
 		if errors or not only_errors:
 			res = '<table><tr><th>Test</th><th>Case</th><th>Elapsed (s)</th><th>%s</th></tr>' % ('Error' if only_errors else 'Result')
-			for test, (cases, test_elapsed, test_passes, test_errors) in tests.items():
+			for test, (cases, _, _, _) in tests.items():
 				for case, (message, elapsed) in cases.items():
 					if message is not None or not only_errors:
-						res += '<tr><td>%s</td><td>%s</td><td>%.2f</td><td><div style="font-family:monospace;white-space:pre;max-width:35rem;overflow:auto">%s</div></td></tr>' % (test, case, elapsed, ('' if message is None else message))
+						res += '<tr><td>%s</td><td>%s</td><td>%.2f</td><td><div style="font-family:monospace;white-space:pre;max-width:35rem;overflow:auto">%s</div></td></tr>' % (test, case, elapsed, ('<span style="color:#080">✓</span>' if message is None else message))
 			if not only_errors:
 				res += '<tr><th colspan=2>Total</th><td>%.2f</td><td>%d/%d OK</td></tr>' % (elapsed, passes, passes + errors)
 			return res + '</table>'
