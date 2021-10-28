@@ -40,6 +40,7 @@ def _mysql_converter():
 class SQL:
 	''' Connector for SQL databases with a handful of helpers. '''
 	ENGINES = 'mysql', 'mariadb', 'mssql'
+
 	def __init__(
 		self, host: str = 'localhost', user: str = 'root', password: str = None, db: str = None,
 		charset: str = 'utf8mb4', collation: str = 'utf8mb4_general_ci', use_unicode: bool = True,
@@ -53,7 +54,7 @@ class SQL:
 			self._init_mysql(charset, collation, host, use_unicode, password, db)
 		elif engine == 'mssql':
 			self._init_mssql(host, password, db)
-	
+
 	def _init_mysql(self, charset, collation, host, use_unicode, password, db):
 		self._connection.update({
 			'charset': charset,
@@ -69,7 +70,7 @@ class SQL:
 		if db:
 			self._connection['db'] = db
 		self._cursor['buffered'] = True
-	
+
 	def _init_mssql(self, host, password, db):
 		self._connection['server'] = host
 		if password:
@@ -271,6 +272,7 @@ class SQL:
 		if value is None:
 			value = 'NULL'
 		else:
+			self.cursor()  # force initialization
 			value = self._connection.converter.escape(str(value))
 			if is_literal:
 				value = '"%s"' % value
