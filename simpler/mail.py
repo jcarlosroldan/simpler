@@ -1,5 +1,4 @@
 from smtplib import SMTP
-from threading import Thread
 from email.message import EmailMessage
 from email.headerregistry import Address
 from email.policy import default

@@ -4,7 +4,6 @@ from functools import wraps
 from hashlib import md5
 from json import load as jload, dumps as jdumps
 from os import listdir, makedirs, chdir, rename
-from os import makedirs
 from os.path import isdir, islink, join, exists, abspath, dirname
 from pickle import load as pload, dump as pdump
 from regex import compile
