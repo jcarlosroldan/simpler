@@ -10,7 +10,7 @@ from regex import compile
 from shutil import copyfileobj
 from sys import path as sys_path
 from time import time
-from typing import Optional
+from typing import Callable, Optional
 
 REGEX_FIND_EPISODE = compile(r'(?P<SEASON>\d+)\s*[x\-]\s*(?P<EPISODE>\d+)|S\s*(?P<SEASON>\d+)\s*E\s*(?P<EPISODE>\d+)|(?P<EPISODE>\d+)').search
 
@@ -200,16 +200,27 @@ def disk_cache(method=None, *, seconds: float = None, directory: str = '.cached/
 	else:
 		return decorator
 
-def mem_cache(method=None, *, key=None, maxsize=None):
+_mem_cache_global = {}
+def mem_cache(
+	method=None, *, key: Callable = None, maxsize: int = None, is_global: bool = False,
+	global_name: str = None
+):
 	''' Decorator to cache the output of a method. It is indexed by its arguments
 	unless the `key` argument is specified, in which case `key(*args, **kwargs)`
 	will be called to get the indexing key. If `maxsize` is defined, it is bounded
-	as an LRU cache with `maxsize` elements at most. '''
+	as an LRU cache with `maxsize` elements at most. If `is_global` is defined,
+	the cache will be stored globally, so that it can be shared accross multiple
+	methods of multiple instances of a class. A `global_name` can be
+	defined to identify the method; otherwise, the method name will be used. '''
 	if key is None:
 		key = lambda *args, **kwargs: frozenset(args + tuple(kwargs.items()))
 	if method is None:
 		return lambda method: mem_cache(method, key=key, maxsize=maxsize)
-	cache, cache_usage = {}, list()
+	if is_global:
+		if global_name is None: global_name = method.__name__
+		cache, cache_usage = _mem_cache_global.get(global_name, ({}, []))
+	else:
+		cache, cache_usage = {}, []
 	def _mem_cache(method, key, maxsize):
 		if maxsize is None:
 			@wraps(method)
