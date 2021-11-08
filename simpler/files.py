@@ -1,16 +1,17 @@
+from collections import OrderedDict
 from filecmp import cmp
+from functools import wraps
 from hashlib import md5
 from json import load as jload, dumps as jdumps
 from os import listdir, makedirs, chdir, rename
+from os import makedirs
 from os.path import isdir, islink, join, exists, abspath, dirname
 from pickle import load as pload, dump as pdump
-from typing import Optional
 from regex import compile
-from time import time
-from sys import path as sys_path
-from collections import OrderedDict
-from os import makedirs
 from shutil import copyfileobj
+from sys import path as sys_path
+from time import time
+from typing import Optional
 
 REGEX_FIND_EPISODE = compile(r'(?P<SEASON>\d+)\s*[x\-]\s*(?P<EPISODE>\d+)|S\s*(?P<SEASON>\d+)\s*E\s*(?P<EPISODE>\d+)|(?P<EPISODE>\d+)').search
 
@@ -161,19 +162,19 @@ def detect_format(path: str, format: str, accept: list = None, default: str = No
 		)
 	return format
 
-def disk_cache(func=None, *, seconds: float = None, directory: str = '.cached/', identifier: str = None):
+def disk_cache(method=None, *, seconds: float = None, directory: str = '.cached/', identifier: str = None):
 	''' The first time the decorated method is called, its result is stored as a pickle file, the
 	next call loads the cached result from the disk. The cached files are used indefinitely unless the
 	`seconds` lifespan is defined. The cached files are stored at `.cached` unless otherwise
 	specificed with the `directory` argument. The cache file identifier is generated from the
 	method name plus its arguments, unless otherwise specified with the `identifier` argument. '''
-	def decorator(func):
+	def decorator(method):
 		def wrapper(*args, **kwargs):
 			makedirs(directory, exist_ok=True)
 			# compute the cached file identifier
 			if identifier is None:
 				fname = '%s|%s|%s' % (
-					func.__name__,
+					method.__name__,
 					','.join(map(str, args)),
 					','.join(map(lambda it: '%s:%s' % it, kwargs.items()))
 				)
@@ -190,15 +191,52 @@ def disk_cache(func=None, *, seconds: float = None, directory: str = '.cached/',
 				if seconds is None or save_time - now < seconds:
 					res = value
 			if res is None:
-				res = func(*args, **kwargs)
+				res = method(*args, **kwargs)
 				with open(fname, 'wb') as fp:
 					pdump((now, res), fp)
 			return res
 		return wrapper
-	if func:
-		return decorator(func)
+	if method:
+		return decorator(method)
 	else:
 		return decorator
+
+def mem_cache(method=None, *, key=None, maxsize=None):
+	''' Decorator to cache the output of a method. It is indexed by its arguments
+	unless the `key` argument is specified, in which case `key(*args, **kwargs)`
+	will be called to get the indexing key. If `maxsize` is defined, it is bounded
+	as an LRU cache with `maxsize` elements at most. '''
+	if key is None:
+		key = lambda *args, **kwargs: frozenset(args + tuple(kwargs.items()))
+	if method is None:
+		return lambda method: mem_cache(method, key=key, maxsize=maxsize)
+	cache, cache_usage = {}, list()
+	def _mem_cache(method, key, maxsize):
+		if maxsize is None:
+			@wraps(method)
+			def _mem_cache_wrapper(*args, **kwargs):
+				k = key(*args, **kwargs)
+				if k in cache: return cache[k]
+				res = method(*args, **kwargs)
+				cache[k] = res
+				return res
+		else:
+			@wraps(method)
+			def _mem_cache_wrapper(*args, **kwargs):
+				k = key(*args, **kwargs)
+				if k in cache:
+					res = cache[k]
+					cache_usage.remove(k)
+				else:
+					res = method(*args, **kwargs)
+					cache[k] = res
+					if len(cache) > maxsize:
+						elem = cache_usage.pop(-1)
+						del cache[elem]
+				cache_usage.insert(0, k)
+				return res
+		return _mem_cache_wrapper
+	return _mem_cache(method, key, maxsize)
 
 def size(file) -> int:
 	''' A way to see the size of a file without loading it to memory. '''
