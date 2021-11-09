@@ -81,7 +81,6 @@ class SQL:
 	def close(self) -> None:
 		''' Closes the current cursor and connection. '''
 		if self._initialized:
-			self._cursor.close()
 			self._connection.close()
 			self._initialized = False
 
