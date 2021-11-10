@@ -45,7 +45,7 @@ class SQL:
 		self, host: str = 'localhost', user: str = 'root', password: str = None, db: str = None,
 		charset: str = 'utf8mb4', collation: str = 'utf8mb4_general_ci', use_unicode: bool = True,
 		max_insertions: int = None, print_queries: bool = False, native_types: bool = True,
-		engine: str = 'mysql'
+		engine: str = 'mysql', force_init: bool = False
 	) -> None:
 		assert engine in SQL.ENGINES, 'Accepted engine values are: %s.' % ', '.join(SQL.ENGINES)
 		self.max_insertions, self.native_types, self.engine, self.print_queries = max_insertions, native_types, engine, print_queries
@@ -54,6 +54,8 @@ class SQL:
 			self._init_mysql(charset, collation, host, use_unicode, password, db)
 		elif engine == 'mssql':
 			self._init_mssql(host, password, db)
+		if force_init:
+			self.cursor()
 
 	def _init_mysql(self, charset, collation, host, use_unicode, password, db):
 		self._connection.update({
