@@ -222,6 +222,7 @@ def mem_cache(
 		cache, cache_usage = _mem_cache_global.get(global_name, ({}, []))
 	else:
 		cache, cache_usage = {}, []
+
 	def _mem_cache(method, key, maxsize):
 		if maxsize is None:
 			@wraps(method)
@@ -248,6 +249,13 @@ def mem_cache(
 				return res
 		return _mem_cache_wrapper
 	return _mem_cache(method, key, maxsize)
+
+def clear_global_mem_cache(global_name: str = None):
+	''' Clears the global memory cache. '''
+	if global_name is None:
+		_mem_cache_global.clear()
+	else:
+		_mem_cache_global.pop(global_name, None)
 
 def size(file) -> int:
 	''' A way to see the size of a file without loading it to memory. '''
