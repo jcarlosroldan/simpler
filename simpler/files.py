@@ -212,7 +212,6 @@ def mem_cache(
 	the cache will be stored globally, so that it can be shared accross multiple
 	methods of multiple instances of a class. A `global_name` can be
 	defined to identify the method; otherwise, the method name will be used. '''
-	print('mem_cache(%s)' % global_name)
 	if key is None:
 		key = lambda *args, **kwargs: frozenset(args + tuple(kwargs.items()))
 	if method is None:
