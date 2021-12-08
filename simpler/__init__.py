@@ -12,4 +12,4 @@ from simpler.sparql import dbpedia, entity_types
 from simpler.terminal import getch, cprint
 from simpler.tests import Test, Suite
 from simpler.validation import assert_set, assert_str, assert_number, assert_id, assert_mail, assert_exists
-from simpler.web import download_file, DownloaderPool, throttle
+from simpler.web import download_file, DownloaderPool, throttle, Driver
