@@ -92,8 +92,8 @@ class Driver:
 	_CONSOLE_LEVELS = 'debug', 'info', 'log', 'warn', 'error'
 	_YEAR_SECONDS = 365.4 * 24 * 3600
 
-	def __init__(self, timeout: int = 3, keystroke_delay: int = .005, headless: bool = True):
-		self.driver = Firefox(headless=headless, disable_flash=False, disable_images=False)
+	def __init__(self, timeout: int = 3, keystroke_delay: int = .005, headless: bool = True, disable_flash: bool = True, disable_images: bool = True):
+		self.driver = Firefox(headless=headless, disable_flash=disable_flash, disable_images=disable_images)
 		self.timeout = timeout
 		self.keystroke_delay = keystroke_delay
 
@@ -105,19 +105,22 @@ class Driver:
 			for level in self._CONSOLE_LEVELS
 		))
 
-	def wait(self, element: str, message: str = 'Timeout waiting for element: ') -> None:
+	def wait(self, element: str, message: str = 'Timeout waiting for element: ', raise_errors=True) -> None:
 		try:
 			WebDriverWait(self.driver, self.timeout).until(EC.presence_of_element_located((By.CSS_SELECTOR, element)))
+			return True
 		except TimeoutException as e:
-			raise AssertionError(message + element) from e
+			if raise_errors:
+				raise AssertionError(message + element) from e
+		return False
 
-	def select(self, element: Union[str, WebElement], wait: bool = True, all: bool = False) -> WebElement:
+	def select(self, element: Union[str, WebElement], wait: bool = True, all: bool = False, raise_errors: bool = None) -> WebElement:
 		if isinstance(element, WebElement): return element
 		if wait:
-			self.wait(element)
+			found = self.wait(element, raise_errors=all if raise_errors is None else raise_errors)
 		if all:
 			return self.driver.find_elements_by_css_selector(element)
-		else:
+		elif found:
 			return self.driver.find_element_by_css_selector(element)
 
 	def write(self, element: Union[str, WebElement], text: str, clear: bool = False) -> None:
