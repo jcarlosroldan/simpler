@@ -116,11 +116,10 @@ class Driver:
 
 	def select(self, element: Union[str, WebElement], wait: bool = True, all: bool = False, raise_errors: bool = None) -> WebElement:
 		if isinstance(element, WebElement): return element
-		if wait:
-			found = self.wait(element, raise_errors=not all if raise_errors is None else raise_errors)
+		found = self.wait(element, raise_errors=not all if raise_errors is None else raise_errors) if wait else False
 		if all:
 			return self.driver.find_elements_by_css_selector(element)
-		elif not wait or found:
+		elif found:
 			return self.driver.find_element_by_css_selector(element)
 
 	def write(self, element: Union[str, WebElement], text: str, clear: bool = False) -> None:
