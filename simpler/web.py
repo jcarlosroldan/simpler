@@ -120,7 +120,7 @@ class Driver:
 			found = self.wait(element, raise_errors=not all if raise_errors is None else raise_errors)
 		if all:
 			return self.driver.find_elements_by_css_selector(element)
-		elif found or not wait:
+		elif not wait or found:
 			return self.driver.find_element_by_css_selector(element)
 
 	def write(self, element: Union[str, WebElement], text: str, clear: bool = False) -> None:
