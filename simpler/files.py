@@ -78,6 +78,7 @@ def save(path: str, content: object, format: str = 'auto', encoding: str = 'utf-
 	elif format == 'csv':
 		from pandas import DataFrame
 		if 'index' not in kwargs: kwargs['index'] = False
+		if 'encoding' not in kwargs: kwargs['encoding'] = 'utf-8-sig'
 		DataFrame(content).to_csv(path, *args, **kwargs)
 	elif format == 'table':
 		from pandas import DataFrame

@@ -153,6 +153,9 @@ class Driver:
 			deltaX: arguments[1], deltaY: arguments[2], clientX: arguments[3], clientY: arguments[4]
 		}))''', self.select(element), x_delta, y_delta, mouse_x, mouse_y)
 
+	def scroll_into_view(self, element: Union[str, WebElement]):
+		self.driver.execute_script('arguments[0].scrollIntoView({"block":"center"});', self.select(element))
+
 	def attribute(self, element: Union[str, WebElement], attribute: str, value: Optional[str] = None) -> Optional[str]:
 		args = [self.select(element), attribute]
 		if value is None:
