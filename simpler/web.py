@@ -3,9 +3,10 @@ from requests import get
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.remote.webelement import WebElement
+from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 from simpler.format import human_seconds, human_bytes
 from sys import stdout
@@ -92,8 +93,10 @@ class Driver:
 	_CONSOLE_LEVELS = 'debug', 'info', 'log', 'warn', 'error'
 	_YEAR_SECONDS = 365.4 * 24 * 3600
 
-	def __init__(self, timeout: int = 3, keystroke_delay: int = .005, headless: bool = True, disable_flash: bool = True, disable_images: bool = True):
-		self.driver = Firefox(headless=headless, disable_flash=disable_flash, disable_images=disable_images)
+	def __init__(self, timeout: int = 3, keystroke_delay: int = .005, headless: bool = True, disable_flash: bool = True, disable_images: bool = True, language: str = 'en-US, en'):
+		options = Options()
+		options.set_preference('intl.accept_languages', language)
+		self.driver = Firefox(headless=headless, disable_flash=disable_flash, disable_images=disable_images, options=options)
 		self.timeout = timeout
 		self.keystroke_delay = keystroke_delay
 
