@@ -16,27 +16,28 @@ from traceback import print_exc
 from typing import Dict, Optional, Tuple, Union
 from urllib.request import urlopen
 
-def download_file(url, path=None, chunk_size=10**5):
+def download_file(url, path=None, chunk_size=10**5, show_progress=True) -> str:
 	''' Downloads a file keeping track of the progress. Returns the output path. '''
 	if path is None: path = url.split('/')[-1]
 	r = get(url, stream=True)
 	total_bytes = int(r.headers.get('content-length'))
 	bytes_downloaded = 0
 	start = time()
-	print('Downloading %s (%s)' % (url, human_bytes(total_bytes)))
+	if show_progress: print('Downloading %s (%s)' % (url, human_bytes(total_bytes)))
 	with open(path, 'wb') as fp:
 		for chunk in r.iter_content(chunk_size=chunk_size):
 			if not chunk: continue
 			fp.write(chunk)
-			bytes_downloaded += len(chunk)
-			percent = bytes_downloaded / total_bytes
-			bar = ('█' * int(percent * 32)).ljust(32)
-			time_delta = time() - start
-			eta = human_seconds((total_bytes - bytes_downloaded) * time_delta / bytes_downloaded)
-			avg_speed = human_bytes(bytes_downloaded / time_delta).rjust(9)
-			stdout.flush()
-			stdout.write('\r  %6.02f%% |%s| %s/s eta %s' % (100 * percent, bar, avg_speed, eta))
-	print()
+			if show_progress:
+				bytes_downloaded += len(chunk)
+				percent = bytes_downloaded / total_bytes
+				bar = ('█' * int(percent * 32)).ljust(32)
+				time_delta = time() - start
+				eta = human_seconds((total_bytes - bytes_downloaded) * time_delta / bytes_downloaded)
+				avg_speed = human_bytes(bytes_downloaded / time_delta).rjust(9)
+				stdout.flush()
+				stdout.write('\r  %6.02f%% |%s| %s/s eta %s' % (100 * percent, bar, avg_speed, eta))
+	if show_progress: print()
 	return path
 
 class DownloaderPool:
