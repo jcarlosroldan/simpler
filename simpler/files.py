@@ -13,7 +13,6 @@ def cwd() -> None:
 _load_formats = 'bytes', 'csv', 'json', 'jsonl', 'pickle', 'string', 'table', 'yaml'
 def load(path: str, format: str = 'auto', encoding: str = 'utf-8', inner_args: list = None, inner_kwargs: dict = None) -> object:
 	''' Load a file in a given format. '''
-	print(3)
 	format = detect_format(path, format, accept=_load_formats, default='string')
 	args = [] if inner_args is None else inner_args
 	kwargs = {} if inner_kwargs is None else inner_kwargs
