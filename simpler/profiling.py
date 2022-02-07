@@ -1,17 +1,12 @@
-from time import time
-from sys import getsizeof
-from types import ModuleType, FunctionType
-from gc import get_referents
-
 _tictoc_stack = []
 def tic() -> None:
 	''' Captures time '''
-	global _tictoc_stack
+	from time import time
 	_tictoc_stack.append(time())
 
 def toc(show: bool = True, show_label: str = '') -> float:
 	''' Shows time since tic() was executed. '''
-	global _tictoc_stack
+	from time import time
 	total = time() - _tictoc_stack.pop()
 	if show:
 		if show_label:
@@ -19,9 +14,15 @@ def toc(show: bool = True, show_label: str = '') -> float:
 		print(total)
 	return total
 
-_deep_size_blacklist = type, ModuleType, FunctionType
+_deep_size_blacklist = None
 def deep_size(obj):
 	''' Get the actual size of an instance, exploring all its references. '''
+	global _deep_size_blacklist
+	from sys import getsizeof
+	from types import ModuleType, FunctionType
+	from gc import get_referents
+	if _deep_size_blacklist is None:
+		_deep_size_blacklist = type, ModuleType, FunctionType
 	if isinstance(obj, _deep_size_blacklist):
 		raise TypeError('getsize() does not take argument of type: ' + str(type(obj)))
 	seen_ids = set()

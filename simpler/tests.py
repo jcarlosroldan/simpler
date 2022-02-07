@@ -1,5 +1,3 @@
-from time import time
-from traceback import format_exc
 from typing import Dict, List, Optional, Tuple
 
 class Test:
@@ -9,6 +7,8 @@ class Test:
 
 	def run(self) -> Dict[str, Tuple[Optional[str], float]]:
 		''' Internal method used to run the tests. '''
+		from time import time
+		from traceback import format_exc
 		res = {}
 		total_elapsed = passes = errors = 0
 		for name in self.__dir__():

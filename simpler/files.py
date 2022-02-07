@@ -1,20 +1,9 @@
-from collections import OrderedDict
-from filecmp import cmp
-from functools import wraps
-from hashlib import md5
-from json import load as jload, dumps as jdumps
-from os import listdir, makedirs, chdir, rename
-from os.path import isdir, islink, join, exists, abspath, dirname
-from pickle import load as pload, dump as pdump
-from regex import compile
-from shutil import copyfileobj
-from sys import path as sys_path
-from time import time
 from typing import Callable, Optional
 
-REGEX_FIND_EPISODE = compile(r'(?P<SEASON>\d+)\s*[x\-]\s*(?P<EPISODE>\d+)|S\s*(?P<SEASON>\d+)\s*E\s*(?P<EPISODE>\d+)|(?P<EPISODE>\d+)').search
-
 def cwd() -> None:
+	from os.path import abspath
+	from os import chdir
+	from sys import path as sys_path
 	''' Change the current directory to the base of relative paths to the directory
 	and returns it. '''
 	path = abspath(sys_path[0])
@@ -24,6 +13,7 @@ def cwd() -> None:
 _load_formats = 'bytes', 'csv', 'json', 'jsonl', 'pickle', 'string', 'table', 'yaml'
 def load(path: str, format: str = 'auto', encoding: str = 'utf-8', inner_args: list = None, inner_kwargs: dict = None) -> object:
 	''' Load a file in a given format. '''
+	print(3)
 	format = detect_format(path, format, accept=_load_formats, default='string')
 	args = [] if inner_args is None else inner_args
 	kwargs = {} if inner_kwargs is None else inner_kwargs
@@ -34,8 +24,10 @@ def load(path: str, format: str = 'auto', encoding: str = 'utf-8', inner_args: l
 	if format in ('bytes', 'string', 'jsonl'):
 		res = fp.read()
 	elif format == 'json':
+		from json import load as jload
 		res = jload(fp, *args, **kwargs)
 	elif format == 'jsonl':
+		from json import load as jload
 		res = [jload(line, *args, **kwargs) for line in fp]
 	elif format == 'csv':
 		from pandas import read_csv
@@ -44,6 +36,7 @@ def load(path: str, format: str = 'auto', encoding: str = 'utf-8', inner_args: l
 		from pandas import read_table
 		res = read_table(fp, *args, **kwargs)
 	elif format == 'pickle':
+		from pickle import load as pload
 		res = pload(fp, *args, **kwargs)
 	elif format == 'yaml':
 		from yaml import safe_load_all as yload
@@ -66,6 +59,7 @@ def save(path: str, content: object, format: str = 'auto', encoding: str = 'utf-
 	if format in ('bytes', 'string'):
 		fp.write(content)
 	elif format in ('json', 'jsonl'):
+		from json import dumps as jdumps
 		if 'ensure_ascii' not in kwargs: kwargs['ensure_ascii'] = False
 		if 'indent' not in kwargs: kwargs['indent'] = '\t'
 		if format[-1] == 'l':
@@ -73,6 +67,7 @@ def save(path: str, content: object, format: str = 'auto', encoding: str = 'utf-
 		else:
 			fp.write(jdumps(content, *args, **kwargs))
 	elif format == 'pickle':
+		from pickle import dump as pdump
 		if 'protocol' not in kwargs: kwargs['protocol'] = 4
 		pdump(content, fp, *args, **kwargs)
 	elif format == 'csv':
@@ -94,8 +89,10 @@ _decompress_formats = 'tar', 'zip', 'gzip', 'bzip2', 'rar', '7zip', 'lzma'
 def decompress(input_file: str, output_dir: str = None, format: str = 'auto') -> None:
 	''' Decompress the given file to the output directory regardless of its format. '''
 	if output_dir is None:
+		from os.path import dirname
 		output_dir = dirname(input_file)
 	else:
+		from os import makedirs
 		makedirs(output_dir, exist_ok=True)
 	format = detect_format(input_file, format, accept=_decompress_formats)
 	if format == 'zip':
@@ -104,6 +101,8 @@ def decompress(input_file: str, output_dir: str = None, format: str = 'auto') ->
 			i.extractall(output_dir)
 	elif format == 'gzip':
 		from gzip import GzipFile
+		from os.path import join
+		from shutil import copyfileobj
 		o_dir = join(output_dir, input_file.rsplit('.', 1)[0])
 		with GzipFile(input_file, 'r') as i, open(o_dir, 'wb') as o:
 			copyfileobj(i, o)
@@ -113,6 +112,7 @@ def decompress(input_file: str, output_dir: str = None, format: str = 'auto') ->
 			i.extractall(output_dir)
 	elif format == 'bzip2':
 		from bz2 import open as open_bz2
+		from shutil import copyfileobj
 		with open_bz2(input_file, 'r') as i, open(output_dir, 'wb') as o:
 			copyfileobj(i, o)
 	elif format == 'tar':
@@ -125,10 +125,11 @@ def decompress(input_file: str, output_dir: str = None, format: str = 'auto') ->
 			i.extractall(output_dir)
 	elif format == 'lzma':
 		from lzma import open as open_lzma, decompress as lzdecompress
+		from shutil import copyfileobj
 		with open_lzma(input_file, 'r') as i, open(output_dir, 'wb') as o:
 			copyfileobj(lzdecompress(i), o)
 
-_detect_format_exts = OrderedDict((
+_detect_format_exts = (
 	('bytes', ('bin', 'db', 'dat', 'blob', 'bytes')),
 	('csv', ('csv',)),
 	('json', ('json', 'js')),
@@ -144,12 +145,12 @@ _detect_format_exts = OrderedDict((
 	('rar', ('rar', 'cbr')),
 	('7zip', ('7z', '7zip')),
 	('lzma', ('lzip', 'lz')),
-))
+)
 def detect_format(path: str, format: str, accept: list = None, default: str = None) -> Optional[str]:
 	''' Detects the format of a file from its path. '''
 	if format == 'auto':
 		name = path.lower()
-		for ext_format, exts in _detect_format_exts.items():
+		for ext_format, exts in _detect_format_exts:
 			if any(name.endswith('.' + ext) for ext in exts):
 				format = ext_format
 				break
@@ -170,6 +171,10 @@ def disk_cache(method=None, *, seconds: float = None, directory: str = '.cached/
 	method name plus its arguments, unless otherwise specified with the `identifier` argument. '''
 	def decorator(method):
 		def wrapper(*args, **kwargs):
+			from hashlib import md5
+			from os import makedirs
+			from os.path import join, exists
+			from time import time
 			makedirs(directory, exist_ok=True)
 			# compute the cached file identifier
 			if identifier is None:
@@ -186,11 +191,13 @@ def disk_cache(method=None, *, seconds: float = None, directory: str = '.cached/
 			res = None
 			now = time()
 			if exists(fname):
+				from pickle import load as pload
 				with open(fname, 'rb') as fp:
 					save_time, value = pload(fp)
 				if seconds is None or save_time - now < seconds:
 					res = value
 			if res is None:
+				from pickle import dump as pdump
 				res = method(*args, **kwargs)
 				with open(fname, 'wb') as fp:
 					pdump((now, res), fp)
@@ -224,6 +231,7 @@ def mem_cache(
 		cache, cache_usage = {}, []
 
 	def _mem_cache(method, key, maxsize):
+		from functools import wraps
 		if maxsize is None:
 			@wraps(method)
 			def _mem_cache_wrapper(*args, **kwargs):
@@ -306,12 +314,18 @@ def find_hidden_compressed(path: str) -> list:
 				signatures.append(ftype)
 		return signatures
 
+_tvshow_rename_regex = None
 def tvshow_rename(path: str) -> None:
 	''' Rename every TV show of a folder.
 	I.e. Inception_Season_4_Episode_02_DivX-Total.mkv would be 04x02.mkv. '''
+	from os import listdir, rename
+	global _tvshow_rename_regex
+	if _tvshow_rename_regex is None:
+		from regex import compile
+		_tvshow_rename_regex = compile(r'(?P<SEASON>\d+)\s*[x\-]\s*(?P<EPISODE>\d+)|S\s*(?P<SEASON>\d+)\s*E\s*(?P<EPISODE>\d+)|(?P<EPISODE>\d+)').search
 	for file in listdir(path):
 		name, ext = file.rsplit('.', 1)
-		match = REGEX_FIND_EPISODE(name.replace('_', ' '))
+		match = _tvshow_rename_regex(name.replace('_', ' '))
 		if match is not None:
 			season, episode = match.groups()
 			season = 1 if season is None else int(season)
@@ -324,6 +338,8 @@ def directory_compare(old: str, new: str, kind: str = 'dir', ignored: list = _di
 	''' Compares the files in two directories (old and new) to detect files that have been created,
 	deleted, changed or updated, ignoring the specified files. '''
 	def children(path):
+		from os import listdir
+		from os.path import isdir, islink, join
 		res = {}
 		for child in listdir(path):
 			if not any(child.endswith(ext) for ext in ignored):
@@ -333,6 +349,7 @@ def directory_compare(old: str, new: str, kind: str = 'dir', ignored: list = _di
 					res[(is_dir, child)] = full
 		return res
 	if kind == 'file':
+		from filecmp import cmp
 		if not cmp(old, new, shallow=False):
 			print('Modified\tfile\t%s' % new)
 	else:
@@ -345,3 +362,14 @@ def directory_compare(old: str, new: str, kind: str = 'dir', ignored: list = _di
 				print('Created \t%s\t%s' % (child[0], new_childs[child]))
 			else:
 				directory_compare(old_childs[child], new_childs[child], child[0])
+
+def import_from_path(path: str, name: str, module_name: str = '.') -> object:
+	''' Loads the script at the specified path and returns an object given its name. '''
+	from importlib.util import spec_from_file_location, module_from_spec
+	from os.path import exists
+	if exists(path):
+		spec = spec_from_file_location(module_name, path)
+		module = module_from_spec(spec)
+		spec.loader.exec_module(module)
+		if name in module.__dict__:
+			return module.__dict__[name]

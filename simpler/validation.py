@@ -1,6 +1,3 @@
-from os.path import exists
-from re import search, match
-
 def assert_set(data: dict, name: str, optional: bool = False, default: object = None):
 	''' Asserts that data[name] exists and returns it. '''
 	if optional and name not in data: return default
@@ -14,6 +11,7 @@ def assert_str(
 	default: object = None
 ) -> str:
 	''' Asserts all the requested checks to data[name] and returns it. '''
+	from re import search, match
 	if optional and name not in data: return default
 	assert_set(data, name)
 	if min_len is not None:
@@ -91,6 +89,7 @@ def assert_id(
 
 def assert_mail(data: dict, name: str, optional: bool = False, default: object = None) -> str:
 	''' Asserts that data[name] is a valid mail string and returns it. '''
+	from re import match
 	if optional and name not in data: return default
 	assert_set(data, name)
 	assert match(r'[^\s@]+@[^\s@]+\.[^\s@]+', data[name]), '%s is not a valid mail.' % name
@@ -98,4 +97,5 @@ def assert_mail(data: dict, name: str, optional: bool = False, default: object =
 
 def assert_exists(path: str) -> None:
 	''' Asserts that the given path exists within PATH_STATIC. '''
+	from os.path import exists
 	assert exists(path), 'Non-existing resource "%s".' % path

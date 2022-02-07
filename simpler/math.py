@@ -1,10 +1,3 @@
-from datetime import timedelta, datetime
-from difflib import SequenceMatcher
-from functools import reduce
-from itertools import product, combinations
-from math import sqrt, ceil
-from typing import Generator
-
 def clamp(value: float, smallest: float = 0, largest: float = 1) -> float:
 	''' Returns the value clamped between smallest and largest.
 	I.e.: `clamp(10, 2, 8)` would return 8. '''
@@ -39,6 +32,7 @@ def jaccard(seq1: list, seq2: list) -> list:
 
 def levenshtein(seq1: list, seq2: list) -> list:
 	''' Returns the Levenshtein distance of two sequences. '''
+	from difflib import SequenceMatcher
 	return SequenceMatcher(None, seq1, seq2).ratio()
 
 def base_change(n: list, base_from: int, base_to: int) -> list:
@@ -54,6 +48,7 @@ def base_change(n: list, base_from: int, base_to: int) -> list:
 
 def prime_list(n: int) -> list:
 	''' Returns the list of prime numbers from 2 to n. '''
+	from math import sqrt, ceil
 	sieve = [True] * int(n / 2)
 	for i in range(3, ceil(sqrt(n)), 2):
 		if sieve[int(i / 2)]:
@@ -62,6 +57,7 @@ def prime_list(n: int) -> list:
 
 def is_prime(n: int) -> bool:
 	''' Checks if a number is prime. '''
+	from math import sqrt
 	res = True
 	if n == 2 or n == 3:
 		res = True
@@ -134,6 +130,7 @@ def factor(n: int) -> list:
 
 def palindrome_list(k: int) -> list:
 	''' Returns a list of every palindromic number with k digits. '''
+	from itertools import product
 	if k == 1:
 		return [1, 2, 3, 4, 5, 6, 7, 8, 9]
 	return [
@@ -151,6 +148,8 @@ def palindrome_list(k: int) -> list:
 
 def phi(n: int) -> int:
 	''' Returns the Euler's phi function of n. '''
+	from functools import reduce
+	from itertools import combinations
 	res = n
 	factors = [f[0] for f in factor(n)]
 	multiplier = 1
@@ -162,7 +161,12 @@ def phi(n: int) -> int:
 				res += (n // val) * multiplier
 	return res
 
-def date_range(date_start: datetime, date_end: datetime, step: timedelta = timedelta(days=1)) -> Generator[datetime, None, None]:
+def date_range(date_start, date_end, step=None):
+	from datetime import timedelta, datetime
+	assert isinstance(date_start, datetime) and isinstance(date_end, datetime), 'date_start and date_end must be datetime objects'
+	assert isinstance(step, timedelta), 'step must be a timedelta object'
+	if step is None:
+		step = timedelta(days=1)
 	current = date_start
 	while current < date_end:
 		yield current

@@ -1,6 +1,3 @@
-from numpy import arange, array, concatenate
-from pandas import concat, DataFrame, ExcelFile, read_excel
-from re import compile, IGNORECASE
 from simpler.terminal import cprint
 from typing import Any, Generator, List, Optional, Union
 
@@ -279,6 +276,8 @@ class SQL:
 				value = '"%s"' % value
 		return value
 
+from re import compile, IGNORECASE
+
 class Excel:
 	''' Pandas Excel backend. '''
 
@@ -286,12 +285,14 @@ class Excel:
 	_LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
 	def __init__(self, path: str):
+		from pandas import ExcelFile
 		self.path = path
 		self.sheet_names = ExcelFile(path).sheet_names
 		self.sheets = {name: None for name in self.sheet_names}
 
-	def sheet(self, sheet: Union[str, int] = 0) -> DataFrame:
+	def sheet(self, sheet: Union[str, int] = 0):
 		''' Loads a sheet given its name or position in the book. '''
+		from pandas import read_excel
 		if isinstance(sheet, int):
 			sheet = self.sheet_names[sheet]
 		if self.sheets[sheet] is None:
@@ -304,11 +305,11 @@ class Excel:
 			).applymap(lambda x: x.strip() if isinstance(x, str) else x)
 		return self.sheets[sheet]
 
-	def cell(self, row: int, col: int, sheet: int = 0) -> DataFrame:
+	def cell(self, row: int, col: int, sheet: int = 0):
 		''' Retrieves a cell from the book. '''
 		return self.sheet(sheet).iloc[row].iloc[col]
 
-	def cells(self, block: Union[str, int], sheet: int = 0) -> DataFrame:
+	def cells(self, block: Union[str, int], sheet: int = 0):
 		''' Retrieves a square of cells data from a block. '''
 		if isinstance(block, str):
 			block = self.block_from_code(block)
@@ -335,7 +336,9 @@ class Excel:
 	def table(
 		self, data: Union[tuple, str], hrows: Union[tuple, str] = None,
 		hcols: Union[tuple, str] = None, sheet: Union[int, str] = 0
-	) -> array:
+	):
+		from numpy import arange, concatenate
+		from pandas import concat
 		data = self.cells(data, sheet=sheet)
 		rows, cols = data.shape
 		data = data.stack().values.reshape(-1, 1)
