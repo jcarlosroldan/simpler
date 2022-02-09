@@ -88,6 +88,7 @@ class Driver:
 
 	_CONSOLE_LEVELS = 'debug', 'info', 'log', 'warn', 'error'
 	_YEAR_SECONDS = 365.4 * 24 * 3600
+	_WAIT_POLL_EACH = .1
 
 	def __init__(self, timeout: int = 3, keystroke_delay: int = .005, headless: bool = True, disable_flash: bool = True, disable_images: bool = True, language: str = 'en-US, en'):
 		from autoselenium import Firefox
@@ -107,7 +108,7 @@ class Driver:
 			for level in self._CONSOLE_LEVELS
 		))
 
-	def wait(self, element: str, message: str = 'Timeout waiting for element: ', raise_errors=True) -> None:
+	def wait(self, element: str, message: str = 'Timeout waiting for element: ', raise_errors=True) -> bool:
 		from selenium.common.exceptions import TimeoutException
 		from selenium.webdriver.common.by import By
 		from selenium.webdriver.support import expected_conditions as EC
@@ -119,6 +120,19 @@ class Driver:
 			if raise_errors:
 				raise AssertionError(message + element) from e
 		return False
+
+	def wait_for_file(self, path: str, message: str = 'Timeout waiting for file: ', raise_errors=True) -> bool:
+		from os.path import exists
+		from time import sleep, time
+		start = time()
+		while True:
+			if exists(path): return True
+			elapsed = time() - start
+			if elapsed > self.timeout:
+				if raise_errors:
+					raise AssertionError(message + path)
+				return False
+			sleep(self._WAIT_POLL_EACH)
 
 	def select(self, element, wait: bool = True, all: bool = False, raise_errors: bool = None):
 		from selenium.webdriver.remote.webelement import WebElement

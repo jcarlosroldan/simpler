@@ -15,7 +15,6 @@ Submodules
    simpler.mail
    simpler.math
    simpler.profiling
-   simpler.reflection
    simpler.sparql
    simpler.terminal
    simpler.tests
