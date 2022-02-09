@@ -90,12 +90,17 @@ class Driver:
 	_YEAR_SECONDS = 365.4 * 24 * 3600
 	_WAIT_POLL_EACH = .1
 
-	def __init__(self, timeout: int = 3, keystroke_delay: int = .005, headless: bool = True, disable_flash: bool = True, disable_images: bool = True, language: str = 'en-US, en'):
+	def __init__(
+		self, timeout: int = 3, keystroke_delay: int = .005, headless: bool = True, disable_flash: bool = True,
+		disable_images: bool = True, language: str = 'en-US, en', options: Dict[str, str] = None
+	):
 		from autoselenium import Firefox
 		from selenium.webdriver.firefox.options import Options
-		options = Options()
-		options.set_preference('intl.accept_languages', language)
-		self.driver = Firefox(headless=headless, disable_flash=disable_flash, disable_images=disable_images, options=options)
+		opts = Options()
+		opts.set_preference('intl.accept_languages', language)
+		if options is not None:
+			[opts.set_preference(k, v) for k, v in options.items()]
+		self.driver = Firefox(headless=headless, disable_flash=disable_flash, disable_images=disable_images, options=opts)
 		self.timeout = timeout
 		self.keystroke_delay = keystroke_delay
 
