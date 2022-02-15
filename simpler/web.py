@@ -113,17 +113,39 @@ class Driver:
 			for level in self._CONSOLE_LEVELS
 		))
 
-	def wait(self, element: str, message: str = 'Timeout waiting for element: ', raise_errors=True) -> bool:
+	def wait(self, element: str, message: str = None, raise_errors: bool = True, invert: bool = True) -> bool:
 		from selenium.common.exceptions import TimeoutException
 		from selenium.webdriver.common.by import By
 		from selenium.webdriver.support import expected_conditions as EC
 		from selenium.webdriver.support.ui import WebDriverWait
 		try:
-			WebDriverWait(self.driver, self.timeout).until(EC.presence_of_element_located((By.CSS_SELECTOR, element)))
+			if invert:
+				WebDriverWait(self.driver, self.timeout).until_not(EC.presence_of_element_located((By.CSS_SELECTOR, element)))
+			else:
+				WebDriverWait(self.driver, self.timeout).until(EC.presence_of_element_located((By.CSS_SELECTOR, element)))
 			return True
 		except TimeoutException as e:
 			if raise_errors:
+				if message is None:
+					message = 'Timeout waiting for element to disappear: ' if invert else 'Timeout waiting for element to appear: '
 				raise AssertionError(message + element) from e
+		return False
+
+	def wait_for_url(self, url: str, message: str = None, raise_errors: bool = True, invert: bool = True) -> bool:
+		from selenium.common.exceptions import TimeoutException
+		from selenium.webdriver.support import expected_conditions as EC
+		from selenium.webdriver.support.ui import WebDriverWait
+		try:
+			if invert:
+				WebDriverWait(self.driver, self.timeout).until_not(EC.url_to_be(url))
+			else:
+				WebDriverWait(self.driver, self.timeout).until(EC.url_to_be(url))
+			return True
+		except TimeoutException as e:
+			if raise_errors:
+				if message is None:
+					message = 'Timeout waiting for URL to not be: ' if invert else 'Timeout waiting for URL to be: '
+				raise AssertionError(message + url) from e
 		return False
 
 	def wait_for_file(self, path: str, message: str = 'Timeout waiting for file: ', raise_errors=True) -> bool:
