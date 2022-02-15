@@ -113,7 +113,7 @@ class Driver:
 			for level in self._CONSOLE_LEVELS
 		))
 
-	def wait(self, element: str, message: str = None, raise_errors: bool = True, invert: bool = True) -> bool:
+	def wait(self, element: str, message: str = None, raise_errors: bool = True, invert: bool = False) -> bool:
 		from selenium.common.exceptions import TimeoutException
 		from selenium.webdriver.common.by import By
 		from selenium.webdriver.support import expected_conditions as EC
@@ -131,7 +131,7 @@ class Driver:
 				raise AssertionError(message + element) from e
 		return False
 
-	def wait_for_url(self, url: str, message: str = None, raise_errors: bool = True, invert: bool = True) -> bool:
+	def wait_for_url(self, url: str, message: str = None, raise_errors: bool = True, invert: bool = False) -> bool:
 		from selenium.common.exceptions import TimeoutException
 		from selenium.webdriver.support import expected_conditions as EC
 		from selenium.webdriver.support.ui import WebDriverWait
