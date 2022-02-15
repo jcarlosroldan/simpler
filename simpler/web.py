@@ -230,9 +230,6 @@ class Driver:
 			args.append(value)
 		return self.driver.execute_script(script, *args)
 
-	def bounding_box(self, element) -> Dict[str, float]:
-		return self.driver.execute_script('return arguments[0].getBoundingClientRect()', self.select(element))
-
 	def has_class(self, element, class_name: str) -> bool:
 		return self.driver.execute_script(
 			'return arguments[0].classList.contains(arguments[1])',
@@ -249,8 +246,46 @@ class Driver:
 		else:
 			self.driver.add_cookie({'name': name, 'value': value, 'path': '/', 'expiry': int(time() + self._YEAR_SECONDS)})
 
-	def clear_cookies(self):
-		self.driver.delete_all_cookies()
+	def local_storage(self, key: str, value: Optional[str] = None, delete: bool = False) -> Optional[str]:
+		if delete:
+			self.driver.execute_script('localStorage.removeItem(arguments[0])', key)
+		elif value is None:
+			return self.driver.execute_script('return localStorage.getItem(arguments[0])', key)
+		else:
+			self.driver.execute_script('localStorage.setItem(arguments[0], arguments[1])', key, value)
+
+	def session_storage(self, key: str, value: Optional[str] = None, delete: bool = False) -> Optional[str]:
+		if delete:
+			self.driver.execute_script('sessionStorage.removeItem(arguments[0])', key)
+		elif value is None:
+			return self.driver.execute_script('return sessionStorage.getItem(arguments[0])', key)
+		else:
+			self.driver.execute_script('sessionStorage.setItem(arguments[0], arguments[1])', key, value)
+
+	def all_cookies(self, clear: bool = True, path: str = None, domain: str = None, http_only: str = None, secure: str = None) -> dict:
+		res = {
+			c['name']: c['value']
+			for c in self.driver.get_cookies().items()
+			if (path is None or c['path'] == path)
+			and (domain is None or c['domain'] == domain)
+			and (http_only is None or c['httpOnly'] == http_only)
+			and (secure is None or c['secure'] == secure)
+		}
+		if clear:
+			self.driver.delete_all_cookies()
+		return res
+
+	def all_local_storage(self, clear: bool = True) -> dict:
+		res = {k: v for k, v in self.driver.execute_script('return Object.entries(localStorage)')}
+		if clear:
+			self.driver.execute_script('localStorage.clear()')
+		return res
+
+	def all_session_storage(self, clear: bool = True) -> dict:
+		res = {k: v for k, v in self.driver.execute_script('return Object.entries(sessionStorage)')}
+		if clear:
+			self.driver.execute_script('sessionStorage.clear()')
+		return res
 
 	def box(self, element) -> Tuple[float, float]:
 		res = self.driver.execute_script('return arguments[0].getBoundingClientRect()', self.select(element))
