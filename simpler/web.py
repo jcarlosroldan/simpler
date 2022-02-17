@@ -237,14 +237,20 @@ class Driver:
 			class_name
 		)
 
-	def cookie(self, name: str, value: Optional[str] = None, delete: bool = False) -> Optional[str]:
+	def cookie(self, name: str, value: Optional[str] = None, expiry=None, delete: bool = False, path: str = None, domain: str = None, http_only: str = None, secure: str = None) -> Optional[str]:
 		from time import time
 		if delete:
 			self.driver.delete_cookie(name)
 		elif value is None:
 			return self.driver.get_cookie(name)['value']
 		else:
-			self.driver.add_cookie({'name': name, 'value': value, 'path': '/', 'expiry': int(time() + self._YEAR_SECONDS)})
+			cookie = {'name': name, 'value': value, 'path': '/'}
+			cookie['expiry'] = expiry if expiry is not None else int(time() + self._YEAR_SECONDS)
+			if path is not None: cookie['path'] = path
+			if domain is not None: cookie['domain'] = domain
+			if http_only is not None: cookie['httpOnly'] = http_only
+			if secure is not None: cookie['secure'] = secure
+			self.driver.add_cookie(cookie)
 
 	def local_storage(self, key: str, value: Optional[str] = None, delete: bool = False) -> Optional[str]:
 		if delete:
@@ -265,7 +271,7 @@ class Driver:
 	def all_cookies(self, clear: bool = True, path: str = None, domain: str = None, http_only: str = None, secure: str = None) -> dict:
 		res = {
 			c['name']: c['value']
-			for c in self.driver.get_cookies().items()
+			for c in self.driver.get_cookies()
 			if (path is None or c['path'] == path)
 			and (domain is None or c['domain'] == domain)
 			and (http_only is None or c['httpOnly'] == http_only)
