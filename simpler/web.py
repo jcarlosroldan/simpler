@@ -237,7 +237,10 @@ class Driver:
 			class_name
 		)
 
-	def cookie(self, name: str, value: Optional[str] = None, expiry=None, delete: bool = False, path: str = None, domain: str = None, http_only: str = None, secure: str = None) -> Optional[str]:
+	def cookie(
+		self, name: str, value: Optional[str] = None, expiry: int = None, delete: bool = False,
+		path: str = None, domain: str = None, http_only: str = None, secure: str = None
+	) -> Optional[str]:
 		from time import time
 		if delete:
 			self.driver.delete_cookie(name)
