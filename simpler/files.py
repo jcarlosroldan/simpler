@@ -32,8 +32,8 @@ def load(path: str, format: str = 'auto', encoding: str = 'utf-8', inner_args: l
 		from pandas import read_csv
 		res = read_csv(fp, *args, **kwargs)
 	elif format == 'table':
-		from pandas import read_table
-		res = read_table(fp, *args, **kwargs)
+		from pandas import read_excel
+		res = read_excel(fp, *args, **kwargs)
 	elif format == 'pickle':
 		from pickle import load as pload
 		res = pload(fp, *args, **kwargs)
