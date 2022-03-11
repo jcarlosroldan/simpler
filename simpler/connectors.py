@@ -32,6 +32,9 @@ def _mysql_converter():
 			return res
 		_VAR_STRING_to_python = _STRING_to_python
 
+		def _timestamp_to_mysql(self, value, desc=None):
+			return value.strftime('%Y-%m-%d %H:%M:%S').encode(self.charset)
+
 	return MySQLConverter
 
 class SQL:
