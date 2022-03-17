@@ -214,7 +214,7 @@ class SQL:
 		self.execute(query, params, commit=True)
 		return int(self.cursor().lastrowid)
 
-	def insert_all(self, table: str, rows: Union[List[dict], List[tuple]], tuple_rows: bool = True, commit: bool = True) -> Optional[int]:
+	def insert_all(self, table: str, rows: Union[List[dict], List[tuple]], tuple_rows: bool = False, commit: bool = True) -> Optional[int]:
 		''' Insert a list of rows and returns the id of the last one. By default,
 		these rows are a list of {column: value} dicts, but they can be inserted
 		from tuples of values setting `tuple_rows` to True. '''
