@@ -54,25 +54,27 @@ class Suite:
 				res[test.__name__[:-4]] = output, elapsed, errors, passes
 		return res, total_elapsed, total_passes, total_errors
 
-	def run_text(self) -> str:
+	def run_text(self, only_errors: bool = True) -> Optional[str]:
 		''' Runs the `run` method and formats the output as a plain text. '''
 		tests, elapsed, passes, errors = self.run()
-		res = 'Summary: %d errors and %d passes in %.2fs.\n' % (errors, passes, elapsed)
-		for test, (cases, test_elapsed, test_passes, test_errors) in tests.items():
-			res += 'Test %s (%d/%d in %.2fs)\n' % (test, test_errors, test_errors + test_passes, test_elapsed)
-			for case, (message, elapsed) in cases.items():
-				res += '\tCase %s (%.2fs)' % (case, elapsed)
-				if message is None:
-					res += ': PASS\n'
-				else:
-					res += ': ERROR\n%s\n' % '\n'.join('\t\t%s' % line for line in message.strip().split('\n'))
-		return res.strip()
+		if errors or not only_errors:
+			res = 'Summary: %d errors and %d passes in %.2fs.\n' % (errors, passes, elapsed)
+			for test, (cases, test_elapsed, test_passes, test_errors) in tests.items():
+				if only_errors and test_errors == 0: continue
+				res += 'Test %s (%d/%d in %.2fs)\n' % (test, test_errors, test_errors + test_passes, test_elapsed)
+				for case, (message, elapsed) in cases.items():
+					if only_errors and message is None: continue
+					res += '\tCase %s (%.2fs)' % (case, elapsed)
+					res += ': PASS\n' if message is None else ': ERROR\n%s\n' % '\n'.join('\t\t%s' % line for line in message.strip().split('\n'))
+			return res.strip()
 
-	def run_html(self, only_errors=True) -> Optional[str]:
+	def run_html(self, only_errors: bool = True) -> Optional[str]:
 		''' Runs the `run` method and returns a table of errors, or None if there isn't any. '''
 		tests, elapsed, passes, errors = self.run()
 		if errors or not only_errors:
-			res = '<table><tr><th>Test</th><th>Case</th><th>Elapsed (s)</th><th>%s</th></tr>' % ('Error' if only_errors else 'Result')
+			res = '<p><b>Summary: %d errors and %d passes in %.2fs.</b></p><table><tr><th>Test</th><th>Case</th><th>Elapsed (s)</th><th>%s</th></tr>' % (
+				errors, passes, elapsed, 'Error' if only_errors else 'Result'
+			)
 			for test, (cases, _, _, _) in tests.items():
 				for case, (message, elapsed) in cases.items():
 					if message is not None or not only_errors:
