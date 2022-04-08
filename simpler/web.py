@@ -108,7 +108,7 @@ class Driver:
 		from selenium.webdriver.support.ui import WebDriverWait
 		self.driver.get(path)
 		WebDriverWait(self.driver, self.timeout).until(lambda d: d.execute_script('return document.readyState') == 'complete')
-		self.driver.execute_script('var CONSOLE_MESSAGES = [];%s' % ';'.join(
+		self.driver.execute_script('window.CONSOLE_MESSAGES = [];%s' % ';'.join(
 			'console.%s = (m) => CONSOLE_MESSAGES.push([\'%s\', m])' % (level, level)
 			for level in self._CONSOLE_LEVELS
 		))
@@ -312,7 +312,7 @@ class Driver:
 			return char
 
 	def console_clear(self):
-		self.driver.execute_script('CONSOLE_MESSAGES = []')
+		self.driver.execute_script('window.CONSOLE_MESSAGES = []')
 
 	def console_messages(self, group_by_level: bool = False) -> Dict[str, str]:
 		messages = self.driver.execute_script('return CONSOLE_MESSAGES')
