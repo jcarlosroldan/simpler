@@ -1,4 +1,4 @@
-from typing import Any, Callable, Optional
+from typing import Any, Callable, Optional, Set
 
 def cwd() -> None:
 	from os.path import abspath
@@ -302,16 +302,15 @@ _find_hidden_compressed_signatures = {
 	# 'tar': b'\x1f\x9d',
 	# 'bz2': b'\x42\x5a\x68',
 }
-def find_hidden_compressed(path: str) -> list:
-	''' Recursively examines the signature of the files in a directory while looking for a
-	compressed file. '''
+def find_hidden_compressed(path: str, byte_limit: int = None) -> Set[str]:
+	''' Recursively looks for compressed file signatures in a file. '''
 	with open(path, 'rb') as fp:
-		data = fp.read()
-		signatures = []
-		for ftype, signature in _find_hidden_compressed_signatures.items():
-			if data.find(signature) != -1:
-				signatures.append(ftype)
-		return signatures
+		data = fp.read() if byte_limit is None else fp.read(byte_limit)
+	return {
+		ftype
+		for ftype, signature in _find_hidden_compressed_signatures.items()
+		if data.find(signature) != -1
+	}
 
 _tvshow_rename_regex = None
 def tvshow_rename(path: str) -> None:
