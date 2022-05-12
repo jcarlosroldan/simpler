@@ -1,4 +1,4 @@
-from typing import Callable, Optional
+from typing import Any, Callable, Optional
 
 def cwd() -> None:
 	from os.path import abspath
@@ -362,7 +362,7 @@ def directory_compare(old: str, new: str, kind: str = 'dir', ignored: list = _di
 			else:
 				directory_compare(old_childs[child], new_childs[child], child[0])
 
-def import_from_path(path: str, name: str, module_name: str = '.') -> object:
+def import_from_path(path: str, name: str, module_name: str = '.') -> Any:
 	''' Loads the script at the specified path and returns an object given its name. '''
 	from importlib.util import spec_from_file_location, module_from_spec
 	from os.path import exists
@@ -373,7 +373,8 @@ def import_from_path(path: str, name: str, module_name: str = '.') -> object:
 		if name in module.__dict__:
 			return module.__dict__[name]
 
-def run_notebook(path, timeout=600, kernel_name='python3'):
+def run_notebook(path: str, timeout: int = 600, kernel_name: str = 'python3') -> Any:
+	''' Runs a notebook and returns the result. '''
 	from nbformat import read, NO_CONVERT
 	from nbconvert.preprocessors import ExecutePreprocessor
 	with open(path) as fp:
