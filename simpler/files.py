@@ -372,3 +372,11 @@ def import_from_path(path: str, name: str, module_name: str = '.') -> object:
 		spec.loader.exec_module(module)
 		if name in module.__dict__:
 			return module.__dict__[name]
+
+def run_notebook(path, timeout=600, kernel_name='python3'):
+	from nbformat import read, NO_CONVERT
+	from nbconvert.preprocessors import ExecutePreprocessor
+	with open(path) as fp:
+		data = read(fp, NO_CONVERT)
+	ep = ExecutePreprocessor(timeout=timeout, kernel_name=kernel_name)
+	return ep.preprocess(data)
