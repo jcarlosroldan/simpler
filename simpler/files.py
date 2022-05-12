@@ -372,11 +372,10 @@ def import_from_path(path: str, name: str, module_name: str = '.') -> Any:
 		if name in module.__dict__:
 			return module.__dict__[name]
 
-def run_notebook(path: str, timeout: int = 600, kernel_name: str = 'python3') -> Any:
+def run_notebook(path: str) -> None:
 	''' Runs a notebook and returns the result. '''
-	from nbformat import read, NO_CONVERT
-	from nbconvert.preprocessors import ExecutePreprocessor
-	with open(path) as fp:
-		data = read(fp, NO_CONVERT)
-	ep = ExecutePreprocessor(timeout=timeout, kernel_name=kernel_name)
-	return ep.preprocess(data)
+	source = ''
+	for cell in load(path, 'json')['cells']:
+		if cell['cell_type'] == 'code':
+			source += ''.join(line for line in cell['source'] if not line.startswith('%')) + '\n'
+	return exec(source, globals(), locals())
