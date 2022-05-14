@@ -1,4 +1,7 @@
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
+from sys import version_info
+
+assert version_info.major == 3, 'Python 3 required'
 
 with open('README.md', 'r', encoding='utf-8') as fp:
 	long_description = fp.read()
