@@ -13,8 +13,11 @@ QUERY_CLASSES = '''select ?type count (*) as ?num where {
 
 def dbpedia(query: str):
     ''' Sends a query to DBPedia and return the results. '''
-    from SPARQLWrapper import SPARQLWrapper, JSON
-    res = SPARQLWrapper("http://dbpedia.org/sparql")
+    try:
+        from SPARQLWrapper import SPARQLWrapper, JSON
+    except Exception as e:
+        raise RuntimeError('You should call `pip install SPARQLWrapper` before.') from e
+    res = SPARQLWrapper('http://dbpedia.org/sparql')
     res.setReturnFormat(JSON)
     res.setQuery(DBPEDIA_PREFIX + query)
 

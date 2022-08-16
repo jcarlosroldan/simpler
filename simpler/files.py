@@ -319,7 +319,7 @@ def tvshow_rename(path: str) -> None:
 	from os import listdir, rename
 	global _tvshow_rename_regex
 	if _tvshow_rename_regex is None:
-		from regex import compile
+		from re import compile
 		_tvshow_rename_regex = compile(r'(?P<SEASON>\d+)\s*[x\-]\s*(?P<EPISODE>\d+)|S\s*(?P<SEASON>\d+)\s*E\s*(?P<EPISODE>\d+)|(?P<EPISODE>\d+)').search
 	for file in listdir(path):
 		name, ext = file.rsplit('.', 1)
