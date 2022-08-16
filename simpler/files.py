@@ -379,3 +379,19 @@ def run_notebook(path: str) -> None:
 		if cell['cell_type'] == 'code':
 			source += ''.join(line for line in cell['source'] if not line.startswith('%')) + '\n'
 	return exec(source, globals(), locals())
+
+def already_running(path_pidfile: str = 'pid.txt') -> bool:
+	''' Uses a PID file to check if an instance of this script is already running. If it's
+	not running, it will create a PID file (a file with the PID of the current process). '''
+	from os import getpid
+	from os.path import exists
+	from psutil import pid_exists, Process
+	my_pid = getpid()
+	try:
+		assert exists(path_pidfile)
+		pid = int(load(path_pidfile))
+		assert pid_exists(pid) and Process(pid).cmdline() == Process(my_pid).cmdline()
+		return True
+	except:
+		save(path_pidfile, str(my_pid))
+	return False
