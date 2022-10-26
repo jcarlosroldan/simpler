@@ -55,3 +55,14 @@ class DynamicProgramming:
 				return optimals
 			else:
 				return optimals[0]
+
+def deep_merge(dict1: dict, dict2: dict) -> dict:
+	''' This function merges two dictionaries. '''
+	from copy import deepcopy
+	res = deepcopy(dict1)
+	for key, value in dict2.items():
+		if key in res and isinstance(res[key], dict) and isinstance(value, dict):
+			res[key] = deep_merge(res[key], value)
+		else:
+			res[key] = deepcopy(value)
+	return res

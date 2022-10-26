@@ -1,5 +1,5 @@
 from simpler._version import __version__
-from simpler.algorithms import DynamicProgramming
+from simpler.algorithms import DynamicProgramming, deep_merge
 from simpler.bioinformatics import codon_table, monoisotopic_mass_table, monoisotopic_mass_water, parse_fasta, dna_to_rna, rna_to_dna, rna_to_protein, reverse_complement
 from simpler.connectors import SQL, Excel
 from simpler.files import cwd, load, save, disk_cache, mem_cache, clear_global_mem_cache, size, find_hidden_compressed, tvshow_rename, directory_compare, decompress, import_from_path, already_running
