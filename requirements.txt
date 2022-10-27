@@ -4,3 +4,4 @@ pyyaml
 rarfile
 py7zr
 sphinx_autodoc_typehints
+elevate>=0.1.3
