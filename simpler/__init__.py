@@ -8,7 +8,7 @@ from simpler.mail import compose, send
 from simpler.math import clamp, snap, unique, all_equal, jaccard, levenshtein, base_change, prime_list, is_prime, fibonacci, lcm, gcd, factor, palindrome_list, phi, date_range
 from simpler.profiling import tic, toc, deep_size
 from simpler.sparql import dbpedia, entity_types
-from simpler.terminal import getch, cprint
+from simpler.terminal import getch, cprint, register_protocol_handler
 from simpler.tests import Test, Suite
 from simpler.validation import assert_set, assert_str, assert_number, assert_id, assert_mail, assert_exists
 from simpler.web import download_file, DownloaderPool, throttle, Driver
