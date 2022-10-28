@@ -402,9 +402,9 @@ def register_protocol_handler(protocol: str, path: str, link_name: str = None, c
 	'C:/Program Files/qBittorrent/qbittorrent.exe', link_name='URL:Magnet link',
 	content_type='application/x-magnet')`. '''
 	from os import name as os_name
-	from elevate import elevate
-	elevate()
 	if os_name == 'nt':
+		from ctypes import windll
+		assert windll.shell32.IsUserAnAdmin(), 'You must run the `register_protocol_handler` method script as administrator'
 		assert path not in ('explorer', 'explorer.exe', 'start', 'start.exe'), 'Setting start or explorer as a protocol handler would cause an infinite loop'
 		from winreg import CreateKey, SetValue, SetValueEx, HKEY_CLASSES_ROOT, REG_SZ
 		path = path.replace('/', '\\')
