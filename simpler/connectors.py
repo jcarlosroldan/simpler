@@ -50,8 +50,10 @@ class SQL:
 		assert engine in SQL.ENGINES, 'Accepted engine values are: %s.' % ', '.join(SQL.ENGINES)
 		self.max_insertions, self.native_types, self.engine, self.print_queries = max_insertions, native_types, engine, print_queries
 		self._connection, self._cursor, self._initialized = {'user': user}, {}, False
-		if engine in ('mysql', 'mariadb'):
+		if engine == 'mysql':
 			self._init_mysql(charset, collation, host, use_unicode, password, db)
+		elif engine == 'mariadb':
+			self._init_mariadb(host, password, db)
 		elif engine == 'mssql':
 			self._init_mssql(host, password, db)
 		if force_init:
@@ -73,6 +75,13 @@ class SQL:
 			self._connection['db'] = db
 		self._cursor['buffered'] = True
 
+	def _init_mariadb(self, host, password, db):
+		self._connection.update({
+			'host': host,
+			'password': password,
+			'database': db
+		})
+
 	def _init_mssql(self, host, password, db):
 		self._connection['server'] = host
 		if password:
@@ -91,14 +100,19 @@ class SQL:
 	def cursor(self):
 		''' Returns the open cursor and initializes the connection if required. '''
 		if not self._initialized:
-			if self.engine in ('mysql', 'mariadb'):
+			if self.engine == 'mysql':
 				try:
 					from mysql.connector import connect
 				except ModuleNotFoundError:
 					raise ModuleNotFoundError('Missing MySQL/MariaDB connector. Install a mysql client and then do `pip install mysql.connector`.')
 				if self.native_types:
 					self._connection['converter_class'] = _mysql_converter()
-			else:
+			elif self.engine == 'mariadb':
+				try:
+					from mariadb import connect
+				except ModuleNotFoundError:
+					raise ModuleNotFoundError('Missing MySQL/MariaDB connector. Install a mysql client and then do `pip install mariadb`.')
+			elif self.engine == 'mssql':
 				try:
 					from pymssql import connect
 				except ModuleNotFoundError:
