@@ -76,10 +76,12 @@ class SQL:
 		self._cursor['buffered'] = True
 
 	def _init_mariadb(self, host, password, db):
+		from mariadb.constants.CLIENT import MULTI_STATEMENTS
 		self._connection.update({
 			'host': host,
 			'password': password,
-			'database': db
+			'database': db,
+			'client_flag': MULTI_STATEMENTS
 		})
 
 	def _init_mssql(self, host, password, db):
@@ -130,15 +132,19 @@ class SQL:
 		error = None
 		try:
 			if self.engine == 'mysql':
-				statement = self.cursor().execute(query, params if params is not None and len(params) else None, multi)
+				statement = self.cursor().execute(query, params if params is not None and len(params) else None, multi=multi)
 				if multi:
 					try:
 						list(statement)
 					except RuntimeError:  # see https://bugs.mysql.com/bug.php?id=87818
 						pass
-			else:
+			elif self.engine == 'mariadb':
+				self.cursor().execute(query, params if params is not None and len(params) else None)
+				if multi:
+					while self.cursor().nextset(): pass
+			elif self.engine == 'mssql':
 				assert not multi, 'MS-SQL connector does not support multistatement queries.'
-				statement = self.cursor().execute(*([query] + ([params] if params else [])))
+				self.cursor().execute(*([query] + ([params] if params else [])))
 		except Exception as e:
 			error = e
 		if self._initialized and (commit or self.engine in ('mysql', 'mariadb')):
