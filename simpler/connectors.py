@@ -77,11 +77,15 @@ class SQL:
 
 	def _init_mariadb(self, host, password, db):
 		from mariadb.constants.CLIENT import MULTI_STATEMENTS
+		from mariadb.constants.FIELD_TYPE import JSON
+		from json import loads
+
 		self._connection.update({
 			'host': host,
 			'password': password,
 			'database': db,
-			'client_flag': MULTI_STATEMENTS
+			'client_flag': MULTI_STATEMENTS,
+			'converter': {JSON: loads}
 		})
 
 	def _init_mssql(self, host, password, db):
@@ -139,6 +143,9 @@ class SQL:
 					except RuntimeError:  # see https://bugs.mysql.com/bug.php?id=87818
 						pass
 			elif self.engine == 'mariadb':
+				# mariadb connector doesn't support adding encoders at parameter level, so we have to do JSON manually; see https://github.com/mariadb-corporation/mariadb-connector-python/blob/1.1/mariadb/cursors.py#L232 https://github.com/mariadb-corporation/mariadb-connector-python/blob/80b642b8a1a3b0b41b26e8cbe188cd91c8d1233b/mariadb/mariadb_codecs.c#L1400
+				from json import dumps
+				params = [dumps(param, ensure_ascii=False, separators=(',', ':')) if isinstance(param, dict) else param for param in params] if params is not None else None
 				self.cursor().execute(query, params if params is not None and len(params) else None)
 				if multi:
 					while self.cursor().nextset(): pass
@@ -232,7 +239,7 @@ class SQL:
 	def insert(self, query: str, *params: tuple) -> int:
 		''' Inserts a row and returns its id. '''
 		self.execute(query, params, commit=True)
-		return int(self.cursor().lastrowid)
+		return None if self.cursor().lastrowid is None else int(self.cursor().lastrowid)
 
 	def insert_all(self, table: str, rows: Union[List[dict], List[tuple]], tuple_rows: bool = False, commit: bool = True) -> Optional[int]:
 		''' Insert a list of rows and returns the id of the last one. By default,
