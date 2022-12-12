@@ -39,16 +39,18 @@ def _mysql_converter():
 
 class SQL:
 	''' Connector for SQL databases with a handful of helpers. '''
-	ENGINES = 'mysql', 'mariadb', 'mssql'
+	ENGINES = 'mysql', 'mariadb', 'mssql', 'postgre'
 
 	def __init__(
-		self, host: str = 'localhost', user: str = 'root', password: str = None, db: str = None,
+		self, host: str = 'localhost', user: str = None, password: str = None, db: str = None,
 		charset: str = 'utf8mb4', collation: str = 'utf8mb4_general_ci', use_unicode: bool = True,
 		max_insertions: int = None, print_queries: bool = False, native_types: bool = True,
 		engine: str = 'mysql', force_init: bool = False
 	) -> None:
 		assert engine in SQL.ENGINES, 'Accepted engine values are: %s.' % ', '.join(SQL.ENGINES)
 		self.max_insertions, self.native_types, self.engine, self.print_queries = max_insertions, native_types, engine, print_queries
+		if user is None:
+			user = 'postgres' if engine == 'postgre' else 'root'
 		self._connection, self._cursor, self._initialized = {'user': user}, {}, False
 		if engine == 'mysql':
 			self._init_mysql(charset, collation, host, use_unicode, password, db)
@@ -56,6 +58,8 @@ class SQL:
 			self._init_mariadb(host, password, db)
 		elif engine == 'mssql':
 			self._init_mssql(host, password, db)
+		elif engine == 'postgre':
+			self._init_postgre(host, password, db)
 		if force_init:
 			self.cursor()
 
@@ -95,6 +99,13 @@ class SQL:
 		if db:
 			self._connection['database'] = db
 
+	def _init_postgre(self, host, password, db):
+		self._connection.update({
+			'database': db,
+			'host': host,
+			'password': password,
+		})
+
 	def close(self) -> None:
 		''' Closes the current cursor and connection. '''
 		if self._initialized:
@@ -123,6 +134,11 @@ class SQL:
 					from pymssql import connect
 				except ModuleNotFoundError:
 					raise ModuleNotFoundError('Missing MS-SQL connector. Install a MS-SQL client and then do `pip install pymssql`.')
+			elif self.engine == 'postgre':
+				try:
+					from psycopg2 import connect
+				except ModuleNotFoundError:
+					raise ModuleNotFoundError('Missing PostgreSQL connector. Install a PostgreSQL client and then do `pip install psycopg2-binary`.')
 			self._connection = connect(**self._connection)
 			self._cursor = self._connection.cursor(**self._cursor)
 			self._initialized = True
@@ -152,6 +168,10 @@ class SQL:
 			elif self.engine == 'mssql':
 				assert not multi, 'MS-SQL connector does not support multistatement queries.'
 				self.cursor().execute(*([query] + ([params] if params else [])))
+			elif self.engine == 'postgre':
+				cursor = self.cursor()
+				self._connection.autocommit = True
+				cursor.execute(query, params if params is not None and len(params) else None)
 		except Exception as e:
 			error = e
 		if self._initialized and (commit or self.engine in ('mysql', 'mariadb')):
