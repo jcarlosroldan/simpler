@@ -257,8 +257,13 @@ class SQL:
 			yield row[0]
 
 	def insert(self, query: str, *params: tuple) -> int:
-		''' Inserts a row and returns its id. '''
+		''' Inserts a row and returns its id (if engine="postgre", you'll have to use the RETURNING keyword). '''
 		self.execute(query, params, commit=True)
+		if self.engine == 'postgre':
+			try:
+				return self.cursor().fetchone()
+			except:
+				return None
 		return None if self.cursor().lastrowid is None else int(self.cursor().lastrowid)
 
 	def insert_all(self, table: str, rows: Union[List[dict], List[tuple]], tuple_rows: bool = False, commit: bool = True) -> Optional[int]:
