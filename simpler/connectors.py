@@ -249,6 +249,12 @@ class SQL:
 		if res:
 			return res[0]
 
+	def exists(self, table: str, column: str, value: Any) -> bool:
+		''' Returns True if the value exists in the specified column of the specified table. '''
+		return self.find_value('SELECT 1 FROM %s WHERE %s = %%s' % (
+			self.escape(table), self.escape(column)
+		), value) is not None
+
 	def find_column(self, query: str, *params: tuple) -> list:
 		''' Returns the value of the first column of every selected row. '''
 		return list(self.iter_column(query, *params))
