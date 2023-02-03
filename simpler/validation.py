@@ -11,7 +11,7 @@ def assert_str(
 	default: object = None
 ) -> str:
 	''' Asserts all the requested checks to data[name] and returns it. '''
-	from re import search, match
+	from re import search
 	if optional and name not in data: return default
 	assert_set(data, name)
 	if min_len is not None:
@@ -43,7 +43,7 @@ def assert_str(
 		else:
 			assert not contains, '%s must not contain any whitespaces.' % name
 	if has_pattern is not None:
-		assert match(has_pattern, data[name]) is not None, '%s has an invalid format.' % name
+		assert search('^(%s)$' % has_pattern, data[name]) is not None, '%s has an invalid format.' % name
 	return data[name]
 
 def assert_number(
