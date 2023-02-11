@@ -138,8 +138,10 @@ class SQL:
 				try:
 					from psycopg2 import connect
 					from psycopg2.extras import Json
+					from decimal import Decimal
 					from psycopg2.extensions import register_adapter
 					register_adapter(dict, Json)
+					register_adapter(Decimal, lambda d: float(d))
 				except ModuleNotFoundError:
 					raise ModuleNotFoundError('Missing PostgreSQL connector. Install a PostgreSQL client and then do `pip install psycopg2-binary`.')
 			self._connection = connect(**self._connection)
