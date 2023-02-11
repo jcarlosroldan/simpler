@@ -252,7 +252,7 @@ class SQL:
 	def exists(self, table: str, column: str, value: Any) -> bool:
 		''' Returns True if the value exists in the specified column of the specified table. '''
 		return self.find_value('SELECT 1 FROM %s WHERE %s = %%s' % (
-			self.escape(table), self.escape(column)
+			table, column
 		), value) is not None
 
 	def find_column(self, query: str, *params: tuple) -> list:
