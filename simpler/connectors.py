@@ -138,7 +138,6 @@ class SQL:
 				try:
 					from psycopg2 import connect
 					from psycopg2.extras import Json
-					from decimal import Decimal
 					from psycopg2.extensions import register_adapter, register_type, new_type, DECIMAL
 					register_adapter(dict, Json)
 					register_type(new_type(
