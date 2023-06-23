@@ -336,13 +336,21 @@ class SQL:
 	def escape(self, value: Any, is_literal: bool = True) -> str:
 		''' Escapes the given value for its injection into the SQL query. By default,
 		the data `is_literal=True`, which will wrap strings with quotes for its insertion. '''
-		if value is None:
-			value = 'NULL'
-		else:
-			self.cursor()  # force initialization
-			value = self._connection.converter.escape(str(value))
+		if self.engine == 'postgre':
+			from psycopg2 import extensions as ext
+			from psycopg2 import sql
 			if is_literal:
-				value = '"%s"' % value
+				value = ext.adapt(value).getquoted().decode('utf-8')
+			else:
+				value = sql.Identifier(value).as_string(self._connection)
+		else:
+			if value is None:
+				value = 'NULL'
+			else:
+				self.cursor()  # force initialization
+				value = self._connection.converter.escape(str(value))
+				if is_literal:
+					value = '"%s"' % value
 		return value
 
 from re import compile, IGNORECASE
