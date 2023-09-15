@@ -333,6 +333,20 @@ class SQL:
 		self.execute(query, params, commit=True)
 		return int(self.cursor().rowcount)
 
+	def delete(self, table: str, filters: dict = lambda: {}) -> int:
+		''' Executes a delete operation and returns the number of affected rows, specifying
+		a filters list, i.e. `{'a': 4, 'b': None}` will be translated into `WHERE A = 4 AND B = NULL`. '''
+		query = 'DELETE FROM %s ' % table
+		params = []
+		if len(filters):
+			values = []
+			for k, v in filters.items():
+				values.append(k + '=%s ')
+				params.append(v)
+			query += 'WHERE ' + ' AND '.join(values)
+		self.execute(query, params, commit=True)
+		return int(self.cursor().rowcount)
+
 	def escape(self, value: Any, is_literal: bool = True) -> str:
 		''' Escapes the given value for its injection into the SQL query. By default,
 		the data `is_literal=True`, which will wrap strings with quotes for its insertion. '''
