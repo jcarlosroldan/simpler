@@ -353,6 +353,7 @@ class SQL:
 		if self.engine == 'postgre':
 			from psycopg2 import extensions as ext
 			from psycopg2 import sql
+			self.cursor()  # force initialization
 			if is_literal:
 				value = ext.adapt(value).getquoted().decode('utf-8')
 			else:
