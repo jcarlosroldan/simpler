@@ -356,6 +356,7 @@ class SQL:
 			if is_literal:
 				value = ext.adapt(value).getquoted().decode('utf-8')
 			else:
+				self.cursor()  # force initialization
 				value = sql.Identifier(value).as_string(self._connection)
 		else:
 			if value is None:
