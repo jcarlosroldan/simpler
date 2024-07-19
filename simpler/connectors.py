@@ -136,19 +136,22 @@ class SQL:
 					raise ModuleNotFoundError('Missing MS-SQL connector. Install a MS-SQL client and then do `pip install pymssql`.')
 			elif self.engine == 'postgre':
 				try:
-					from psycopg2 import connect
-					from psycopg2.extras import Json
-					from psycopg2.extensions import register_adapter, register_type, new_type, DECIMAL
-					register_adapter(dict, Json)
-					register_type(new_type(
-						DECIMAL.values,
-						'DEC2FLOAT',
-						lambda value, _: float(value) if value is not None else None
-					))
+					from psycopg import connect
+					from psycopg import ClientCursor
+					from psycopg.adapt import Dumper, Loader
+					from json import dumps
+					class DictDumper(Dumper):
+						def dump(self, value):
+							return dumps(value, ensure_ascii=False, separators=(',', ':')).encode('utf-8')
+					class DecimalLoader(Loader):
+						def load(self, value):
+							return float(value)
 				except ModuleNotFoundError:
-					raise ModuleNotFoundError('Missing PostgreSQL connector. Install a PostgreSQL client and then do `pip install psycopg2-binary`.')
-			self._connection = connect(**self._connection)
+					raise ModuleNotFoundError('Missing PostgreSQL connector. Install a PostgreSQL client and then do `pip install psycopg[binary]`.')
+			self._connection = connect(**self._connection, cursor_factory=ClientCursor)
 			self._cursor = self._connection.cursor(**self._cursor)
+			self._cursor.adapters.register_dumper(dict, DictDumper)
+			self._cursor.adapters.register_loader('numeric', DecimalLoader)
 			self._initialized = True
 		return self._cursor
 
