@@ -306,6 +306,19 @@ class SQL:
 				','.join(values for _ in rows)
 			)
 			params = [insertion[key] for insertion in rows for key in keys]
+		if self.engine == 'postgre':
+			query = 'INSERT INTO %s(%s) VALUES (%s) RETURNING *' % (table, ','.join(keys), ','.join('%s' for _ in keys))
+			params = [[row[key] for key in keys] for row in rows]
+			self.cursor().executemany(query, params, returning=True)
+			try:
+				ids = []
+				while True:
+					ids.append(self.cursor().fetchone()[0])
+					if not self.cursor().nextset():
+						break
+				return ids[-1] if ids else None
+			except:
+				None
 		self.execute(query, params, commit=commit)
 		return int(self.cursor().lastrowid)
 
