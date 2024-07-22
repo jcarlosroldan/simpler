@@ -367,10 +367,9 @@ class SQL:
 		''' Escapes the given value for its injection into the SQL query. By default,
 		the data `is_literal=True`, which will wrap strings with quotes for its insertion. '''
 		if self.engine == 'postgre':
-			from psycopg2 import extensions as ext
-			from psycopg2 import sql
+			from psycopg import sql
 			if is_literal:
-				value = ext.adapt(value).getquoted().decode('utf-8')
+				value = sql.quote(value)
 			else:
 				self.cursor()  # force initialization
 				value = sql.Identifier(value).as_string(self._connection)
