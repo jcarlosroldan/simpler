@@ -136,22 +136,20 @@ class SQL:
 					raise ModuleNotFoundError('Missing MS-SQL connector. Install a MS-SQL client and then do `pip install pymssql`.')
 			elif self.engine == 'postgre':
 				try:
-					from psycopg import connect
-					from psycopg import ClientCursor
-					from psycopg.adapt import Dumper, Loader
+					from psycopg import ClientCursor, connect
+					from psycopg.adapt import Dumper
+					from psycopg.types.numeric import FloatLoader
+					from psycopg._oids import NUMERIC_OID
 					from json import dumps
 					class DictDumper(Dumper):
 						def dump(self, value):
 							return dumps(value, ensure_ascii=False, separators=(',', ':')).encode('utf-8')
-					class DecimalLoader(Loader):
-						def load(self, value):
-							return float(value)
 				except ModuleNotFoundError:
-					raise ModuleNotFoundError('Missing PostgreSQL connector. Install a PostgreSQL client and then do `pip install psycopg[binary]`.')
+					raise ModuleNotFoundError('Missing PostgreSQL connector. Install a PostgreSQL client and then do `pip install "psycopg[binary]"`.')
 			self._connection = connect(**self._connection, cursor_factory=ClientCursor)
 			self._cursor = self._connection.cursor(**self._cursor)
 			self._cursor.adapters.register_dumper(dict, DictDumper)
-			self._cursor.adapters.register_loader('numeric', DecimalLoader)
+			self._cursor.adapters.register_loader(NUMERIC_OID, FloatLoader)
 			self._initialized = True
 		return self._cursor
 
@@ -307,7 +305,8 @@ class SQL:
 			)
 			params = [insertion[key] for insertion in rows for key in keys]
 		if self.engine == 'postgre':
-			query = 'INSERT INTO %s(%s) VALUES (%s) RETURNING *' % (table, ','.join(keys), ','.join('%s' for _ in keys))
+			keys = list(rows[0].keys())
+			query = 'INSERT INTO %s(%s) VALUES (%s) RETURNING *' % (table, ','.join([str(key) for key in keys]), ','.join(['%s'] * len(keys)))
 			params = [[row[key] for key in keys] for row in rows]
 			self.cursor().executemany(query, params, returning=True)
 			try:
@@ -318,7 +317,7 @@ class SQL:
 						break
 				return ids[-1] if ids else None
 			except:
-				None
+				return None
 		self.execute(query, params, commit=commit)
 		return int(self.cursor().lastrowid)
 
