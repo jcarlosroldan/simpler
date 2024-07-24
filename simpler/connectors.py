@@ -1,41 +1,6 @@
+from re import compile, IGNORECASE
 from simpler.terminal import cprint
 from typing import Any, Generator, List, Optional, Union
-
-def _mysql_converter():
-	''' Simpler MySQL converter that returns some bytes as strings and decimals as floats. '''
-	from mysql.connector.constants import FieldFlag
-	from mysql.connector.conversion import MySQLConverter as NativeConverter
-
-	class MySQLConverter(NativeConverter):
-		def row_to_python(self, row, fields):
-			res = super().row_to_python(row, fields)
-			return res
-
-		def _BLOB_to_python(self, value, dsc=None):
-			"""Convert BLOB data type to Python"""
-			return self._STRING_to_python(value, dsc)
-		_LONG_BLOB_to_python = _BLOB_to_python
-		_MEDIUM_BLOB_to_python = _BLOB_to_python
-		_TINY_BLOB_to_python = _BLOB_to_python
-
-		def _DECIMAL_to_python(self, value, desc=None):
-			return float(value.decode(self.charset))
-		_NEWDECIMAL_to_python = _DECIMAL_to_python
-
-		def _float64_to_mysql(self, value, desc=None):
-			return float(value)
-
-		def _STRING_to_python(self, value, dsc=None):
-			res = super(MySQLConverter, self)._STRING_to_python(value, dsc)
-			if dsc[7] & FieldFlag.BINARY:
-				return res.decode(self.charset)
-			return res
-		_VAR_STRING_to_python = _STRING_to_python
-
-		def _timestamp_to_mysql(self, value, desc=None):
-			return value.strftime('%Y-%m-%d %H:%M:%S').encode(self.charset)
-
-	return MySQLConverter
 
 class SQL:
 	''' Connector for SQL databases with a handful of helpers. '''
@@ -100,10 +65,22 @@ class SQL:
 			self._connection['database'] = db
 
 	def _init_postgre(self, host, password, db):
+		from psycopg import ClientCursor
+		from json import dumps
+		from psycopg import adapters
+		from psycopg._oids import NUMERIC_OID
+		from psycopg.adapt import Dumper
+		from psycopg.types.numeric import FloatLoader
+		class DictDumper(Dumper):
+			def dump(self, value):
+				return dumps(value, ensure_ascii=False, separators=(',', ':')).encode('utf-8')
+		adapters.register_dumper(dict, DictDumper)
+		adapters.register_loader(NUMERIC_OID, FloatLoader)
 		self._connection.update({
-			'database': db,
+			'dbname': db,
 			'host': host,
 			'password': password,
+			'cursor_factory': ClientCursor
 		})
 
 	def close(self) -> None:
@@ -120,10 +97,10 @@ class SQL:
 			if self.engine == 'mysql':
 				try:
 					from mysql.connector import connect
+					if self.native_types:
+						self._connection['converter_class'] = _mysql_converter()
 				except ModuleNotFoundError:
 					raise ModuleNotFoundError('Missing MySQL/MariaDB connector. Install a mysql client and then do `pip install mysql.connector`.')
-				if self.native_types:
-					self._connection['converter_class'] = _mysql_converter()
 			elif self.engine == 'mariadb':
 				try:
 					from mariadb import connect
@@ -136,20 +113,11 @@ class SQL:
 					raise ModuleNotFoundError('Missing MS-SQL connector. Install a MS-SQL client and then do `pip install pymssql`.')
 			elif self.engine == 'postgre':
 				try:
-					from psycopg import ClientCursor, connect
-					from psycopg.adapt import Dumper
-					from psycopg.types.numeric import FloatLoader
-					from psycopg._oids import NUMERIC_OID
-					from json import dumps
-					class DictDumper(Dumper):
-						def dump(self, value):
-							return dumps(value, ensure_ascii=False, separators=(',', ':')).encode('utf-8')
+					from psycopg import connect
 				except ModuleNotFoundError:
 					raise ModuleNotFoundError('Missing PostgreSQL connector. Install a PostgreSQL client and then do `pip install "psycopg[binary]"`.')
-			self._connection = connect(**self._connection, cursor_factory=ClientCursor)
+			self._connection = connect(**self._connection)
 			self._cursor = self._connection.cursor(**self._cursor)
-			self._cursor.adapters.register_dumper(dict, DictDumper)
-			self._cursor.adapters.register_loader(NUMERIC_OID, FloatLoader)
 			self._initialized = True
 		return self._cursor
 
@@ -382,7 +350,41 @@ class SQL:
 					value = '"%s"' % value
 		return value
 
-from re import compile, IGNORECASE
+def _mysql_converter():
+	''' Simpler MySQL converter that returns some bytes as strings and decimals as floats. '''
+	from mysql.connector.constants import FieldFlag
+	from mysql.connector.conversion import MySQLConverter as NativeConverter
+
+	class MySQLConverter(NativeConverter):
+		def row_to_python(self, row, fields):
+			res = super().row_to_python(row, fields)
+			return res
+
+		def _BLOB_to_python(self, value, dsc=None):
+			"""Convert BLOB data type to Python"""
+			return self._STRING_to_python(value, dsc)
+		_LONG_BLOB_to_python = _BLOB_to_python
+		_MEDIUM_BLOB_to_python = _BLOB_to_python
+		_TINY_BLOB_to_python = _BLOB_to_python
+
+		def _DECIMAL_to_python(self, value, desc=None):
+			return float(value.decode(self.charset))
+		_NEWDECIMAL_to_python = _DECIMAL_to_python
+
+		def _float64_to_mysql(self, value, desc=None):
+			return float(value)
+
+		def _STRING_to_python(self, value, dsc=None):
+			res = super(MySQLConverter, self)._STRING_to_python(value, dsc)
+			if dsc[7] & FieldFlag.BINARY:
+				return res.decode(self.charset)
+			return res
+		_VAR_STRING_to_python = _STRING_to_python
+
+		def _timestamp_to_mysql(self, value, desc=None):
+			return value.strftime('%Y-%m-%d %H:%M:%S').encode(self.charset)
+
+	return MySQLConverter
 
 class Excel:
 	''' Pandas Excel backend. '''
