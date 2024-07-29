@@ -257,25 +257,37 @@ class SQL:
 		while self.max_insertions is not None and self.max_insertions < len(rows):
 			part, rows = rows[:self.max_insertions], rows[self.max_insertions:]
 			self.insert_all(table, part, tuple_rows, commit=False)
+		is_postgre = self.engine == 'postgre'
 		if tuple_rows:
-			query = 'INSERT INTO %s VALUES %s' % (
-				table,
-				','.join(['(' + ','.join(['%s'] * len(rows[0])) + ')'] * len(rows))
-			)
-			params = [param for row in rows for param in row]
+			if is_postgre:
+				query = 'INSERT INTO %s VALUES (%s) RETURNING *' % (
+					table,
+					','.join(['%s'] * len(rows[0]))
+				)
+			else:
+				query = 'INSERT INTO %s VALUES %s' % (
+					table,
+					','.join(['(' + ','.join(['%s'] * len(rows[0])) + ')'] * len(rows))
+				)
+			params = [param for row in rows for param in row] if not is_postgre else rows
 		else:
 			keys = list(rows[0].keys())
-			values = '(%s)' % ','.join('%s' for _ in keys)
-			query = 'INSERT INTO %s(%s) VALUES %s' % (
-				table,
-				','.join(keys),
-				','.join(values for _ in rows)
-			)
-			params = [insertion[key] for insertion in rows for key in keys]
-		if self.engine == 'postgre':
-			keys = list(rows[0].keys())
-			query = 'INSERT INTO %s(%s) VALUES (%s) RETURNING *' % (table, ','.join([str(key) for key in keys]), ','.join(['%s'] * len(keys)))
-			params = [[row[key] for key in keys] for row in rows]
+			if is_postgre:
+				query = 'INSERT INTO %s(%s) VALUES (%s) RETURNING *' % (
+					table,
+					','.join([str(key) for key in keys]),
+					','.join(['%s'] * len(keys))
+				)
+				params = [[row[key] for key in keys] for row in rows]
+			else:
+				values = '(%s)' % ','.join('%s' for _ in keys)
+				query = 'INSERT INTO %s(%s) VALUES %s' % (
+					table,
+					','.join(keys),
+					','.join(values for _ in rows)
+				)
+				params = [insertion[key] for insertion in rows for key in keys]
+		if is_postgre:
 			self.cursor().executemany(query, params, returning=True)
 			try:
 				ids = []
