@@ -1,3 +1,6 @@
+from typing import Union
+
+
 def assert_set(data: dict, name: str, optional: bool = False, default: object = None):
 	''' Asserts that data[name] exists and returns it. '''
 	if optional and name not in data: return default
@@ -5,9 +8,9 @@ def assert_set(data: dict, name: str, optional: bool = False, default: object = 
 	return data[name]
 
 def assert_str(
-	data: dict, name: str, optional: bool = False, min_len: bool = None,
-	max_len: bool = None, has_letter: bool = None, has_number: bool = None,
-	has_symbol: bool = None, has_whitespace: bool = None, has_pattern: bool = None,
+	data: dict, name: str, optional: bool = False, min_len: int = None,
+	max_len: int = None, has_letter: bool = None, has_number: bool = None,
+	has_symbol: bool = None, has_whitespace: bool = None, has_pattern: str = None,
 	default: object = None
 ) -> str:
 	''' Asserts all the requested checks to data[name] and returns it. '''
@@ -37,7 +40,7 @@ def assert_str(
 		else:
 			assert not contains, '%s must not contain any symbols.' % name
 	if has_whitespace is not None:
-		contains = search(r'\w', data[name]) is not None
+		contains = search(r'\s', data[name]) is not None
 		if has_whitespace:
 			assert contains, '%s must contain at least one whitespace.' % name
 		else:
@@ -47,9 +50,9 @@ def assert_str(
 	return data[name]
 
 def assert_number(
-	data: dict, name: str, optional: bool = False, min_val: bool = None,
-	max_val: bool = None, is_integer: bool = None, default: object = None
-) -> int:
+	data: dict, name: str, optional: bool = False, min_val: int = None,
+	max_val: int = None, is_integer: bool = None, default: object = None
+) -> Union[int, float]:
 	''' Asserts all the requested numeric checks to data[name] and returns it. '''
 	if optional and name not in data: return default
 	assert_set(data, name)
@@ -57,20 +60,15 @@ def assert_number(
 		val = float(data[name])
 	except ValueError:
 		raise AssertionError('%s must be a number.' % name)
-	if is_integer:
-		try:
-			val = int(data[name])
-		except ValueError:
-			raise AssertionError('%s must be an integer.' % name)
-	if is_integer is not None and not is_integer:
-		try:
-			int(data[name])
-		except ValueError:
-			raise AssertionError('%s must not be an integer.' % name)
+	if is_integer is True:
+		assert val.is_integer(), '%s must be an integer.' % name
+		val = int(val)
+	elif is_integer is False:
+		assert not val.is_integer(), '%s must not be an integer.' % name
 	if min_val is not None:
 		assert val >= min_val, '%s must be %s at least.' % (name, min_val)
 	if max_val is not None:
-		assert val <= min_val, '%s must be %s at most.' % (name, max_val)
+		assert val <= max_val, '%s must be %s at most.' % (name, max_val)
 	return val
 
 def assert_id(
