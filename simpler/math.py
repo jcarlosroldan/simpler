@@ -1,7 +1,7 @@
-def clamp(value: float, smallest: float = 0, largest: float = 1) -> float:
+def clamp(value: float, minimum: float = 0, maximum: float = 1) -> float:
 	''' Returns the value clamped between smallest and largest.
 	I.e.: `clamp(10, 2, 8)` would return 8. '''
-	return max(smallest, min(value, largest))
+	return max(minimum, min(value, maximum))
 
 def snap(value: float, step: float = 1, offset: float = 0) -> float:
 	''' Returns the value snapped to a scale of size step with an optional offset.
@@ -21,16 +21,16 @@ def unique(seq: list, uniqueness_function) -> list:
 			values.append(elem)
 	return values
 
-def all_equal(seq: list) -> list:
+def all_equal(seq: list) -> bool:
 	''' Returns true if every element in the sequence has the same value. '''
 	return len(seq) < 2 or all(seq[0] == e for e in seq[1:])
 
-def jaccard(seq1: list, seq2: list) -> list:
+def jaccard(seq1: list, seq2: list) -> float:
 	''' Returns the Jaccard index of two sequences. '''
 	set1, set2 = set(seq1), set(seq2)
 	return len(set1.intersection(set2)) / len(set1.union(set2))
 
-def levenshtein(seq1: list, seq2: list) -> list:
+def levenshtein(seq1: list, seq2: list) -> float:
 	''' Returns the Levenshtein distance of two sequences. '''
 	from difflib import SequenceMatcher
 	return SequenceMatcher(None, seq1, seq2).ratio()
@@ -93,7 +93,7 @@ def fibonacci(n: int) -> int:
 
 def lcm(a: int, b: int) -> int:
 	''' Least common multiple of two numbers. '''
-	return a * b / gcd(a, b)
+	return a * b // gcd(a, b)
 
 def gcd(a: int, b: int) -> int:
 	''' Greatest common divisor of two numbers. '''
@@ -164,7 +164,7 @@ def phi(n: int) -> int:
 def date_range(date_start, date_end, step=None):
 	from datetime import timedelta, datetime
 	assert isinstance(date_start, datetime) and isinstance(date_end, datetime), 'date_start and date_end must be datetime objects'
-	assert isinstance(step, timedelta), 'step must be a timedelta object'
+	assert step is None or isinstance(step, timedelta), 'step must be a timedelta object'
 	if step is None:
 		step = timedelta(days=1)
 	current = date_start
