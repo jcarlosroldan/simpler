@@ -1,11 +1,11 @@
 from typing import Any, Callable, Optional, Set
 
 def cwd() -> None:
+	''' Change the current directory to the base of relative paths to the directory
+	and returns it. '''
 	from os.path import abspath
 	from os import chdir
 	from sys import path as sys_path
-	''' Change the current directory to the base of relative paths to the directory
-	and returns it. '''
 	path = abspath(sys_path[0])
 	chdir(path)
 	return path
