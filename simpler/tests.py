@@ -1,84 +1,101 @@
-from typing import Dict, List, Optional, Tuple
+from typing import Optional, Type
 
 class Test:
 	''' Class for a test case. Each test case might contain multiple `test_<something>` methods
 	which are called when running the tests. It is advisable to run it from the `simpler.Suite` class. '''
 	PREFIX = 'test_'
 
-	def run(self) -> Dict[str, Tuple[Optional[str], float]]:
+	def run(self, only_errors: bool = True) -> dict:
 		''' Internal method used to run the tests. '''
 		from time import time
 		from traceback import format_exc
-		res = {}
-		total_elapsed = passes = errors = 0
-		for name in self.__dir__():
+		res = {'oks': 0, 'errors': 0, 'elapsed': 0, 'cases': {}}
+		for name in dir(self):
 			if not name.startswith(self.PREFIX): continue
-			method = self.__getattribute__(name)
+			case = getattr(self, name)
 			elapsed = time()
+			error = None
 			try:
-				method()
-				output = None
+				case()
+				res['oks'] += 1
 			except AssertionError as e:
-				output = e.args[0]
+				error = e.args[0] if e.args else ''
+				res['errors'] += 1
 			except:
-				output = 'Error while running the test:\n' + format_exc()
+				error = 'There was an uncaught error while running the test.\n' + format_exc()
+				res['errors'] += 1
 			elapsed = time() - elapsed
-			total_elapsed += elapsed
-			res[name[len(self.PREFIX):]] = output, elapsed
-			if output is None:
-				passes += 1
-			else:
-				errors += 1
-		return res, total_elapsed, passes, errors
+			res['elapsed'] += elapsed
+			if not only_errors or error is not None:
+				res['cases'][name[len(self.PREFIX):]] = {'elapsed': elapsed, 'error': error}
+		return res
 
 class Suite:
 	''' Class for running a test suite. Is built as Suite(FirstTest, SecondTest...) where the
 	arguments are an enumeration of subclasses of `simpler.Test` classes that will be run when using
 	this class `run` method. There are a few `run_<format>` methods to get a formatted output. '''
 
-	def __init__(self, *tests: List[Test]) -> None:
+	def __init__(self, *tests: Type[Test]) -> None:
 		assert all(t.__name__.endswith('Test') for t in tests), 'All test classes must end with "Test".'
 		self.tests = tests
 
-	def run(self) -> Tuple[Dict[str, Tuple[Dict[str, Tuple[Optional[str], float]], float, int, int]], float, int, int]:
+	def run(self, only_errors: bool = True) -> dict:
 		''' Runs the tests and returns a dictionary of tests, where each test is a dictionary of
 		`case: error` pairs. '''
-		res = {}
-		total_elapsed = total_errors = total_passes = 0
+		res = {'_total': {'oks': 0, 'errors': 0, 'elapsed': 0}}
 		for test in self.tests:
-			output, elapsed, passes, errors = test().run()
-			total_elapsed += elapsed
-			total_errors += errors
-			total_passes += passes
-			if len(output):
-				res[test.__name__[:-4]] = output, elapsed, errors, passes
-		return res, total_elapsed, total_passes, total_errors
+			name = test.__name__[:-4]
+			test = test().run(only_errors)
+			res['_total']['elapsed'] += test['elapsed']
+			res['_total']['oks'] += test['oks']
+			res['_total']['errors'] += test['errors']
+			if not only_errors or test['errors']:
+				res[name] = test
+		return res
 
 	def run_text(self, only_errors: bool = True) -> Optional[str]:
 		''' Runs the `run` method and formats the output as a plain text. '''
-		tests, elapsed, passes, errors = self.run()
-		if errors or not only_errors:
-			res = 'Summary: %d errors and %d passes in %.2fs.\n' % (errors, passes, elapsed)
-			for test, (cases, test_elapsed, test_passes, test_errors) in tests.items():
-				if only_errors and test_errors == 0: continue
-				res += 'Test %s (%d/%d in %.2fs)\n' % (test, test_errors, test_errors + test_passes, test_elapsed)
-				for case, (message, elapsed) in cases.items():
-					if only_errors and message is None: continue
-					res += '\tCase %s (%.2fs)' % (case, elapsed)
-					res += ': PASS\n' if message is None else ': ERROR\n%s\n' % '\n'.join('\t\t%s' % line for line in message.strip().split('\n'))
-			return res.strip()
+		res = self.run(only_errors)
+		if only_errors and res['_total']['errors'] == 0: return None
+		output = f'Summary: {res["_total"]["errors"]} errors and {res["_total"]["oks"]} passes in {res["_total"]["elapsed"]:.2f}s.\n'
+		for name, data in res.items():
+			if name == '_total': continue
+			output += f'Test {name} ({data["errors"]}/{data["oks"] + data["errors"]} in {data["elapsed"]:.2f}s)\n'
+			for case, details in data['cases'].items():
+				output += f'\tCase {case} ({details["elapsed"]:.2f}s)'
+				if details['error'] is None:
+					output += ': PASS\n'
+				else:
+					output += f': ERROR\n\t\t{details["error"].replace("\n", "\n\t\t")}\n'
+		return output.strip()
 
 	def run_html(self, only_errors: bool = True) -> Optional[str]:
 		''' Runs the `run` method and returns a table of errors, or None if there isn't any. '''
-		tests, elapsed, passes, errors = self.run()
-		if errors or not only_errors:
-			res = '<p><b>Summary: %d errors and %d passes in %.2fs.</b></p><table><tr><th>Test</th><th>Case</th><th>Elapsed (s)</th><th>%s</th></tr>' % (
-				errors, passes, elapsed, 'Error' if only_errors else 'Result'
-			)
-			for test, (cases, _, _, _) in tests.items():
-				for case, (message, elapsed) in cases.items():
-					if message is not None or not only_errors:
-						res += '<tr><td>%s</td><td>%s</td><td>%.2f</td><td><div style="font-family:monospace;white-space:pre;max-width:35rem;overflow:auto">%s</div></td></tr>' % (test, case, elapsed, ('<span style="color:#080">✓</span>' if message is None else message))
-			if not only_errors:
-				res += '<tr><th colspan=2>Total</th><td>%.2f</td><td>%d/%d OK</td></tr>' % (elapsed, passes, passes + errors)
-			return res + '</table>'
+		res = self.run(only_errors)
+		if only_errors and res['_total']['errors'] == 0: return None
+		output = f'<p><b>Summary:</b> {res["_total"]["errors"]} errors and {res["_total"]["oks"]} passes in {res["_total"]["elapsed"]:.2f}s.</p><table><tr><th>Test</th><th>Case</th><th>Elapsed (s)</th><th>Error</th></tr>'
+		for name, data in res.items():
+			if name == '_total': continue
+			for case, details in data['cases'].items():
+				output += f'<tr><td>{name}</td><td>{case}</td><td>{details["elapsed"]:.2f}</td>'
+				if details['error'] is None:
+					output += '<td><span style="color:#080">✓</span></td></tr>'
+				else:
+					output += f'<td><div style="font-family:monospace;white-space:pre;max-width:35rem;overflow:auto">{details["error"].replace("\n", "<br>")}</div></td></tr>'
+		if not only_errors:
+			output += f'<tr><th colspan=2>Total</th><td>{res["_total"]["elapsed"]:.2f}</td><td>{res["_total"]["oks"]}/{res["_total"]["errors"] + res["_total"]["oks"]} OK</td></tr>'
+		return output + '</table>'
+
+	def run_markdown(self, only_errors: bool = True) -> Optional[str]:
+		res = self.run(only_errors)
+		if only_errors and res['_total']['errors'] == 0: return None
+		output = f'**Summary:** {res["_total"]["errors"]} errors and {res["_total"]["oks"]} passes in {res["_total"]["elapsed"]:.2f}s.\n\n'
+		for name, data in res.items():
+			if name == '_total': continue
+			output += f'* **{name}** ({data["errors"]}/{data["oks"] + data["errors"]} in {data["elapsed"]:.2f}s)\n'
+			for case, details in data['cases'].items():
+				if details['error'] is None:
+					output += f'  * {case} ({details["elapsed"]:.2f}s): ✓ PASS\n'
+				else:
+					output += f'  * {case} ({details["elapsed"]:.2f}s): ❌ ERROR\n    ```\n    {details["error"].replace("\n", "\n    ")}\n    ```\n'
+		return output.strip()
