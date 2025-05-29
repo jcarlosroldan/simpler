@@ -20,7 +20,7 @@ _human_date_measures = (
 	('second', 1)
 )
 def human_date(date) -> str:
-	''' Return a date the a human-friendly format "1 month ago". '''
+	''' Given a past date, it returns a date in a human-friendly format "1 month ago". '''
 	from datetime import datetime
 	if isinstance(date, str):
 		res = datetime.strptime(date, '%Y-%m-%d, %H:%M:%S')
@@ -43,7 +43,7 @@ def random_string(length: int, mask: list = None) -> str:
 		mask = digits + ascii_letters
 	return ''.join(choice(mask) for _ in range(length))
 
-def print_matrix(matrix: list, rows: int = None, cols: int = None, elem_width: int = None, separator: str = ' ') -> str:
+def print_matrix(matrix: list, rows: int = None, cols: int = None, elem_width: int = None, separator: str = ' ') -> None:
 	for row in matrix[:rows]:
 		for col in row[:cols]:
 			print(str(col)[:elem_width], end=separator)
