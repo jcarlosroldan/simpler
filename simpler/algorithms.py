@@ -1,11 +1,4 @@
 class DynamicProgramming:
-	'''
-	Abstract class to solve problems using dynamic programming. To use it,
-	make a child class implementing alternatives, is_final and penalty. Then,
-	make one of such objects providing the initial state in the constructor, and
-	call to solve(), providing one search type.
-	'''
-
 	ONE_SOLUTION = 0
 	ONE_OPTIMAL_SOLUTION = 1
 	ALL_SOLUTIONS = 2
@@ -27,14 +20,13 @@ class DynamicProgramming:
 		raise NotImplementedError()
 
 	def solve(self, search_type: int = ONE_SOLUTION):
-		''' Resolves the Dynamic Programming problem. '''
-		assert search_type in range(4), "Invalid search type."
+		assert search_type in range(4), 'Invalid search type.'
 		final_states = []
-		explored = []
+		explored = set()
 		remaining = [(self.penalty(self.initial_state), self.initial_state)]
 		while len(remaining):
 			_, state = remaining.pop(0)
-			explored.append(state)
+			explored.add(state)
 			for alternative in self.alternatives(state):
 				if alternative in explored: continue
 				penalty = self.penalty(alternative)
@@ -46,6 +38,7 @@ class DynamicProgramming:
 				else:
 					index = sum(1 for p, _ in remaining if p < penalty)
 					remaining.insert(index, (penalty, alternative))
+		if not final_states: return None
 		if search_type == self.ALL_SOLUTIONS:
 			return [state for _, state in final_states]
 		else:
