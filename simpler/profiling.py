@@ -24,7 +24,7 @@ def deep_size(obj):
 	if _deep_size_blacklist is None:
 		_deep_size_blacklist = type, ModuleType, FunctionType
 	if isinstance(obj, _deep_size_blacklist):
-		raise TypeError('getsize() does not take argument of type: ' + str(type(obj)))
+		raise TypeError('deep_size() does not take argument of type: ' + str(type(obj)))
 	seen_ids = set()
 	size = 0
 	objects = [obj]
