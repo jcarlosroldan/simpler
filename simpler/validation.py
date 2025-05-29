@@ -47,7 +47,7 @@ def assert_str(
 		else:
 			assert not contains, '%s must not contain any whitespaces.' % name
 	if has_pattern is not None:
-		assert search('^(%s)$' % has_pattern, data[name]) is not None, '%s has an invalid format.' % name
+		assert search(has_pattern, data[name]) is not None, '%s has an invalid format.' % name
 	return data[name]
 
 def assert_number(
@@ -91,7 +91,7 @@ def assert_mail(data: dict, name: str, optional: bool = False, default: object =
 	from re import match
 	if optional and name not in data: return default
 	assert_set(data, name)
-	assert match(r'[^\s@]+@[^\s@]+\.[^\s@]+', data[name]), '%s is not a valid mail.' % name
+	assert match(r'^[^\s@]+@[^\s@]+\.[^\s@]+$', data[name]), '%s is not a valid mail.' % name
 	return data[name]
 
 def assert_exists(path: str) -> None:
