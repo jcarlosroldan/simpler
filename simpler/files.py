@@ -16,18 +16,18 @@ def load(path: str, format: str = 'auto', encoding: str = 'utf-8', inner_args: l
 	format = detect_format(path, format, accept=_load_formats, default='string')
 	args = [] if inner_args is None else inner_args
 	kwargs = {} if inner_kwargs is None else inner_kwargs
-	if format == 'string':
+	if format in ('string', 'jsonl'):
 		fp = open(path, 'r', encoding=encoding)
 	else:
 		fp = open(path, 'rb')
-	if format in ('bytes', 'string', 'jsonl'):
+	if format in ('bytes', 'string'):
 		res = fp.read()
 	elif format == 'json':
 		from json import load as jload
 		res = jload(fp, *args, **kwargs)
 	elif format == 'jsonl':
-		from json import load as jload
-		res = [jload(line, *args, **kwargs) for line in fp]
+		from json import loads as jloads
+		res = [jloads(line.strip(), *args, **kwargs) for line in fp if line.strip()]
 	elif format == 'csv':
 		from pandas import read_csv
 		res = read_csv(fp, *args, **kwargs)
@@ -60,9 +60,9 @@ def save(path: str, content: object, format: str = 'auto', encoding: str = 'utf-
 	elif format in ('json', 'jsonl'):
 		from json import dumps as jdumps
 		if 'ensure_ascii' not in kwargs: kwargs['ensure_ascii'] = False
-		if 'indent' not in kwargs: kwargs['indent'] = '\t'
+		if format == 'json' and 'indent' not in kwargs: kwargs['indent'] = '\t'
 		if format[-1] == 'l':
-			fp.write(jdumps(elem, *args, **kwargs) for elem in content)
+			fp.write('\n'.join(jdumps(elem, *args, **kwargs) for elem in content))
 		else:
 			fp.write(jdumps(content, *args, **kwargs))
 	elif format == 'pickle':
@@ -193,7 +193,7 @@ def disk_cache(method=None, *, seconds: float = None, directory: str = '.cached/
 				from pickle import load as pload
 				with open(fname, 'rb') as fp:
 					save_time, value = pload(fp)
-				if seconds is None or save_time - now < seconds:
+				if seconds is None or now - save_time < seconds:
 					res = value
 			if res is None:
 				from pickle import dump as pdump
@@ -266,7 +266,7 @@ def clear_global_mem_cache(global_name: str = None):
 
 def size(file) -> int:
 	''' A way to see the size of a file without loading it to memory. '''
-	if file.content_length:
+	if hasattr(file, 'content_length') and file.content_length:
 		return file.content_length
 	try:
 		pos = file.tell()
@@ -314,22 +314,19 @@ def find_hidden_compressed(path: str, byte_limit: int = None) -> Set[str]:
 
 _tvshow_rename_regex = None
 def tvshow_rename(path: str) -> None:
-	''' Rename every TV show of a folder.
-	I.e. Inception_Season_4_Episode_02_DivX-Total.mkv would be 04x02.mkv. '''
 	from os import listdir, rename
 	global _tvshow_rename_regex
 	if _tvshow_rename_regex is None:
 		from re import compile
-		_tvshow_rename_regex = compile(r'(?P<SEASON>\d+)\s*[x\-]\s*(?P<EPISODE>\d+)|S\s*(?P<SEASON>\d+)\s*E\s*(?P<EPISODE>\d+)|(?P<EPISODE>\d+)').search
+		_tvshow_rename_regex = compile(r'(\d+)\s*[x\-]\s*(\d+)|S(\d+)E(\d+)|Episode.*?(\d+)')
 	for file in listdir(path):
 		name, ext = file.rsplit('.', 1)
-		match = _tvshow_rename_regex(name.replace('_', ' '))
-		if match is not None:
-			season, episode = match.groups()
-			season = 1 if season is None else int(season)
-			episode = int(episode)
-			name = '%02d x %02d.%s' % (season, episode, ext)
-			rename(file, name)
+		match = _tvshow_rename_regex.search(name.replace('_', ' '))
+		if match:
+			sx_season, sx_episode, se_season, se_episode, ep_only = match.groups()
+			season, episode = (int(sx_season), int(sx_episode)) if sx_season else (int(se_season), int(se_episode)) if se_season else (1, int(ep_only))
+			new_name = '%02d x %02d.%s' % (season, episode, ext)
+			rename(file, new_name)
 
 _directory_compare_ignored = ('.class', '.metadata', '.recommenders', '.pyc', '.git', '.svn', '.cached', '__pycache__')
 def directory_compare(old: str, new: str, kind: str = 'dir', ignored: list = _directory_compare_ignored) -> None:
