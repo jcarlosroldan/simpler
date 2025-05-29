@@ -27,7 +27,7 @@ def rna_to_dna(rna: str) -> str:
 
 def rna_to_protein(rna: str) -> str:
 	''' Transforms a RNA string into a CODON string. '''
-	return ''.join(codon_table[rna[n:n + 3]] for n in range(0, len(rna), 3)).strip('Stop')
+	return ''.join(codon_table[rna[n:n + 3]] for n in range(0, 3 * (len(rna) // 3), 3)).strip('Stop')
 
 def reverse_complement(seq: str, is_rna: bool = True) -> str:
 	''' Obtains the reverse complement of a DNA or RNA string. '''
