@@ -14,7 +14,12 @@ sphinx-apidoc -o docs simpler -f --separate
 
 # Update library
 python3 setup.py sdist bdist_wheel
-python3 -m twine upload dist/* -u juancroldan
+
+echo 'Enter your PyPI API token:'
+read -s PYPI_TOKEN
+echo
+
+TWINE_PASSWORD="$PYPI_TOKEN" TWINE_USERNAME=__token__ python3 -m twine upload dist/*
 
 # Remove auxiliary files again
 rm -rf build dist simpler.egg-info
@@ -29,4 +34,4 @@ sudo killall -HUP mDNSResponder
 pip3 uninstall simpler -y
 pip3 install simpler -U
 
-echo "Script execution completed."
+echo 'Script execution completed.'
