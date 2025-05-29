@@ -17,6 +17,7 @@ def assert_str(
 	from re import search
 	if optional and name not in data: return default
 	assert_set(data, name)
+	assert isinstance(data[name], str), '%s must be a string.' % name
 	if min_len is not None:
 		assert len(data[name]) >= min_len, '%s should be %d characters at least.' % (name, min_len)
 	if max_len is not None:
