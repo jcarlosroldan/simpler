@@ -49,10 +49,19 @@ def print_matrix(matrix: list, rows: int = None, cols: int = None, elem_width: i
 			print(str(col)[:elem_width], end=separator)
 		print()
 
-_safe_filename_regex = None
-def safe_filename(filename: str) -> str:
-	global _safe_filename_regex
-	if _safe_filename_regex is None:
-		from regex import compile
-		_safe_filename_regex = compile(r'[/\\\*;\[\]\":=,<>]')
-	return _safe_filename_regex.sub('', filename)
+_safe_filename_windows_reserved = {'CON', 'PRN', 'AUX', 'NUL'} | {f'{prefix}{i}' for prefix in ['COM', 'LPT'] for i in range(1, 10)}
+def safe_filename(
+	filename: str,
+	trim_spaces: bool = True,
+	disallowed_chars: set = set('/\\*;[]":=,<>'),
+	length_limit: int = None,
+	suffix_windows_reserved_names: bool = False
+) -> str:
+	''' Returns a safe filename by removing disallowed characters, trimming spaces, and optionally
+	adding a suffix to Windows reserved names. If `length_limit` is set, it will truncate the filename
+	to that length, removing trailing spaces and dots. '''
+	res = ''.join(char for char in filename if char not in disallowed_chars)
+	if trim_spaces: res = res.strip(' ')
+	if suffix_windows_reserved_names and res.upper() in _safe_filename_windows_reserved: res = f'{res}_safe'
+	if length_limit and len(res) > length_limit: res = res[:length_limit].rstrip(' .')
+	return res
