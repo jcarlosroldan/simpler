@@ -1,4 +1,5 @@
-from typing import Dict, Optional, Tuple
+from typing import Dict, Optional, Tuple, Union, List
+import threading
 
 def download_file(url, path=None, chunk_size=10**5, show_progress=True) -> str:
 	''' Downloads a file keeping track of the progress. Returns the output path. '''
@@ -8,7 +9,7 @@ def download_file(url, path=None, chunk_size=10**5, show_progress=True) -> str:
 	from time import time
 	if path is None: path = url.split('/')[-1]
 	r = get(url, stream=True)
-	total_bytes = int(r.headers.get('content-length'))
+	total_bytes = int(r.headers.get('content-length', 0))
 	bytes_downloaded = 0
 	start = time()
 	if show_progress: print('Downloading %s (%s)' % (url, human_bytes(total_bytes)))
@@ -16,7 +17,7 @@ def download_file(url, path=None, chunk_size=10**5, show_progress=True) -> str:
 		for chunk in r.iter_content(chunk_size=chunk_size):
 			if not chunk: continue
 			fp.write(chunk)
-			if show_progress:
+			if show_progress and total_bytes > 0:
 				bytes_downloaded += len(chunk)
 				percent = bytes_downloaded / total_bytes
 				bar = ('█' * int(percent * 32)).ljust(32)
@@ -35,6 +36,7 @@ class DownloaderPool:
 		self.pending_urls = []
 		self.responses = {}
 		self.workers = None
+		self.lock = threading.Lock()
 		if download_method is None:
 			from urllib.request import urlopen
 			self.download_method = lambda url: urlopen(url, timeout=5).read()
@@ -48,14 +50,18 @@ class DownloaderPool:
 
 	def download_worker(self):
 		from traceback import print_exc
-		while len(self.pending_urls):
-			url = self.pending_urls.pop()
+		while True:
+			with self.lock:
+				if not self.pending_urls:
+					break
+				url = self.pending_urls.pop()
 			try:
 				res = self.download_method(url)
 			except:
 				print_exc()
 				res = None
-			self.responses[url] = res
+			with self.lock:
+				self.responses[url] = res
 
 	def get(self, urls):
 		self.pending_urls.extend(urls)
@@ -162,13 +168,14 @@ class Driver:
 			sleep(self._WAIT_POLL_EACH)
 
 	def select(self, element, wait: bool = True, all: bool = False, raise_errors: bool = None):
+		from selenium.webdriver.common.by import By
 		from selenium.webdriver.remote.webelement import WebElement
 		if isinstance(element, WebElement): return element
 		found = self.wait(element, raise_errors=not all if raise_errors is None else raise_errors) if wait else False
 		if all:
-			return self.driver.find_elements_by_css_selector(element)
+			return self.driver.find_elements(By.CSS_SELECTOR, element)
 		elif found:
-			return self.driver.find_element_by_css_selector(element)
+			return self.driver.find_element(By.CSS_SELECTOR, element)
 
 	def write(self, element, text: str, clear: bool = False) -> None:
 		from selenium.webdriver.common.action_chains import ActionChains
@@ -314,7 +321,7 @@ class Driver:
 	def console_clear(self):
 		self.driver.execute_script('window.CONSOLE_MESSAGES = []')
 
-	def console_messages(self, group_by_level: bool = False) -> Dict[str, str]:
+	def console_messages(self, group_by_level: bool = False) -> Union[Dict[str, List[str]], List[str]]:
 		messages = self.driver.execute_script('return CONSOLE_MESSAGES')
 		if group_by_level:
 			res = {}
