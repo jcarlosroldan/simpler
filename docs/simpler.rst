@@ -26,5 +26,5 @@ Module contents
 
 .. automodule:: simpler
    :members:
-   :show-inheritance:
    :undoc-members:
+   :show-inheritance:

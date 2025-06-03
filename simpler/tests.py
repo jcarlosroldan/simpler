@@ -66,7 +66,7 @@ class Suite:
 				if details['error'] is None:
 					output += ': PASS\n'
 				else:
-					output += ': ERROR\n\t\t%s\n' % details["error"].replace("\n", "\n\t\t")
+					output += ': ERROR\n\t\t%s\n' % details['error'].replace('\n', '\n\t\t')
 		return output.strip()
 
 	def run_html(self, only_errors: bool = True) -> Optional[str]:
@@ -81,7 +81,7 @@ class Suite:
 				if details['error'] is None:
 					output += '<td><span style="color:#080">✓</span></td></tr>'
 				else:
-					output += f'<td><div style="font-family:monospace;white-space:pre;max-width:35rem;overflow:auto">{details["error"].replace("\n", "<br>")}</div></td></tr>'
+					output += '<td><div style="font-family:monospace;white-space:pre;max-width:35rem;overflow:auto">%s</div></td></tr>' % details['error'].replace('\n', '<br>')
 		if not only_errors:
 			output += f'<tr><th colspan=2>Total</th><td>{res["_total"]["elapsed"]:.2f}</td><td>{res["_total"]["oks"]}/{res["_total"]["errors"] + res["_total"]["oks"]} OK</td></tr>'
 		return output + '</table>'
@@ -97,5 +97,5 @@ class Suite:
 				if details['error'] is None:
 					output += f'  * {case} ({details["elapsed"]:.2f}s): ✓ PASS\n'
 				else:
-					output += f'  * {case} ({details["elapsed"]:.2f}s): ❌ ERROR\n    ```\n    {details["error"].replace("\n", "\n    ")}\n    ```\n'
+					output += '  * %s (%.2fs): ❌ ERROR\n    ```\n    %s\n    ```\n' % (case, details['elapsed'], details['error'].replace('\n', '\n    '))
 		return output.strip()
