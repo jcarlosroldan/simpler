@@ -66,7 +66,7 @@ class Suite:
 				if details['error'] is None:
 					output += ': PASS\n'
 				else:
-					output += f': ERROR\n\t\t{details["error"].replace("\n", "\n\t\t")}\n'
+					output += ': ERROR\n\t\t%s\n' % details["error"].replace("\n", "\n\t\t")
 		return output.strip()
 
 	def run_html(self, only_errors: bool = True) -> Optional[str]:
